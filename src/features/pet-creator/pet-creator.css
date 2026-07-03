@@ -1,0 +1,202 @@
+﻿.pet-creator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.pc-header {
+  text-align: center;
+}
+.pc-header h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.6rem;
+}
+.pc-header p {
+  margin: 0;
+  opacity: 0.7;
+  font-size: 0.95rem;
+}
+
+.pc-board {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.drawing-canvas {
+  width: 320px;
+  height: 320px;
+  max-width: 80vw;
+  border-radius: 16px;
+  border: 2px solid var(--border);
+  background: #fff;
+  touch-action: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.pc-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 180px;
+}
+
+.pc-tool-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pc-label {
+  font-size: 0.8rem;
+  opacity: 0.6;
+  letter-spacing: 0.03em;
+}
+
+.pc-palette {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+
+.pc-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s;
+}
+.pc-swatch:hover {
+  transform: scale(1.1);
+}
+.pc-swatch.is-active {
+  border-color: #7dd3fc;
+  box-shadow: 0 0 0 2px #7dd3fc;
+}
+
+.pc-color-input {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+
+.pc-sizes {
+  display: flex;
+  gap: 6px;
+}
+.pc-size {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+}
+.pc-size.is-active {
+  border-color: #7dd3fc;
+  background: rgba(125, 211, 252, 0.15);
+}
+.pc-size-dot {
+  background: currentColor;
+  border-radius: 50%;
+  display: block;
+}
+
+.pc-tool-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.pc-undo-row {
+  display: flex;
+  gap: 6px;
+}
+.pc-undo-row .pc-btn {
+  flex: 1;
+}
+.pc-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pc-btn,
+.pc-save {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+  padding: 0.5rem 0.75rem;
+  transition: background 0.15s;
+}
+.pc-btn:hover {
+  background: var(--border);
+}
+.pc-btn.is-active {
+  border-color: #7dd3fc;
+  background: rgba(125, 211, 252, 0.15);
+}
+
+.pc-form {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+.pc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+}
+.pc-field span {
+  opacity: 0.7;
+}
+.pc-field input {
+  font: inherit;
+  padding: 0.5rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+}
+.pc-field input:focus {
+  outline: none;
+  border-color: #7dd3fc;
+}
+
+.pc-error {
+  margin: 0;
+  color: #fca5a5;
+  font-size: 0.9rem;
+}
+
+.pc-save {
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 0.75rem 2rem;
+  border: none;
+  background: linear-gradient(135deg, #7dd3fc, #c4b5fd);
+  color: #15161d;
+}
+.pc-save:hover {
+  filter: brightness(1.05);
+}

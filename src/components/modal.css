@@ -1,0 +1,103 @@
+﻿.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: modal-fade 0.18s ease-out;
+  /* Electron: 상단 드래그 영역이 모달 클릭(닫기)을 가로채지 않도록 */
+  -webkit-app-region: no-drag;
+}
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  width: 100%;
+  max-width: 420px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--modal-bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: modal-pop 0.2s ease-out;
+}
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+.modal-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.modal-close {
+  font: inherit;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+}
+.modal-close:hover {
+  background: var(--border);
+}
+
+.modal-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+/* 인라인 변형 — 하단 탭 가로 페이저의 한 페이지로 꽉 채워 렌더 */
+.modal.modal--inline {
+  max-width: none;
+  max-height: none;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  animation: none;
+}
+.modal.modal--inline .modal-body {
+  flex: 1;
+  min-height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-backdrop,
+  .modal {
+    animation: none;
+  }
+}

@@ -1,0 +1,105 @@
+﻿.quest-count {
+  font-size: 0.82rem;
+  font-weight: 700;
+  opacity: 0.8;
+}
+.quest-section-label {
+  margin: 1.25rem 0 0.6rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  opacity: 0.7;
+}
+.quest-section-label:first-child {
+  margin-top: 0;
+}
+
+.quest-chapter {
+  padding: 1.1rem 1.15rem;
+  border-radius: 14px;
+  margin-bottom: 0.8rem;
+  border: 1px solid var(--border);
+}
+.quest-chapter.done {
+  background: var(--surface);
+  opacity: 0.85;
+}
+.quest-chapter.current {
+  background: rgba(196, 181, 253, 0.1);
+  border-color: rgba(196, 181, 253, 0.4);
+}
+
+.quest-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+.quest-title {
+  font-weight: 800;
+  font-size: 1rem;
+  word-break: keep-all;
+}
+.quest-check {
+  color: var(--good-text);
+  font-weight: 800;
+}
+.quest-story {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--text);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.quest-chapter.current .quest-story {
+  font-weight: 500;
+}
+
+.quest-goal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0.75rem 0 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.quest-status {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 8px;
+  background: var(--border);
+  opacity: 0.8;
+}
+.quest-status.ok {
+  background: rgba(34, 197, 94, 0.2);
+  color: var(--good-text);
+}
+
+.quest-claim {
+  width: 100%;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.7rem;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #7dd3fc, #c4b5fd);
+  color: #15161d;
+}
+.quest-claim:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.quest-end {
+  text-align: center;
+  padding: 1rem 0;
+}
+.quest-end-emoji {
+  font-size: 3rem;
+}
+.quest-end p {
+  margin: 0.5rem 0 0;
+  opacity: 0.85;
+}

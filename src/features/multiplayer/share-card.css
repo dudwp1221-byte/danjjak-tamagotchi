@@ -1,0 +1,50 @@
+﻿.share-preview {
+  display: flex;
+  justify-content: center;
+  min-height: 200px;
+  align-items: center;
+}
+.share-img {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.share-loading {
+  opacity: 0.6;
+}
+
+.share-btns {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+.share-btn {
+  flex: 1;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.7rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+}
+.share-btn:hover {
+  background: var(--border);
+}
+.share-btn.primary {
+  border: none;
+  background: linear-gradient(135deg, #7dd3fc, #c4b5fd);
+  color: #15161d;
+}
+.share-btn.primary:hover {
+  filter: brightness(1.05);
+}
+
+.share-msg {
+  margin: 0.75rem 0 0;
+  font-size: 0.82rem;
+  text-align: center;
+  opacity: 0.7;
+}

@@ -1,0 +1,19 @@
+{
+  "name": "단짝 다마고치",
+  "short_name": "단짝",
+  "description": "회사에서 몰래 키우는 나만의 펫",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#15161d",
+  "theme_color": "#15161d",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

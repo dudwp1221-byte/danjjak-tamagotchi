@@ -1,0 +1,48 @@
+{
+  "name": "danjjak-tamagotchi",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "electron:dev": "ELECTRON=1 vite-plugin-electron dev",
+    "electron:build": "tsc -p tsconfig.electron.json && tsc -b && vite build && electron-builder"
+  },
+  "dependencies": {
+    "firebase": "^12.15.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "electron": "^35.7.5",
+    "electron-builder": "^25.1.8",
+    "oxlint": "^1.69.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.1.0",
+    "vite-plugin-electron": "^0.29.1",
+    "vitest": "^3.2.6"
+  },
+  "build": {
+    "appId": "com.danjjak.tamagotchi",
+    "productName": "단짝",
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    }
+  }
+}

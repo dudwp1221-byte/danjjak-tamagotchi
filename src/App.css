@@ -1,0 +1,104 @@
+﻿.app {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: max(0.75rem, env(safe-area-inset-top)) 0.75rem max(1rem, env(safe-area-inset-bottom));
+}
+
+/* Electron: 창 맨 위 드래그 영역 (창 이동). 우측은 창 컨트롤 버튼 공간 비움 */
+.app-drag {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 140px;
+  height: 34px;
+  z-index: 40;
+  -webkit-app-region: drag;
+}
+
+.title-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 3rem 3.5rem;
+  border-radius: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.pet-egg {
+  font-size: 4rem;
+  line-height: 1;
+  animation: bob 2.4s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+  }
+}
+
+.title {
+  margin: 0;
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #7dd3fc, #c4b5fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 1.05rem;
+  opacity: 0.85;
+}
+
+.hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  opacity: 0.5;
+  letter-spacing: 0.04em;
+}
+
+.start-btn {
+  margin-top: 0.75rem;
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.7rem 2.2rem;
+  border: none;
+  border-radius: 999px;
+  color: #15161d;
+  background: linear-gradient(135deg, #7dd3fc, #c4b5fd);
+  transition: filter 0.15s, transform 0.1s;
+}
+.start-btn:hover {
+  filter: brightness(1.05);
+}
+.start-btn:active {
+  transform: translateY(1px);
+}
+
+.pet-portrait {
+  border-radius: 16px;
+  background: #fff;
+  border: 2px solid var(--border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pet-egg {
+    animation: none;
+  }
+}

@@ -1,0 +1,31 @@
+.amb-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.amb-btn {
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+  white-space: nowrap;
+  transition: background 0.12s, border-color 0.12s;
+}
+.amb-btn:hover { background: var(--border) }
+.amb-playing .amb-btn {
+  background: rgba(125, 211, 252, 0.12);
+  border-color: rgba(125, 211, 252, 0.4);
+  color: #7dd3fc;
+}
+
+.amb-vol {
+  width: 64px;
+  accent-color: #7dd3fc;
+  cursor: pointer;
+}

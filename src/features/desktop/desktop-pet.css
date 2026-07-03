@@ -1,0 +1,340 @@
+:root { background: transparent !important }
+body, html {
+  margin: 0; padding: 0;
+  background: transparent !important;
+  background-image: none !important;
+  overflow: hidden;
+  user-select: none;
+  -webkit-app-region: no-drag;
+  min-height: unset !important;
+}
+#root {
+  min-height: unset !important;
+  background: transparent !important;
+}
+
+/* 전체 루트 */
+.dp-root {
+  width: 160px;
+  height: 160px;
+  position: relative;
+  cursor: default;
+}
+
+/* 말풍선 */
+.dp-bubble {
+  position: absolute;
+  bottom: 115px;
+  left: 4px;
+  background: #1e1e2e;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 12px;
+  /* backdrop-filter removed: causes white artifact on Windows transparent window */
+  pointer-events: none;
+  animation: dp-pop 0.15s ease-out;
+  max-width: 140px;
+  white-space: normal;
+  line-height: 1.4;
+  z-index: 10;
+}
+.dp-bubble::after {
+  content: '';
+  position: absolute; top: 100%; left: 14px;
+  border: 4px solid transparent;
+  border-top-color: #1e1e2e;
+}
+@keyframes dp-pop {
+  from { opacity:0; transform: translateY(4px) scale(0.9) }
+  to   { opacity:1; transform: translateY(0) scale(1) }
+}
+
+/* 펫 이미지 */
+.dp-pet-wrap {
+  position: absolute;
+  bottom: 20px;
+  left: 8px;
+  transform-origin: center bottom;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+.dp-img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5));
+  animation: dp-bob 2.4s ease-in-out infinite;
+  display: block;
+  transform-origin: center bottom;
+}
+@keyframes dp-bob {
+  0%,100% { transform: translateY(0) scale(1) }
+  50%      { transform: translateY(-5px) scale(1.02, 0.98) }
+}
+.dp-tier-0 .dp-img {
+  animation-duration: 1.8s;
+}
+.dp-tier-3 .dp-img,
+.dp-tier-4 .dp-img {
+  animation-duration: 3.2s;
+}
+.dp-root.is-distressed .dp-img {
+  animation: dp-distress 0.45s ease-in-out infinite;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5)) saturate(0.82) brightness(0.92);
+}
+@keyframes dp-distress {
+  0%,100% { transform: translateX(0) rotate(0deg) }
+  25% { transform: translateX(-2px) rotate(-2deg) }
+  75% { transform: translateX(2px) rotate(2deg) }
+}
+.dp-root.is-sleeping .dp-img {
+  animation: dp-breathe 3s ease-in-out infinite;
+  opacity: 0.8;
+}
+.dp-root.dp-action-feed .dp-img {
+  animation: dp-feed-react 0.72s ease;
+}
+.dp-root.dp-action-pet .dp-img {
+  animation: dp-pet-react 0.72s cubic-bezier(0.2, 0.9, 0.24, 1.1);
+}
+.dp-root.dp-action-wash .dp-img {
+  animation: dp-wash-react 0.72s ease;
+}
+.dp-root.dp-action-sleep .dp-img {
+  animation: dp-sleep-react 0.9s ease;
+}
+@keyframes dp-feed-react {
+  0%,100% { transform: translateX(0) scale(1) }
+  18% { transform: translateX(5px) scale(1.08, 0.9) }
+  38% { transform: translateX(-2px) scale(0.94, 1.08) }
+  58% { transform: translateX(4px) scale(1.06, 0.93) }
+}
+@keyframes dp-pet-react {
+  0%,100% { transform: translateY(0) rotate(0deg) scale(1) }
+  20% { transform: translateY(2px) rotate(-2deg) scale(1.08, 0.9) }
+  46% { transform: translateY(-16px) rotate(4deg) scale(0.96, 1.12) }
+  68% { transform: translateY(0) rotate(-2deg) scale(1.1, 0.88) }
+  84% { transform: translateY(-5px) rotate(1deg) scale(0.98, 1.04) }
+}
+@keyframes dp-wash-react {
+  0%,100% { transform: translateY(0) rotate(0deg) scale(1) }
+  18% { transform: translateY(-2px) rotate(-10deg) scale(1.03) }
+  38% { transform: translateY(1px) rotate(10deg) scale(0.98, 1.03) }
+  60% { transform: translateY(-2px) rotate(-7deg) scale(1.02) }
+  80% { transform: translateY(0) rotate(4deg) scale(1) }
+}
+@keyframes dp-sleep-react {
+  0%,100% { transform: translateY(0) scale(1) }
+  50% { transform: translateY(4px) scale(1.08, 0.9) }
+}
+@keyframes dp-breathe {
+  0%,100% { transform: scaleY(1) }
+  50%      { transform: scaleY(0.94) }
+}
+.dp-sleeping { position: relative; display: inline-block }
+.dp-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 1px;
+  background: var(--dp-particle-color, #fde68a);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.28);
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  animation: dp-particle-rise 2.6s ease-in-out infinite;
+}
+.dp-particle-1 { left: 8px; top: 18px }
+.dp-particle-2 { right: 4px; top: 10px; animation-delay: 1s }
+.dp-attr-fire { --dp-particle-color: #fb923c }
+.dp-attr-water { --dp-particle-color: #38bdf8 }
+.dp-attr-grass { --dp-particle-color: #86efac }
+.dp-attr-wind { --dp-particle-color: #5eead4 }
+.dp-attr-earth { --dp-particle-color: #c4a484 }
+.dp-attr-light { --dp-particle-color: #fde68a }
+.dp-attr-dark { --dp-particle-color: #c084fc }
+.dp-attr-neutral { --dp-particle-color: #d1d5db }
+.dp-attr-water .dp-particle,
+.dp-attr-wind .dp-particle,
+.dp-attr-light .dp-particle {
+  border-radius: 50%;
+}
+@keyframes dp-particle-rise {
+  0% { transform: translateY(8px) scale(0.7); opacity: 0 }
+  28% { opacity: 0.85 }
+  100% { transform: translateY(-16px) scale(1); opacity: 0 }
+}
+.dp-action-burst {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.dp-action-burst span {
+  position: absolute;
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: #f6d365;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.28);
+  opacity: 0;
+  animation: dp-burst-pop 0.78s ease-out forwards;
+}
+.dp-action-burst span:nth-child(1) { left: 48px; top: 26px }
+.dp-action-burst span:nth-child(2) { left: 58px; top: 18px; animation-delay: 0.08s }
+.dp-action-burst span:nth-child(3) { left: 30px; top: 12px; animation-delay: 0.16s }
+.dp-action-burst-pet span {
+  background: #fb8ccf;
+  transform: rotate(45deg);
+}
+.dp-action-burst-wash span {
+  width: 5px;
+  height: 9px;
+  border-radius: 999px;
+  background: #67e8f9;
+}
+.dp-action-burst-sleep span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #c7d2fe;
+}
+@keyframes dp-burst-pop {
+  0% { transform: translateY(8px) scale(0.45); opacity: 0 }
+  35% { opacity: 1 }
+  100% { transform: translateY(-22px) scale(1); opacity: 0 }
+}
+.dp-zzz {
+  position: absolute; top: -6px; right: -10px;
+  font-size: 0.9rem;
+  animation: dp-zzz-float 2s ease-in-out infinite;
+}
+@keyframes dp-zzz-float {
+  0%   { transform: translate(0,0); opacity: 1 }
+  100% { transform: translate(5px,-10px); opacity: 0 }
+}
+
+/* 이름 — 펫 이미지 바로 아래 중앙 */
+.dp-info {
+  position: absolute;
+  bottom: 4px;
+  left: 8px;
+  width: 72px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  background: #1a1a2e;
+  border-radius: 8px;
+  padding: 1px 6px;
+}
+.dp-name  { font-size: 0.62rem; font-weight: 700; color: #fff; white-space: nowrap }
+.dp-mood  { font-size: 0.65rem }
+
+/* 케어 버튼 — 오른쪽 절대위치 */
+.dp-care-btns {
+  position: absolute;
+  right: 0;
+  bottom: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, 34px);
+  gap: 4px;
+  justify-content: end;
+}
+.dp-care-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: none;
+  background: #1a1a2e;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  position: relative;
+  transition: background 0.15s, transform 0.1s;
+  -webkit-app-region: no-drag;
+}
+.dp-care-btn:hover  { background: rgba(125,211,252,0.35); transform: scale(1.1) }
+.dp-care-btn:active { transform: scale(0.92) }
+.dp-care-btn.muted  { opacity: 0.45 }
+.dp-care-btn.capped { opacity: 0.5 }
+.dp-care-btn:disabled { cursor: not-allowed }
+.dp-care-btn:disabled:hover { transform: none; background: #1a1a2e }
+/* 남은 횟수 배지 */
+.dp-care-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 13px;
+  height: 13px;
+  padding: 0 2px;
+  border-radius: 7px;
+  background: #7dd3fc;
+  color: #15161d;
+  font-size: 0.5rem;
+  font-weight: 800;
+  line-height: 13px;
+  text-align: center;
+}
+.dp-care-btn.capped .dp-care-count {
+  background: #4b5563;
+  color: #e5e7eb;
+}
+
+/* 숨기기 버튼 */
+.dp-hide-btn {
+  position: absolute; top: 68px; left: 0;
+  background: #1a1a2e; border: none; color: #fff;
+  font-size: 0.6rem; width: 16px; height: 16px;
+  border-radius: 50%; cursor: pointer; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px); transition: background 0.15s; z-index: 10;
+  -webkit-app-region: no-drag;
+}
+.dp-hide-btn:hover { background: rgba(239,68,68,0.8) }
+
+/* 케어 이펙트 */
+.dp-care-fx {
+  position: absolute;
+  bottom: 80px;
+  left: 20px;
+  font-size: 1.6rem;
+  animation: dp-care-pop 0.9s ease-out forwards;
+  pointer-events: none;
+  z-index: 20;
+}
+@keyframes dp-care-pop {
+  0%   { transform: translateY(0) scale(0.8); opacity: 1 }
+  60%  { transform: translateY(-20px) scale(1.2); opacity: 1 }
+  100% { transform: translateY(-34px) scale(1); opacity: 0 }
+}
+
+/* 빈 상태 */
+.dp-empty {
+  width: 160px; height: 160px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px; cursor: pointer; font-size: 1.8rem;
+  color: rgba(255,255,255,0.7);
+}
+.dp-empty span {
+  font-size: 0.6rem; text-align: center;
+  background: #1a1a2e; padding: 2px 8px; border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dp-img,
+  .dp-root.is-distressed .dp-img,
+  .dp-particle,
+  .dp-action-burst span,
+  .dp-zzz,
+  .dp-care-fx {
+    animation: none;
+  }
+}

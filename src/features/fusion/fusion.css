@@ -1,0 +1,136 @@
+﻿.fus-intro {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  text-align: center;
+  line-height: 1.5;
+}
+.fus-loading {
+  text-align: center;
+  opacity: 0.6;
+  padding: 1.5rem 0;
+}
+
+.fus-friends {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+}
+.fus-friend {
+  font: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+}
+.fus-friend:hover {
+  background: var(--border);
+}
+.fus-friend-name {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.fus-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.fus-parents {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.fus-parent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+}
+.fus-parent img {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  background: #fff;
+}
+.fus-plus {
+  font-size: 1.4rem;
+  font-weight: 800;
+  opacity: 0.6;
+}
+.fus-arrow {
+  font-size: 1.2rem;
+}
+.fus-child {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+.fus-name {
+  font: inherit;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.5rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+  max-width: 160px;
+}
+
+.fus-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+.fus-adopt,
+.fus-yes {
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.75rem;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #7dd3fc, #c4b5fd);
+  color: #15161d;
+}
+.fus-adopt:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.fus-retry,
+.fus-no {
+  font: inherit;
+  cursor: pointer;
+  padding: 0.6rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+}
+
+.fus-confirm {
+  margin-top: 0.75rem;
+  text-align: center;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.fus-confirm-btns {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+.fus-confirm-btns button {
+  flex: 1;
+}

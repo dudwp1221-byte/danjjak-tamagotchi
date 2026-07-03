@@ -1,0 +1,292 @@
+.room-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: room-fade 0.2s ease-out;
+}
+@keyframes room-fade {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+.room-container {
+  width: 100%;
+  max-width: 460px;
+  background: var(--modal-bg);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+  animation: room-pop 0.25s cubic-bezier(0.34,1.4,0.64,1);
+}
+@keyframes room-pop {
+  from { transform: scale(0.93); opacity: 0 }
+  to { transform: scale(1); opacity: 1 }
+}
+
+/* 헤더 */
+.room-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.1rem 0.7rem;
+  font-weight: 700;
+  font-size: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.room-count {
+  flex: 1;
+  font-size: 0.78rem;
+  font-weight: 500;
+  opacity: 0.45;
+}
+.room-close {
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  opacity: 0.4;
+  cursor: pointer;
+  padding: 0.25rem 0.4rem;
+  border-radius: 8px;
+  color: inherit;
+}
+.room-close:hover { opacity: 0.8 }
+
+/* 방 씬 */
+.room-scene {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  user-select: none;
+}
+
+.room-wall {
+  position: absolute;
+  inset: 0 0 35% 0;
+  background: linear-gradient(180deg, #2d2a3e 0%, #3b3758 100%);
+}
+.room-floor {
+  position: absolute;
+  inset: 65% 0 0 0;
+  background: linear-gradient(180deg, #4a4060 0%, #312e45 100%);
+  border-top: 2px solid rgba(255,255,255,0.07);
+}
+
+.room-window {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 54px;
+  height: 44px;
+  background: rgba(125, 211, 252, 0.15);
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.room-window::before,
+.room-window::after {
+  content: '';
+  position: absolute;
+  background: rgba(255,255,255,0.1);
+}
+.room-window::before {
+  width: 1px;
+  height: 100%;
+}
+.room-window::after {
+  width: 100%;
+  height: 1px;
+}
+.room-window-inner {
+  font-size: 1.1rem;
+  z-index: 1;
+}
+
+.room-deco {
+  position: absolute;
+  bottom: 35%;
+  font-size: 1.6rem;
+  opacity: 0.6;
+}
+.room-deco-left { left: 6% }
+.room-deco-right { right: 6% }
+
+/* 펫 */
+.room-pet {
+  position: absolute;
+  transform-origin: bottom center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  /* translate(-50%, -100%) so x/y = feet position */
+  translate: -50% -100%;
+  transition: filter 0.15s;
+}
+.room-pet:hover { filter: brightness(1.15) drop-shadow(0 0 6px rgba(196,181,253,0.7)) }
+.room-pet.is-active .room-pet-img {
+  filter: drop-shadow(0 0 5px #c4b5fd);
+}
+.room-pet.is-sleeping {
+  opacity: 0.7;
+}
+
+.room-pet-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+.room-pet-sleep {
+  font-size: 1.6rem;
+  animation: room-bob 2s ease-in-out infinite;
+}
+@keyframes room-bob {
+  0%, 100% { transform: translateY(0) }
+  50% { transform: translateY(-4px) }
+}
+
+.room-pet-name {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.room-pet-mood {
+  font-size: 0.75rem;
+  pointer-events: none;
+}
+.room-pet-active-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #86efac;
+  border: 1.5px solid var(--modal-bg);
+  animation: room-pulse 1.5s ease-in-out infinite;
+}
+@keyframes room-pulse {
+  0%, 100% { opacity: 1; transform: scale(1) }
+  50% { opacity: 0.6; transform: scale(1.3) }
+}
+
+/* 펫 목록 */
+.room-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  padding: 0.75rem 0.9rem;
+  border-top: 1px solid var(--border);
+}
+
+.room-list-item {
+  position: relative;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 0.5rem 0.6rem;
+  color: inherit;
+  min-width: 88px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.room-list-switch {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+.room-grad-btn {
+  margin-top: 0.4rem;
+  width: 100%;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.3rem 0.2rem;
+  border-radius: 8px;
+  border: 1px solid rgba(196, 181, 253, 0.5);
+  background: rgba(196, 181, 253, 0.16);
+  color: var(--violet-text);
+  white-space: nowrap;
+}
+.room-grad-btn:hover:not(:disabled) {
+  background: rgba(196, 181, 253, 0.3);
+}
+.room-grad-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+.room-full-note {
+  margin: 0.5rem 0.9rem 0;
+  font-size: 0.78rem;
+  opacity: 0.7;
+  text-align: center;
+}
+.room-list-item:hover {
+  border-color: #c4b5fd;
+}
+
+.room-add-btn {
+  flex-shrink: 0;
+  min-width: 64px;
+  border: 1.5px dashed var(--border);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--violet-text);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.5rem 0.6rem;
+}
+.room-add-btn:hover {
+  border-color: #c4b5fd;
+  background: rgba(196, 181, 253, 0.1);
+}
+.room-list-item.is-active {
+  border-color: #c4b5fd;
+  background: rgba(196, 181, 253, 0.1);
+}
+
+.room-list-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+.room-list-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.room-list-score {
+  font-size: 0.65rem;
+  opacity: 0.5;
+}
+.room-list-badge {
+  font-size: 0.6rem;
+  background: rgba(196,181,253,0.25);
+  color: #c4b5fd;
+  border-radius: 6px;
+  padding: 0.1rem 0.35rem;
+  font-weight: 700;
+}

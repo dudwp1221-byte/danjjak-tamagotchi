@@ -1,0 +1,101 @@
+.lobby {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background:
+    radial-gradient(1000px 700px at 50% -10%, var(--bg-accent), transparent),
+    var(--bg);
+}
+.lobby-card {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.6rem;
+  padding: 2rem 1.5rem;
+  border-radius: 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+.lobby-emoji {
+  font-size: 3rem;
+  animation: lobby-bob 2.6s ease-in-out infinite;
+}
+@keyframes lobby-bob {
+  0%, 100% { transform: translateY(0) }
+  50% { transform: translateY(-7px) }
+}
+.lobby-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+.lobby-tagline {
+  margin: 0 0 0.8rem;
+  font-size: 0.85rem;
+  opacity: 0.65;
+}
+.lobby-input {
+  font: inherit;
+  font-size: 0.92rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: inherit;
+}
+.lobby-input:focus {
+  outline: none;
+  border-color: rgba(125, 211, 252, 0.6);
+}
+.lobby-err {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #fca5a5;
+}
+.lobby-note {
+  margin: 0.3rem 0 0.6rem;
+  font-size: 0.82rem;
+  opacity: 0.7;
+  line-height: 1.5;
+}
+.lobby-btns {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+.lobby-btn {
+  flex: 1;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.7rem 0;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: inherit;
+}
+.lobby-btn.primary {
+  border: none;
+  color: #15161d;
+  background: linear-gradient(135deg, #7dd3fc, #c4b5fd);
+}
+.lobby-btn:hover:not(:disabled) { filter: brightness(1.06); }
+.lobby-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.lobby-guest {
+  margin-top: 0.5rem;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--accent-text);
+  opacity: 0.85;
+}
+.lobby-guest:hover { opacity: 1; }
+.lobby-guest:disabled { opacity: 0.4; cursor: not-allowed; }

@@ -1,0 +1,127 @@
+﻿.set-section {
+  padding: 0.5rem 0;
+}
+.set-section + .set-section {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+
+.set-label {
+  margin: 0 0 0.6rem;
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+.set-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.set-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.set-name {
+  font-weight: 600;
+}
+.set-desc {
+  font-size: 0.78rem;
+  opacity: 0.6;
+  line-height: 1.4;
+  margin-top: 0.2rem;
+}
+
+.set-toggle {
+  flex-shrink: 0;
+  width: 50px;
+  height: 28px;
+  border-radius: 999px;
+  border: none;
+  background: var(--border);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+}
+.set-toggle.on {
+  background: #22c55e;
+}
+.set-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+}
+.set-toggle.on .set-knob {
+  transform: translateX(22px);
+}
+
+.set-rename {
+  display: flex;
+  gap: 0.5rem;
+}
+.set-name-input {
+  flex: 1;
+  font: inherit;
+  padding: 0.5rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+}
+.set-name-input:focus {
+  outline: none;
+  border-color: #7dd3fc;
+}
+.set-wide {
+  width: 100%;
+}
+
+.set-theme {
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+}
+.set-theme:hover {
+  background: var(--border);
+}
+
+.set-btns {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+.set-btn {
+  flex: 1;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.6rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+}
+.set-btn:hover {
+  background: var(--border);
+}
+
+.set-msg {
+  margin: 1rem 0 0;
+  font-size: 0.8rem;
+  text-align: center;
+  opacity: 0.75;
+  color: var(--accent-text);
+}

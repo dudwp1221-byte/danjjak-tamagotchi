@@ -1,0 +1,2408 @@
+﻿.pg-behavior {
+  font-size: 0.78rem;
+  font-weight: 500;
+  opacity: 0.7;
+  letter-spacing: 0.02em;
+}
+
+.pg-furniture {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0.75rem;
+  pointer-events: none;
+}
+
+.pg-furniture-item {
+  font-size: 1.4rem;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+}
+
+.pg-furniture-left { align-self: flex-end; }
+.pg-furniture-right { align-self: flex-end; }
+.pg-furniture-back { align-self: flex-start; opacity: 0.7; }
+
+.pet-game {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.pg-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  flex-wrap: wrap;
+}
+/* 이름·시계 칼럼: 남는 공간을 차지하되 0까지 줄어들 수 있어
+   좁은 화면에서 버튼 묶음이 아랫줄로 내려가도 글자가 잘게 쪼개지지 않는다. */
+.pg-header-info {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.pg-name {
+  margin: 0;
+  font-size: 1.5rem;
+}
+.pg-name-edit {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  opacity: 0.45;
+  padding: 0 0.15rem;
+  -webkit-app-region: no-drag;
+}
+.pg-name-edit:hover {
+  opacity: 1;
+}
+.pg-name-edit-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.pg-name-input {
+  font: inherit;
+  font-size: 1.3rem;
+  font-weight: inherit;
+  width: 7rem;
+  max-width: 50vw;
+  border: 1px solid rgba(125, 211, 252, 0.6);
+  border-radius: 8px;
+  background: var(--bg);
+  color: inherit;
+  padding: 0 0.4rem;
+  -webkit-app-region: no-drag;
+}
+.pg-name-save {
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 0.2rem 0.5rem;
+  background: linear-gradient(135deg, #7dd3fc, #c4b5fd);
+  color: #15161d;
+  -webkit-app-region: no-drag;
+}
+.pg-owner {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+.pg-clock {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  opacity: 0.78;
+  font-variant-numeric: tabular-nums;
+}
+.pg-stage-badge {
+  font-size: 1.1rem;
+}
+.pg-header-btns {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.pg-coins {
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.4rem 0.6rem;
+  border-radius: 10px;
+  background: rgba(234, 179, 8, 0.15);
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  color: var(--gold-text);
+  white-space: nowrap;
+}
+.pg-icon-btn {
+  font: inherit;
+  font-size: 1.1rem;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+  padding: 0.45rem 0.6rem;
+  border-radius: 10px;
+  line-height: 1;
+}
+.pg-icon-btn:hover {
+  background: var(--border);
+}
+.pg-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+/* 게임 시계의 시간대에 따라 무대를 은은하게 덮는 야간 분위기.
+   펫이 있는 중앙은 비워 두고 가장자리만 어둡게(앰비언트 조명 느낌). */
+.pg-night {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 90% at 50% 42%,
+    rgba(20, 24, 64, 0) 34%,
+    rgba(18, 22, 60, 0.55) 78%,
+    rgba(10, 12, 40, 0.85) 100%
+  );
+  transition: opacity 1.2s ease;
+}
+/* 게임 계절에 따라 무대 위쪽을 은은하게 물들이는 색조 (밤 분위기 아래에 깔림) */
+.pg-season-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  transition: background 1.5s ease;
+}
+.pg-season-spring {
+  background: linear-gradient(180deg, rgba(244, 114, 182, 0.14), transparent 60%);
+}
+.pg-season-summer {
+  background: linear-gradient(180deg, rgba(250, 204, 21, 0.14), transparent 60%);
+}
+.pg-season-autumn {
+  background: linear-gradient(180deg, rgba(234, 88, 12, 0.14), transparent 60%);
+}
+.pg-season-winter {
+  background: linear-gradient(180deg, rgba(96, 165, 250, 0.16), transparent 60%);
+}
+/* 밤(게임 시간)에 펫 곁에 떠오르는 졸음 표시 */
+.pg-sleep-z {
+  position: absolute;
+  top: 1.6rem;
+  left: calc(50% + 52px);
+  z-index: 4;
+  font-size: 1.4rem;
+  pointer-events: none;
+  animation: pg-zfloat 2.6s ease-in-out infinite;
+}
+@keyframes pg-zfloat {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-10px) scale(1.12);
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pg-sleep-z {
+    animation: none;
+  }
+}
+.pg-portrait {
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  animation: idle 3s ease-in-out infinite;
+}
+@keyframes idle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.pg-portrait.is-distressed {
+  animation: distress 0.4s ease-in-out infinite;
+}
+@keyframes distress {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0);
+  }
+  25% {
+    transform: translateX(-4px) rotate(-2deg);
+  }
+  75% {
+    transform: translateX(4px) rotate(2deg);
+  }
+}
+.pg-speech {
+  position: absolute;
+  top: 0.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  padding: 0.4rem 0.8rem;
+  border-radius: 14px;
+  background: #fff;
+  color: #1a1a1a;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: speech-pop 0.2s ease-out;
+}
+.pg-speech::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 7px solid #fff;
+}
+@keyframes speech-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+.pg-avatar-tap {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pg-statpop {
+  position: absolute;
+  top: 2.5rem;
+  right: 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--good-text);
+  pointer-events: none;
+  animation: statpop-up 0.9s ease-out forwards;
+}
+@keyframes statpop-up {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+}
+
+.pg-effect {
+  position: absolute;
+  top: 1rem;
+  font-size: 2.5rem;
+  animation: float-up 0.8s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes float-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.6);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-40px) scale(1.2);
+  }
+}
+.pg-growth-fx {
+  position: absolute;
+  top: 1.05rem;
+  left: 50%;
+  width: 220px;
+  height: 220px;
+  transform: translateX(-50%);
+  z-index: 5;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  animation: growth-fx-fade 1.7s ease-out forwards;
+}
+.pg-growth-fx::before {
+  content: '';
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.9) 0 6%, rgba(253,224,71,0.36) 18%, rgba(125,211,252,0.18) 42%, transparent 70%);
+  mix-blend-mode: screen;
+  animation: growth-flash 1.15s ease-out forwards;
+}
+.pg-growth-ring {
+  position: absolute;
+  width: 118px;
+  height: 118px;
+  border: 2px solid rgba(253, 224, 71, 0.85);
+  border-radius: 50%;
+  box-shadow: 0 0 18px rgba(253, 224, 71, 0.45);
+  animation: growth-ring 1.15s ease-out forwards;
+}
+.pg-growth-ray {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: #fde047;
+  box-shadow: 0 0 0 1px rgba(17,24,39,0.24), 0 0 10px rgba(253,224,71,0.9);
+  animation: growth-ray 1.2s ease-out forwards;
+}
+.pg-growth-ray-1 { transform: translate(-62px, -54px) }
+.pg-growth-ray-2 { transform: translate(68px, -36px); animation-delay: 0.06s }
+.pg-growth-ray-3 { transform: translate(-72px, 52px); animation-delay: 0.12s }
+.pg-growth-ray-4 { transform: translate(62px, 64px); animation-delay: 0.18s }
+.pg-growth-title,
+.pg-growth-subtitle {
+  position: absolute;
+  left: 50%;
+  max-width: 180px;
+  transform: translateX(-50%);
+  text-align: center;
+  white-space: nowrap;
+  text-shadow: 0 2px 0 rgba(17,24,39,0.65), 0 0 10px rgba(253,224,71,0.55);
+  animation: growth-text 1.45s ease-out forwards;
+}
+.pg-growth-title {
+  top: 142px;
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #fff7ad;
+}
+.pg-growth-subtitle {
+  top: 172px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #bae6fd;
+}
+.pg-growth-level .pg-growth-title {
+  top: 82px;
+}
+.pg-growth-level .pg-growth-subtitle {
+  top: 112px;
+}
+.pg-evo-morph {
+  position: absolute;
+  top: 36px;
+  left: 50%;
+  width: 108px;
+  height: 108px;
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 12px 12px rgba(0,0,0,0.36));
+}
+.pg-evo-sprite {
+  grid-area: 1 / 1;
+  width: 108px;
+  height: 108px;
+  object-fit: contain;
+  transform-origin: center bottom;
+}
+.pg-evo-before {
+  animation: evo-before-morph 1.35s ease-in forwards;
+}
+.pg-evo-after {
+  opacity: 0;
+  animation: evo-after-morph 1.45s ease-out forwards;
+}
+@keyframes evo-before-morph {
+  0% {
+    opacity: 1;
+    filter: brightness(1);
+    transform: scale(1) rotate(0deg);
+  }
+  36% {
+    opacity: 1;
+    filter: brightness(2.2) saturate(0.3);
+    transform: scale(1.12) rotate(-2deg);
+  }
+  58% {
+    opacity: 0.8;
+    filter: brightness(5) saturate(0);
+    transform: scale(0.72, 1.32) rotate(3deg);
+  }
+  76% {
+    opacity: 0;
+    transform: scale(0.35, 1.55);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.35, 1.55);
+  }
+}
+@keyframes evo-after-morph {
+  0%,
+  54% {
+    opacity: 0;
+    filter: brightness(5) saturate(0);
+    transform: scale(0.4, 1.45);
+  }
+  70% {
+    opacity: 1;
+    filter: brightness(2.6) saturate(1.2);
+    transform: scale(1.18, 0.9);
+  }
+  86% {
+    opacity: 1;
+    filter: brightness(1.2);
+    transform: scale(0.94, 1.08);
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+    transform: scale(1);
+  }
+}
+.pg-growth-evolve::before {
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.92) 0 5%, rgba(196,181,253,0.42) 20%, rgba(94,234,212,0.18) 48%, transparent 72%);
+}
+.pg-growth-fusion::before {
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.92) 0 5%, rgba(240,171,252,0.42) 20%, rgba(251,191,36,0.18) 48%, transparent 72%);
+}
+.pg-growth-awaken::before {
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.94) 0 5%, rgba(251,191,36,0.45) 20%, rgba(167,139,250,0.22) 48%, transparent 72%);
+}
+@keyframes growth-fx-fade {
+  0% { opacity: 0 }
+  12% { opacity: 1 }
+  78% { opacity: 1 }
+  100% { opacity: 0 }
+}
+@keyframes growth-flash {
+  0% { transform: scale(0.35); opacity: 0 }
+  28% { transform: scale(1.08); opacity: 1 }
+  100% { transform: scale(1.4); opacity: 0 }
+}
+@keyframes growth-ring {
+  0% { transform: scale(0.35); opacity: 0 }
+  35% { opacity: 1 }
+  100% { transform: scale(1.65); opacity: 0 }
+}
+@keyframes growth-ray {
+  0% { opacity: 0; scale: 0.4 }
+  25% { opacity: 1 }
+  100% { opacity: 0; scale: 1.25 }
+}
+@keyframes growth-text {
+  0% { opacity: 0; transform: translate(-50%, 10px) scale(0.86) }
+  24% { opacity: 1; transform: translate(-50%, 0) scale(1.04) }
+  72% { opacity: 1; transform: translate(-50%, 0) scale(1) }
+  100% { opacity: 0; transform: translate(-50%, -8px) scale(0.96) }
+}
+.pg-mood {
+  margin: 0.5rem 0 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.pg-score {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+.pg-person {
+  opacity: 0.9;
+}
+.pg-species {
+  margin: 0.4rem 0 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.pg-rarity {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid;
+}
+.pg-species-base {
+  font-weight: 500;
+  opacity: 0.6;
+}
+.pg-class {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  opacity: 0.7;
+  font-weight: 600;
+}
+.pg-perk {
+  font-weight: 500;
+  opacity: 0.7;
+}
+.pg-evolve-btn {
+  margin-top: 0.5rem;
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #7dd3fc, #c4b5fd);
+  color: #15161d;
+  animation: combo-glow 1.3s ease-in-out infinite;
+}
+.pg-evolve-btn:hover {
+  filter: brightness(1.05);
+}
+.pg-awaken-btn {
+  margin-top: 0.4rem;
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #fcd34d, #f0abfc);
+  color: #15161d;
+  animation: combo-glow 1.3s ease-in-out infinite;
+}
+.pg-awaken-btn:hover {
+  filter: brightness(1.05);
+}
+.pg-combo {
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(125, 211, 252, 0.25), rgba(196, 181, 253, 0.25));
+  border: 1px solid rgba(196, 181, 253, 0.5);
+  color: var(--violet-text);
+  animation: combo-glow 1.6s ease-in-out infinite;
+}
+@keyframes combo-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(196, 181, 253, 0);
+  }
+  50% {
+    box-shadow: 0 0 10px 1px rgba(196, 181, 253, 0.5);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pg-combo {
+    animation: none;
+  }
+}
+
+.pg-level {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 280px;
+  margin-top: 0.6rem;
+}
+.pg-level-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0.9;
+}
+.pg-xp-track {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+.pg-xp-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7dd3fc, #c4b5fd);
+  transition: width 0.4s ease;
+}
+.pg-xp-text {
+  font-size: 0.7rem;
+  opacity: 0.6;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.pg-grad-btn {
+  margin-top: 0.75rem;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #fcd34d, #f0abfc);
+  color: #1a1a2e;
+  animation: combo-glow 1.8s ease-in-out infinite;
+}
+.pg-grad-btn:hover {
+  filter: brightness(1.05);
+}
+
+.pg-gamehub {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+.pg-game-card {
+  font: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 1.25rem 0.75rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+  transition: background 0.15s, transform 0.1s;
+}
+.pg-game-card:hover {
+  background: var(--border);
+}
+.pg-game-card:active {
+  transform: scale(0.97);
+}
+.pg-game-emoji {
+  font-size: 2.2rem;
+}
+.pg-game-name {
+  font-weight: 700;
+}
+.pg-game-desc {
+  font-size: 0.74rem;
+  opacity: 0.6;
+  text-align: center;
+}
+
+.pg-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 2rem;
+  transform: translateX(-50%);
+  z-index: 900;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  background: rgba(20, 21, 29, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f5f5f7;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  animation: toast-in 0.25s ease-out;
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.pg-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.stat-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.stat-icon {
+  font-size: 1.2rem;
+  width: 1.6rem;
+  text-align: center;
+}
+.stat-body {
+  flex: 1;
+}
+.stat-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  margin-bottom: 2px;
+}
+.stat-label {
+  opacity: 0.75;
+}
+.stat-value {
+  opacity: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+.stat-track {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+.stat-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease, background 0.4s ease;
+}
+.stat-bar.is-critical .stat-track {
+  animation: critical-pulse 1s ease-in-out infinite;
+}
+@keyframes critical-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.5);
+  }
+}
+.stat-warn {
+  font-size: 0.75rem;
+}
+
+.pg-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+}
+.pg-action {
+  font: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.8rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+  transition: transform 0.1s, background 0.15s;
+}
+.pg-action:hover {
+  background: var(--border);
+}
+.pg-action:active {
+  transform: scale(0.96);
+}
+.pg-action-icon {
+  font-size: 1.3rem;
+}
+
+.pg-menus {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.pg-menu-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.pg-menu-group-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  opacity: 0.45;
+  padding-left: 0.15rem;
+}
+.pg-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
+  gap: 0.5rem;
+}
+.pg-menu-btn {
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  padding: 0.65rem 0.3rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+  transition: background 0.15s;
+}
+.pg-menu-btn:hover {
+  background: var(--border);
+}
+
+.pg-reset {
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: inherit;
+  font-size: 0.88rem;
+  padding: 0.55rem 1.4rem;
+  border-radius: 999px;
+  opacity: 0.85;
+}
+.pg-reset:hover {
+  opacity: 1;
+  background: var(--border);
+}
+
+.pg-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.08);
+  font-size: 0.9rem;
+}
+.pg-confirm-btns {
+  display: flex;
+  gap: 0.6rem;
+}
+.pg-confirm-yes,
+.pg-confirm-no {
+  font: inherit;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  color: inherit;
+}
+.pg-confirm-yes {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+}
+.pg-confirm-yes:hover {
+  background: rgba(239, 68, 68, 0.3);
+}
+.pg-confirm-no {
+  background: var(--surface);
+}
+.pg-confirm-no:hover {
+  background: var(--border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-portrait,
+  .pg-portrait.is-distressed,
+  .stat-bar.is-critical .stat-track {
+    animation: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .pet-game {
+    padding: 1rem;
+  }
+  .pg-name {
+    font-size: 1.3rem;
+  }
+}
+
+/* ── 상태 힌트 ───────────────────────────────── */
+.pg-needs-hint {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fca5a5;
+  animation: critical-pulse 1.4s ease-in-out infinite;
+}
+
+/* ── 메인 액션 (2개) ─────────────────────────── */
+.pg-main-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+.pg-main-action {
+  font: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.8rem 0.2rem 0.6rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+  font-weight: 600;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  transition: transform 0.1s, background 0.15s, opacity 0.15s;
+  position: relative;
+}
+.pg-main-action:hover:not(:disabled) {
+  background: var(--border);
+}
+.pg-main-action:active:not(:disabled) {
+  transform: scale(0.95);
+}
+.pg-main-action-icon {
+  font-size: 1.7rem;
+}
+.pg-main-action-charge {
+  font-size: 0.6rem;
+  line-height: 1;
+  letter-spacing: -1px;
+  min-height: 0.7rem;
+  opacity: 0.85;
+}
+.pg-main-action:disabled {
+  cursor: not-allowed;
+}
+.pg-main-action.is-capped {
+  opacity: 0.55;
+}
+.pg-main-action.is-capped .pg-main-action-charge {
+  letter-spacing: 0;
+  opacity: 0.6;
+  font-weight: 600;
+}
+
+/* ── 서랍 ────────────────────────────────────── */
+.pg-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.pg-drawer-toggle {
+  font: inherit;
+  cursor: pointer;
+  align-self: center;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  font-weight: 600;
+  padding: 0.45rem 1.4rem;
+  border-radius: 999px;
+  transition: background 0.15s, color 0.15s;
+  letter-spacing: 0.03em;
+}
+.pg-drawer-toggle:hover,
+.pg-drawer-toggle.open {
+  background: var(--border);
+  color: inherit;
+}
+.pg-drawer-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1.1rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.pg-drawer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.pg-drawer-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  opacity: 0.4;
+  padding-left: 0.1rem;
+}
+.pg-drawer-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  gap: 0.4rem;
+}
+.pg-drawer-btn {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.6rem 0.3rem;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: inherit;
+  transition: background 0.12s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pg-drawer-btn:hover {
+  background: var(--border);
+}
+.pg-drawer-btn.active {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--good-text);
+}
+
+/* 헤더 상점 버튼 (상시 노출) */
+.pg-shop-btn {
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 0.45rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid rgba(196, 181, 253, 0.5);
+  background: rgba(196, 181, 253, 0.16);
+  color: var(--violet-text);
+  line-height: 1;
+}
+.pg-shop-btn:hover {
+  background: rgba(196, 181, 253, 0.28);
+}
+
+/* 경험치 획득 속도 안내 */
+.pg-xp-rate {
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  opacity: 0.62;
+  text-align: center;
+}
+.pg-xp-help {
+  margin: 0.25rem 0 0;
+  font-size: 0.68rem;
+  line-height: 1.45;
+  opacity: 0.5;
+  text-align: center;
+}
+/* 서랍 섹션 설명문 */
+.pg-drawer-desc {
+  margin: 0 0 0.45rem;
+  font-size: 0.72rem;
+  opacity: 0.6;
+  line-height: 1.45;
+}
+
+/* Electron: 헤더 빈 공간을 잡고 창 이동 (버튼/입력은 제외) */
+.pg-header { -webkit-app-region: drag; }
+.pg-header button,
+.pg-header input,
+.pg-header a,
+.pg-header .pg-coins {
+  -webkit-app-region: no-drag;
+}
+
+/* ── 업무 모드 배지 ──────────────────────────── */
+.pg-work-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  animation: work-pulse 2s ease-in-out infinite;
+}
+.pg-work-idle {
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  color: var(--text-secondary, #94a3b8);
+  animation: none;
+}
+.pg-work-working {
+  background: rgba(125, 211, 252, 0.15);
+  border: 1px solid rgba(125, 211, 252, 0.4);
+  color: #7dd3fc;
+}
+.pg-work-focused {
+  background: rgba(251, 146, 60, 0.15);
+  border: 1px solid rgba(251, 146, 60, 0.5);
+  color: #fb923c;
+}
+.pg-work-meeting {
+  background: rgba(134, 239, 172, 0.15);
+  border: 1px solid rgba(134, 239, 172, 0.5);
+  color: #86efac;
+}
+.pg-work-overtime {
+  background: rgba(196, 181, 253, 0.15);
+  border: 1px solid rgba(196, 181, 253, 0.5);
+  color: #c4b5fd;
+}
+@keyframes work-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pg-work-badge { animation: none; }
+}
+
+/* ── 업무 XP 가속 연출 ─────────────────────────
+   일하는 동안 펫 주변 스파크·오라 + 레벨바 +XP 플로팅.
+   working < focused < overtime 순으로 강해진다. */
+.pg-work-fx {
+  position: absolute;
+  top: 38px;
+  left: 50%;
+  width: 230px;
+  height: 215px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 3;
+}
+.pg-work-fx::before {
+  /* 펫 뒤 은은한 오라 */
+  content: '';
+  position: absolute;
+  inset: 10% 6%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(253, 230, 138, 0.16), transparent 66%);
+  animation: work-fx-glow 2.4s ease-in-out infinite;
+}
+.pg-spark {
+  position: absolute;
+  bottom: 18%;
+  font-size: 0.95rem;
+  opacity: 0;
+  animation: spark-rise 2.6s ease-out infinite;
+  filter: drop-shadow(0 0 6px rgba(253, 230, 138, 0.8));
+}
+.pg-spark-1 { left: 10%; animation-delay: 0s; }
+.pg-spark-2 { right: 8%; animation-delay: 0.9s; }
+.pg-spark-3 { left: 22%; bottom: 32%; font-size: 0.78rem; animation-delay: 1.6s; }
+.pg-spark-4 { right: 22%; bottom: 30%; font-size: 0.72rem; animation-delay: 2.1s; }
+@keyframes spark-rise {
+  0% { opacity: 0; transform: translateY(8px) scale(0.8); }
+  15% { opacity: 0.95; }
+  60% { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-48px) scale(1.15); }
+}
+@keyframes work-fx-glow {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+/* 업무 중(기본): 스파크 2개만, 잔잔하게 */
+.pg-work-fx-working .pg-spark-3,
+.pg-work-fx-working .pg-spark-4 {
+  display: none;
+}
+/* 집중: 더 빠르고 주황빛 */
+.pg-work-fx-focused .pg-spark { animation-duration: 1.9s; }
+.pg-work-fx-focused::before {
+  background: radial-gradient(ellipse at center, rgba(251, 146, 60, 0.2), transparent 66%);
+}
+/* 야근: 가장 빠르고 보랏빛 */
+.pg-work-fx-overtime .pg-spark {
+  animation-duration: 1.7s;
+  filter: drop-shadow(0 0 6px rgba(196, 181, 253, 0.9));
+}
+.pg-work-fx-overtime::before {
+  background: radial-gradient(ellipse at center, rgba(196, 181, 253, 0.2), transparent 66%);
+}
+
+/* 업무 틱 +XP 플로팅 + 레벨바 글로우 */
+.pg-xp-pop {
+  position: absolute;
+  right: 0.2rem;
+  top: -1.15rem;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #fde68a;
+  text-shadow: 0 0 8px rgba(253, 230, 138, 0.5);
+  pointer-events: none;
+  animation: xp-pop 1.4s ease-out forwards;
+}
+@keyframes xp-pop {
+  0% { opacity: 0; transform: translateY(6px); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-14px); }
+}
+.pg-xp-track.is-ticking .pg-xp-fill {
+  box-shadow: 0 0 12px rgba(125, 211, 252, 0.75);
+  filter: brightness(1.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-spark,
+  .pg-work-fx::before,
+  .pg-xp-pop {
+    animation: none;
+  }
+}
+
+/* ── 회의 모드 버튼 ──────────────────────────── */
+.pg-meeting-btn {
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.pg-meeting-btn:hover {
+  background: var(--border);
+}
+.pg-meeting-btn.active {
+  background: rgba(134, 239, 172, 0.15);
+  border-color: rgba(134, 239, 172, 0.5);
+  color: #86efac;
+}
+.pg-weather {
+  font-size: 0.82rem;
+  font-weight: 600;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+.pg-meeting-btn.active.overtime {
+  background: rgba(196, 181, 253, 0.15);
+  border-color: rgba(196, 181, 253, 0.5);
+  color: #c4b5fd;
+}
+
+/* ── 모바일 게임 홈 polish ───────────────────── */
+.pet-game {
+  position: relative;
+  max-width: 430px;
+  min-height: calc(100svh - 1.5rem);
+  gap: 0.9rem;
+  padding: 0.9rem 0.85rem 1rem;
+}
+
+.pet-game::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(460px 320px at 50% 5%, rgba(125, 211, 252, 0.14), transparent 62%),
+    radial-gradient(420px 420px at 82% 30%, rgba(244, 114, 182, 0.1), transparent 64%),
+    linear-gradient(180deg, rgba(255,255,255,0.035), transparent 28%);
+}
+
+.pg-header {
+  position: sticky;
+  top: max(0.35rem, env(safe-area-inset-top));
+  z-index: 20;
+  align-items: center;
+  padding: 0.7rem 0.75rem;
+  border: 1px solid rgba(255,255,255,0.11);
+  border-radius: 20px;
+  background: rgba(24, 26, 38, 0.82);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.22);
+  backdrop-filter: blur(14px);
+}
+
+.pg-name {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.pg-owner,
+.pg-clock {
+  line-height: 1.25;
+}
+
+.pg-header-btns {
+  gap: 0.38rem;
+}
+
+.pg-weather,
+.amb-wrap,
+.pg-coins,
+.pg-icon-btn,
+.pg-shop-btn {
+  min-height: 34px;
+}
+
+.pg-weather,
+.pg-coins,
+.pg-icon-btn,
+.pg-shop-btn,
+.amb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.pg-icon-btn {
+  width: 38px;
+  padding: 0;
+}
+
+.pg-shop-btn {
+  padding-inline: 0.85rem;
+}
+
+/* 코인 펠릿 안의 + 버튼 (레퍼런스처럼 상점으로 바로) */
+.pg-coins {
+  gap: 0.34rem;
+  padding-right: 0.26rem;
+}
+.pg-coins-plus {
+  width: 21px;
+  height: 21px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+  font-size: 0.98rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #3b2600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+.pg-coins-plus:hover { filter: brightness(1.08); }
+.pg-coins-plus:active { transform: scale(0.9); }
+
+/* 보석 펠릿 — 코인과 같은 형태, 색조만 청록 */
+.pg-gems {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: var(--accent-text, #7dd3fc);
+}
+.pg-gems .pg-coins-plus {
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  color: #01121f;
+}
+
+/* 프로필 아바타 칩 — 이름 왼쪽 원형 펫 썸네일 */
+.pg-avatar-chip {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  background: radial-gradient(circle at 50% 35%, rgba(125,211,252,0.25), rgba(24,26,38,0.9));
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.14);
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-app-region: no-drag;
+}
+.pg-avatar-chip img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  -webkit-user-drag: none;
+}
+.pg-avatar-chip:active { transform: scale(0.94); }
+
+/* 대표 펫 지정 모달 */
+.pg-profile-hint {
+  margin: 0 0 0.8rem;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+.pg-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+.pg-profile-pet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.6rem 0.3rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.pg-profile-pet img {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  -webkit-user-drag: none;
+}
+.pg-profile-pet.selected {
+  border-color: #7dd3fc;
+  box-shadow: 0 0 0 2px rgba(125, 211, 252, 0.4);
+}
+.pg-profile-check {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.4rem;
+  font-style: normal;
+  color: #7dd3fc;
+  font-weight: 900;
+}
+
+.pg-stage {
+  min-height: 470px;
+  padding: 1.25rem 1.05rem 1.15rem;
+  gap: 0.32rem;
+  border-radius: 26px;
+  border-color: rgba(255,255,255,0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 22px 46px rgba(0,0,0,0.26);
+}
+
+.pg-stage::before {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 2.2rem;
+  height: 245px;
+  border-radius: 999px;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, rgba(134, 239, 172, 0.2), transparent 62%),
+    radial-gradient(ellipse at center, rgba(125, 211, 252, 0.12), transparent 74%);
+  filter: blur(2px);
+}
+
+.pg-avatar-tap {
+  position: relative;
+  z-index: 2;
+  /* 펫을 러그(바닥) 쪽으로 내려 방에 서 있는 느낌을 준다 */
+  margin-top: 2.2rem;
+}
+
+.pg-speech,
+.pg-effect,
+.pg-statpop,
+.pg-growth-fx,
+.pg-sleep-z {
+  z-index: 8;
+}
+
+.pg-behavior {
+  margin-top: -0.15rem;
+  padding: 0.24rem 0.68rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  opacity: 0.82;
+}
+
+.pg-mood {
+  margin-top: 0.5rem;
+  font-size: 1.18rem;
+  letter-spacing: 0;
+}
+
+.pg-score,
+.pg-class,
+.pg-xp-rate,
+.pg-xp-help {
+  max-width: 340px;
+}
+
+.pg-species {
+  margin-top: 0.5rem;
+}
+
+.pg-rarity {
+  background: rgba(255,255,255,0.06);
+}
+
+.pg-level {
+  max-width: 320px;
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.16);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.pg-xp-track {
+  height: 9px;
+  background: rgba(0,0,0,0.28);
+}
+
+.pg-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  padding: 0.75rem;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.09);
+}
+
+.stat-bar {
+  min-width: 0;
+  gap: 0.45rem;
+}
+
+.stat-icon {
+  width: 1.35rem;
+}
+
+.stat-top {
+  gap: 0.35rem;
+}
+
+.stat-label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.stat-track {
+  height: 8px;
+  background: rgba(0,0,0,0.24);
+}
+
+.pg-main-actions {
+  position: sticky;
+  bottom: max(0.5rem, env(safe-area-inset-bottom));
+  z-index: 18;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  padding: 0.65rem;
+  border-radius: 24px;
+  background: rgba(24, 26, 38, 0.9);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 18px 38px rgba(0,0,0,0.34);
+  backdrop-filter: blur(14px);
+}
+
+.pg-main-action {
+  min-height: 74px;
+  padding: 0.62rem 0.2rem 0.52rem;
+  border-radius: 18px;
+  border-color: rgba(255,255,255,0.11);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.035));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+  font-size: 0.76rem;
+}
+
+.pg-main-action-icon {
+  width: 2.2rem;
+  height: 2.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  font-size: 1.55rem;
+}
+
+.pg-main-action-charge {
+  letter-spacing: 0;
+  font-size: 0.58rem;
+  color: var(--accent-text);
+}
+
+.pg-drawer {
+  margin-top: -0.25rem;
+}
+
+.pg-drawer-toggle {
+  min-width: 132px;
+  background: rgba(255,255,255,0.045);
+}
+
+.pg-drawer-body {
+  border-radius: 22px;
+  background: rgba(255,255,255,0.045);
+  border-color: rgba(255,255,255,0.09);
+}
+
+.pg-drawer-btn {
+  min-height: 44px;
+  border-radius: 14px;
+  background: rgba(0,0,0,0.16);
+}
+
+.pg-toast {
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+}
+
+[data-theme='light'] .pg-header,
+[data-theme='light'] .pg-main-actions {
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 14px 32px rgba(80, 90, 120, 0.18);
+}
+
+[data-theme='light'] .pg-stage,
+[data-theme='light'] .pg-stats,
+[data-theme='light'] .pg-drawer-body {
+  box-shadow: 0 18px 38px rgba(80, 90, 120, 0.16);
+}
+
+@media (max-width: 480px) {
+  .pet-game {
+    max-width: 100%;
+    min-height: calc(100svh - 0.75rem);
+    padding: 0.55rem 0.45rem 0.8rem;
+    gap: 0.65rem;
+  }
+
+  .pg-header {
+    padding: 0.62rem;
+    border-radius: 18px;
+  }
+
+  .pg-header-info {
+    flex-basis: 155px;
+  }
+
+  .pg-name {
+    font-size: 1.28rem;
+  }
+
+  .pg-owner,
+  .pg-clock {
+    font-size: 0.74rem;
+  }
+
+  .pg-header-btns {
+    max-width: 190px;
+  }
+
+  .pg-weather,
+  .amb-wrap {
+    display: none;
+  }
+
+  .pg-stage {
+    min-height: 455px;
+    padding: 1.05rem 0.75rem 1rem;
+    border-radius: 24px;
+  }
+
+  .pg-stage::before {
+    top: 2rem;
+    height: 220px;
+  }
+
+  .pg-score,
+  .pg-class,
+  .pg-xp-rate,
+  .pg-xp-help {
+    max-width: 300px;
+  }
+
+  .pg-stats {
+    padding: 0.62rem;
+    gap: 0.48rem;
+  }
+
+  .stat-top {
+    font-size: 0.72rem;
+  }
+
+  .pg-main-actions {
+    padding: 0.52rem;
+    gap: 0.42rem;
+    border-radius: 22px;
+  }
+
+  .pg-main-action {
+    min-height: 68px;
+    border-radius: 16px;
+    font-size: 0.72rem;
+  }
+
+  .pg-main-action-icon {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.35rem;
+  }
+}
+
+@media (max-width: 370px) {
+  .pg-header {
+    align-items: flex-start;
+  }
+
+  .pg-header-btns {
+    max-width: none;
+    justify-content: flex-start;
+  }
+
+  .pg-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .pg-main-action {
+    font-size: 0.68rem;
+  }
+}
+
+/* ── Tamagotchi room wireframe ───────────────── */
+.pg-room-decor {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* 창문 — 밤하늘 + 달 + 별 + 창살 + 창턱 */
+.pg-room-window {
+  position: absolute;
+  top: 0.9rem;
+  right: 1.1rem;
+  width: 82px;
+  height: 66px;
+  border-radius: 12px;
+  border: 3px solid rgba(203, 213, 225, 0.28);
+  background:
+    radial-gradient(circle at 22% 32%, rgba(255,255,255,0.9) 0 1px, transparent 2px),
+    radial-gradient(circle at 44% 66%, rgba(255,255,255,0.65) 0 1px, transparent 2px),
+    radial-gradient(circle at 56% 20%, rgba(255,255,255,0.8) 0 1px, transparent 2px),
+    radial-gradient(circle at 86% 58%, rgba(255,255,255,0.55) 0 1px, transparent 2px),
+    radial-gradient(circle at 15% 75%, rgba(255,255,255,0.5) 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 30%, rgba(253,230,138,0.95) 0 7px, rgba(253,230,138,0.28) 9px, transparent 15px),
+    linear-gradient(180deg, rgba(30, 41, 73, 0.85), rgba(76, 60, 110, 0.72));
+  box-shadow:
+    inset 0 -8px 14px rgba(0, 0, 0, 0.18),
+    0 0 26px rgba(125, 211, 252, 0.14);
+}
+.pg-room-window::before {
+  /* 창살 십자 */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent calc(50% - 1px), rgba(203,213,225,0.35) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)),
+    linear-gradient(180deg, transparent calc(50% - 1px), rgba(203,213,225,0.35) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px));
+}
+.pg-room-window::after {
+  /* 창턱 */
+  content: '';
+  position: absolute;
+  left: -8px;
+  right: -8px;
+  bottom: -10px;
+  height: 6px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(203,213,225,0.35), rgba(148,163,184,0.2));
+}
+
+/* 펜던트 조명 — 천장 줄 + 갓 + 전구 불빛 */
+.pg-room-lamp {
+  position: absolute;
+  top: 0;
+  left: 1.7rem;
+  width: 46px;
+  height: 78px;
+  background: radial-gradient(circle at 50% 80%, rgba(253,230,138,0.55) 0 5px, rgba(253,230,138,0.2) 13px, transparent 26px);
+}
+.pg-room-lamp::before {
+  /* 전등갓 */
+  content: '';
+  position: absolute;
+  left: 3px;
+  bottom: 18px;
+  width: 40px;
+  height: 26px;
+  clip-path: polygon(30% 0, 70% 0, 100% 100%, 0 100%);
+  background: linear-gradient(180deg, #fbbf24, #f59e0b);
+  box-shadow: 0 0 30px rgba(253, 230, 138, 0.35);
+}
+.pg-room-lamp::after {
+  /* 천장 줄 */
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 2px;
+  height: 34px;
+  margin-left: -1px;
+  background: rgba(203, 213, 225, 0.4);
+}
+
+/* 러그 — 테두리 링 + 가운데 패턴이 있는 오벌 */
+.pg-room-rug {
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  bottom: 8.5rem;
+  height: 64px;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at center, rgba(244, 114, 182, 0.15) 0 36%, transparent 40%),
+    radial-gradient(ellipse at center, transparent 56%, rgba(255, 255, 255, 0.1) 58% 62%, transparent 64%),
+    linear-gradient(120deg, rgba(125, 211, 252, 0.2), rgba(196, 181, 253, 0.22) 55%, rgba(244, 114, 182, 0.16));
+  box-shadow:
+    inset 0 4px 14px rgba(0, 0, 0, 0.16),
+    inset 0 -2px 8px rgba(255, 255, 255, 0.05);
+}
+
+/* 나무 선반 + 화분·책 — 조명 아래 벽면 (스테이지 높이와 무관하게 top 기준) */
+.pg-room-shelf {
+  position: absolute;
+  left: 1.1rem;
+  top: 108px;
+  bottom: auto;
+  width: 66px;
+  height: 44px;
+  border: none;
+  border-radius: 0;
+  background: none;
+}
+.pg-room-shelf::before {
+  /* 선반 판 */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 7px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #a07850, #7c5a3c);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+}
+.pg-room-shelf::after {
+  /* 선반 위 소품 */
+  content: '🪴📚';
+  position: absolute;
+  left: 50%;
+  bottom: 5px;
+  transform: translateX(-50%);
+  font-size: 19px;
+  line-height: 1;
+  letter-spacing: -2px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+}
+
+.pg-side-rail {
+  position: absolute;
+  top: 5.2rem;
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.pg-side-left {
+  left: 0.65rem;
+}
+
+.pg-side-right {
+  right: 0.65rem;
+}
+
+.pg-side-btn {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.05)),
+    rgba(20, 24, 34, 0.78);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.15rem;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  transition: transform 0.1s, background 0.15s;
+}
+
+.pg-side-btn:hover {
+  background: rgba(255,255,255,0.14);
+}
+
+.pg-side-btn:active {
+  transform: scale(0.94);
+}
+
+/* 하단 탭 = 가로 페이저: 뷰포트(오버플로 숨김) + 트랙(가로 이동) + 5개 페이지 */
+.pg-pager {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  touch-action: pan-y;
+  /* 드래그로 페이지 넘길 때 텍스트 선택·이미지 고스트 드래그로 버벅이지 않게 */
+  user-select: none;
+  -webkit-user-select: none;
+}
+.pg-pager img {
+  -webkit-user-drag: none;
+}
+.pg-pager-track {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  will-change: transform;
+}
+.pg-page {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.pg-page-home {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.pg-bottom-tabs {
+  position: sticky;
+  bottom: max(0.45rem, env(safe-area-inset-bottom));
+  z-index: 19;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.35rem;
+  padding: 0.48rem;
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.13);
+  background: rgba(24, 26, 38, 0.92);
+  box-shadow: 0 18px 38px rgba(0,0,0,0.34),
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -2px 0 rgba(0,0,0,0.28);
+  backdrop-filter: blur(14px);
+}
+
+.pg-tab-btn {
+  min-width: 0;
+  min-height: 58px;
+  border: 0;
+  border-radius: 17px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.12rem;
+}
+
+.pg-tab-btn span {
+  font-size: 1.28rem;
+  line-height: 1;
+}
+
+.pg-tab-btn b {
+  font-size: 0.64rem;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.pg-tab-btn.active {
+  background: linear-gradient(180deg, rgba(125,211,252,0.18), rgba(196,181,253,0.12));
+  color: var(--accent-text);
+}
+
+.pg-tab-btn:active {
+  transform: scale(0.96);
+}
+
+/* 케어 = 메인 탭: 가운데에서 살짝 솟아 크게 강조 */
+.pg-tab-main {
+  transform: translateY(-10px) scale(1.14);
+  background: linear-gradient(135deg, #7dd3fc, #c4b5fd);
+  color: #15161d;
+  box-shadow: 0 10px 22px rgba(125, 211, 252, 0.42);
+}
+.pg-tab-main span {
+  font-size: 1.5rem;
+}
+.pg-tab-main b {
+  font-size: 0.66rem;
+}
+.pg-tab-main.active {
+  background: linear-gradient(135deg, #7dd3fc, #c4b5fd);
+  color: #15161d;
+}
+.pg-tab-main:active {
+  transform: translateY(-10px) scale(1.06);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pg-tab-main { transform: scale(1.1); }
+}
+
+.pg-main-actions {
+  position: static;
+  bottom: auto;
+  z-index: 1;
+  border-radius: 22px;
+}
+
+.pg-drawer {
+  margin-bottom: 0.2rem;
+}
+
+[data-theme='light'] .pg-side-btn,
+[data-theme='light'] .pg-bottom-tabs {
+  background: rgba(255,255,255,0.86);
+  box-shadow: 0 12px 28px rgba(80,90,120,0.16);
+}
+
+@media (max-width: 480px) {
+  .pg-side-rail {
+    top: 4.7rem;
+    gap: 0.45rem;
+  }
+
+  .pg-side-left {
+    left: 0.45rem;
+  }
+
+  .pg-side-right {
+    right: 0.45rem;
+  }
+
+  .pg-side-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+    font-size: 1.02rem;
+  }
+
+  .pg-room-window {
+    width: 58px;
+    height: 48px;
+    right: 0.85rem;
+  }
+
+  .pg-room-shelf {
+    display: none;
+  }
+
+  .pg-bottom-tabs {
+    padding: 0.4rem;
+    gap: 0.25rem;
+    border-radius: 22px;
+  }
+
+  .pg-tab-btn {
+    min-height: 53px;
+    border-radius: 15px;
+  }
+
+  .pg-tab-btn span {
+    font-size: 1.18rem;
+  }
+
+.pg-tab-btn b {
+  font-size: 0.6rem;
+  }
+}
+
+/* ── Simpler mobile game readout ─────────────── */
+/* work-badge(업무 성장 상태 칩)는 컨셉 핵심이라 다시 노출. 나머지는 간결화 유지.
+   pg-species(형태 이름·희귀도)와 pg-combo(최상 컨디션)도 메인에선 숨김 —
+   기분 줄과 도감·진화 화면에 같은 정보가 있어 중복 텍스트만 늘린다. */
+.pg-score,
+.pg-class,
+.pg-species,
+.pg-combo,
+.pg-xp-rate,
+.pg-xp-help {
+  display: none;
+}
+
+.pg-mood {
+  margin-top: 0.42rem;
+  font-size: 1.08rem;
+}
+
+.pg-behavior {
+  font-size: 0.72rem;
+  padding: 0.2rem 0.62rem;
+}
+
+.pg-level {
+  margin-top: 0.45rem;
+}
+
+.pg-stats {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.35rem;
+  padding: 0.55rem;
+}
+
+.stat-bar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.18rem;
+  align-items: center;
+  justify-items: center;
+  min-width: 0;
+}
+
+.stat-icon {
+  width: auto;
+  font-size: 1.05rem;
+}
+
+.stat-body {
+  width: 100%;
+  min-width: 0;
+}
+
+.stat-top {
+  justify-content: center;
+  font-size: 0.64rem;
+  margin-bottom: 0.16rem;
+}
+
+.stat-value {
+  display: none;
+}
+
+.stat-label {
+  max-width: 100%;
+  opacity: 0.82;
+}
+
+.stat-track {
+  width: 100%;
+  height: 6px;
+}
+
+.pg-main-actions {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  padding: 0.46rem;
+  gap: 0.32rem;
+}
+
+.pg-main-action {
+  min-height: 62px;
+  border-radius: 15px;
+  font-size: 0.66rem;
+  gap: 0.16rem;
+}
+
+.pg-main-action-icon {
+  width: 1.9rem;
+  height: 1.9rem;
+  font-size: 1.18rem;
+}
+
+.pg-main-action-charge {
+  font-size: 0.52rem;
+  min-height: 0.62rem;
+}
+
+.pg-side-rail {
+  top: 5.6rem;
+}
+
+.pg-side-btn {
+  width: 38px;
+  height: 38px;
+}
+
+.pg-stage {
+  /* 텍스트 칩 간소화(종족·컨디션 숨김)로 콘텐츠가 줄어 하단 공백 최소화 */
+  min-height: 330px;
+}
+
+.pg-stage::before {
+  height: 265px;
+}
+
+.pg-stage::after {
+  bottom: 1.6rem;
+}
+
+.pg-room-decor {
+  inset: 1.2rem 0 3rem;
+}
+
+/* 러그를 스테이지 바닥 기준이 아니라 펫 발밑에 고정 */
+.pg-room-rug {
+  top: 176px;
+  bottom: auto;
+}
+
+@media (max-width: 480px) {
+  .pg-stats {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .pg-main-actions {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    padding: 0.4rem;
+  }
+
+  .pg-main-action {
+    min-height: 58px;
+    padding: 0.42rem 0.08rem 0.36rem;
+    font-size: 0.6rem;
+  }
+
+  .pg-main-action-icon {
+    width: 1.7rem;
+    height: 1.7rem;
+    font-size: 1.05rem;
+  }
+
+  .pg-main-action-charge {
+    display: none;
+  }
+}
+
+/* ── Room-first layout refinements ───────────── */
+.pg-stage {
+  background: transparent !important;
+  border-color: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.pg-stage::before {
+  left: 0;
+  right: 0;
+  top: 1.2rem;
+  height: 330px;
+  border-radius: 30px;
+  background:
+    linear-gradient(180deg, rgba(125, 211, 252, 0.18), rgba(196, 181, 253, 0.1) 45%, rgba(20, 24, 34, 0.08)),
+    radial-gradient(ellipse at center, rgba(134, 239, 172, 0.24), transparent 64%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+  filter: none;
+}
+
+.pg-stage::after {
+  content: '';
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 6.2rem;
+  height: 92px;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at center, rgba(0,0,0,0.26), transparent 68%),
+    linear-gradient(90deg, rgba(125,211,252,0.13), rgba(244,114,182,0.13));
+}
+
+.pg-room-decor {
+  inset: 1.2rem 0 5.8rem;
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.pg-room-decor::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34%;
+  background:
+    linear-gradient(180deg, rgba(15,23,42,0.04), rgba(15,23,42,0.16)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 34px);
+}
+
+.pg-avatar-tap,
+.pg-behavior,
+.pg-mood,
+.pg-score,
+.pg-combo,
+.pg-species,
+.pg-class,
+.pg-work-badge,
+.pg-evolve-btn,
+.pg-awaken-btn,
+.pg-level,
+.pg-xp-rate,
+.pg-xp-help {
+  position: relative;
+  z-index: 3;
+}
+
+.pg-furniture {
+  z-index: 2;
+}
+
+/* 서랍(더보기)은 미션·업적·일기·친구·대화 등의 유일한 진입로라 노출 유지 */
+
+.pg-bottom-tabs {
+  margin-top: -0.35rem;
+}
+
+@media (max-width: 480px) {
+  .pg-stage {
+    /* 콘텐츠(펫+상태+레벨바) 높이에 맞춰 하단 공백 최소화.
+       사이드레일·도움말·종족 칩 제거로 콘텐츠가 줄었음. */
+    min-height: 320px;
+  }
+
+  .pg-stage::before {
+    height: 258px;
+    border-radius: 26px;
+  }
+
+  .pg-stage::after {
+    bottom: 1.6rem;
+  }
+
+  .pg-room-decor {
+    inset: 1.2rem 0 3rem;
+    border-radius: 26px;
+  }
+}

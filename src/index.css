@@ -1,0 +1,58 @@
+:root {
+  --sans: system-ui, 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', Roboto,
+    sans-serif;
+
+  /* 다크 테마 (기본) */
+  --bg: #15161d;
+  --bg-accent: #2a2f4a;
+  --text: #e6e6ea;
+  --surface: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.12);
+  --modal-bg: #1c1e27;
+
+  /* 강조 텍스트 (테마별 대비) */
+  --accent-text: #bae6fd;
+  --gold-text: #fde68a;
+  --good-text: #86efac;
+  --violet-text: #c4b5fd;
+
+  font: 16px/1.5 var(--sans);
+  color-scheme: dark;
+  color: var(--text);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme='light'] {
+  --bg: #eef0f8;
+  --bg-accent: #dfe4f5;
+  --text: #1b1d29;
+  --surface: rgba(0, 0, 0, 0.05);
+  --border: rgba(0, 0, 0, 0.14);
+  --modal-bg: #ffffff;
+  --accent-text: #0369a1;
+  --gold-text: #b45309;
+  --good-text: #15803d;
+  --violet-text: #6d28d9;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  color: var(--text);
+  background:
+    radial-gradient(1200px 800px at 50% -10%, var(--bg-accent), transparent),
+    var(--bg);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+#root {
+  min-height: 100svh;
+}
