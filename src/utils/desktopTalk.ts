@@ -1,6 +1,8 @@
 import type { Pet, Personality } from '../types/pet'
 import { levelFromXp } from './progression'
 import { canEvolveNow } from './evolve'
+import { formById } from './species'
+import { typeLine } from './typeLines'
 
 /* ── 진화 가능 ── */
 const EVOLVE_LINES = [
@@ -87,9 +89,13 @@ const PERSONALITY_LINES: Record<Personality, string[]> = {
   calm: ['천천히 해도 괜찮아요 🧘', '숨 한번 고르고 가요~', '여유가 제일이에요 ☕'],
 }
 
-/** 평상시(필요 없을 때) 시간대 + 성격 섞은 힐링 한마디 */
+/** 평상시(필요 없을 때) 갈래·성격·시간대 섞은 힐링 한마디 */
 export function ambientLine(pet: Pet, hour: number = new Date().getHours()): string {
-  if (Math.random() < 0.3) return pick(PERSONALITY_LINES[pet.personality])
+  if (Math.random() < 0.25) {
+    const t = typeLine(formById(pet.form).type)
+    if (t) return t
+  }
+  if (Math.random() < 0.35) return pick(PERSONALITY_LINES[pet.personality])
   return pick(TIME_LINES[bucketFor(hour)])
 }
 

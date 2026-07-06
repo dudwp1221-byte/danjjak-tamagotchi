@@ -540,6 +540,7 @@ export default function PetGame({
           petRef.current.stats,
           petRef.current.personality,
           gameClock(petRef.current.createdAt),
+          formById(petRef.current.form).type,
         ),
       )
       window.setTimeout(() => setSpeech(null), 3500)

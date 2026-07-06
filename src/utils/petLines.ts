@@ -1,3 +1,4 @@
+import { typeLine } from './typeLines'
 import type { Personality, PetStats } from '../types/pet'
 import type { SeasonKey } from './season'
 import type { TimePhase, GameSeason } from './gametime'
@@ -40,11 +41,12 @@ function pick(arr: string[]): string {
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
-/** 현재 상태/성격(+게임 시간)에 맞는 펫 대사 한 줄 */
+/** 현재 상태/성격(+게임 시간, +갈래 타입)에 맞는 펫 대사 한 줄 */
 export function pickPetLine(
   stats: PetStats,
   personality: Personality,
   clock?: { phase: TimePhase; season: GameSeason },
+  petType?: string,
 ): string {
   // 가장 부족한 욕구를 우선 표현
   const lowest = Math.min(
@@ -58,6 +60,11 @@ export function pickPetLine(
     if (stats.cleanliness === lowest) return pick(DIRTY)
     if (stats.energy === lowest) return pick(SLEEPY)
     return pick(LONELY)
+  }
+  // 갈래(타입) 전용 대사 — 30% 확률로 우선 (진화 갈래마다 다른 개성)
+  if (petType && Math.random() < 0.3) {
+    const t = typeLine(petType)
+    if (t) return t
   }
   // 컨디션이 괜찮으면 성격/행복/시간/계절 대사를 섞어서
   const pools: string[][] = [HAPPY, BY_PERSONALITY[personality]]
