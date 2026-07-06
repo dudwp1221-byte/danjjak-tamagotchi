@@ -220,11 +220,17 @@ export function loadGraduates(): Graduate[] {
   }
 }
 
+/**
+ * 명전 최대 인원. 클라우드 저장이 Firestore 문서 1개(1MB 상한)에 전체 데이터를
+ * 담는 구조라 무한정 늘릴 수 없다 — 회고 포함 1명 ≈ 1.5KB, 100명 ≈ 150KB.
+ */
+const GRADUATES_MAX = 100
+
 export function addGraduate(g: Graduate): void {
   try {
     const list = loadGraduates()
     list.unshift(g)
-    localStorage.setItem(GRADUATES_KEY, JSON.stringify(list.slice(0, 50)))
+    localStorage.setItem(GRADUATES_KEY, JSON.stringify(list.slice(0, GRADUATES_MAX)))
   } catch {
     // 무시
   }
