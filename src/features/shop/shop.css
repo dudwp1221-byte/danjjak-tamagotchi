@@ -221,3 +221,68 @@
 .shop-charge-btn:hover {
   background: rgba(125, 211, 252, 0.22);
 }
+
+/* ── 입어보기 미리보기 ── */
+.shop-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.8rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  transition: background 0.3s ease;
+}
+.shop-preview.has-bg {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+.shop-preview-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.shop-preview-name {
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+.shop-preview-hint {
+  font-size: 0.8rem;
+  opacity: 0.65;
+}
+.shop-preview-reset {
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+}
+.shop-preview-reset:hover {
+  background: var(--border);
+}
+
+/* ── 옷장 컬렉션 ── */
+.shop-item.clickable {
+  cursor: pointer;
+}
+.shop-item.clickable:hover {
+  border-color: rgba(196, 181, 253, 0.5);
+}
+.shop-item.locked .shop-emoji,
+.shop-item.locked .shop-info {
+  opacity: 0.55;
+}
+.shop-closet-rate {
+  font-weight: 400;
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
