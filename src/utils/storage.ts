@@ -203,6 +203,8 @@ export interface Graduate {
   days?: number
   /** 돌봐준 횟수 */
   totalActions?: number
+  /** 유대감 (utils/bond.ts 단계 표시용) */
+  bond?: number
   /** 추억 일기 하이라이트 (오래된 순, 최대 6개) */
   highlights?: DiaryEntry[]
   /** 주인이 남긴 한마디 */

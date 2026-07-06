@@ -114,6 +114,8 @@ export interface Pet {
   lastDailyClaim: number
   /** 연속 출석 일수 */
   careStreak: number
+  /** 유대감 — 깎이지 않고 쌓이기만 하는 관계 지표 (utils/bond.ts) */
+  bond: number
 
   // --- 종족 / 성격 / 기록 ---
   /** 계통(트리) id (그릴 때 랜덤 획득) */

@@ -4,6 +4,7 @@ import { formById } from '../../utils/species'
 import { stageFromLevel } from '../../utils/progression'
 import { daysTogether, graduateReward, petSpriteUrl } from '../../utils/pet'
 import { personalityDef } from '../../utils/personality'
+import { bondStage } from '../../utils/bond'
 import { pickHighlights, pickLastWords } from '../../utils/graduation'
 import PetAvatar from '../../components/PetAvatar'
 import Modal from '../../components/Modal'
@@ -88,6 +89,9 @@ export default function Graduation({
             <span className="grad-chip">💞 돌봄 {pet.totalActions}번</span>
             <span className="grad-chip">
               {person.emoji} {person.name}
+            </span>
+            <span className="grad-chip">
+              {bondStage(pet.bond).emoji} {bondStage(pet.bond).name}
             </span>
           </div>
           <p className="grad-text">

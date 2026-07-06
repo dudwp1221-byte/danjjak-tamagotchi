@@ -2,6 +2,7 @@ import type { Pet } from '../../types/pet'
 import { personalityDef } from '../../utils/personality'
 import { daysTogether } from '../../utils/pet'
 import { pickHighlights } from '../../utils/graduation'
+import { bondStage, nextBondStage } from '../../utils/bond'
 import Modal from '../../components/Modal'
 import './diary.css'
 
@@ -32,6 +33,8 @@ function formatDay(at: number): string {
 
 export default function Diary({ pet, onClose, onWriteAi, writing, canWriteAi }: DiaryProps) {
   const p = personalityDef(pet.personality)
+  const bond = bondStage(pet.bond)
+  const nextBond = nextBondStage(pet.bond)
   // 추억 앨범 — 기록이 어느 정도 쌓였을 때만 (적으면 전체 목록과 중복)
   const highlights = pet.diary.length >= 5 ? pickHighlights(pet.diary, 8) : []
 
@@ -44,6 +47,14 @@ export default function Diary({ pet, onClose, onWriteAi, writing, canWriteAi }: 
         <span className="diary-person-desc">{p.desc}</span>
         <span className="diary-days">
           {pet.ownerName}님과 함께한 지 {daysTogether(pet.createdAt)}일째
+        </span>
+        <span className="diary-bond" title="선물·매일 만남·기념일로 깊어져요">
+          {bond.emoji} {bond.name}
+          {nextBond && (
+            <span className="diary-bond-next">
+              {' '}· 다음 「{nextBond.name}」까지 💞{nextBond.min - pet.bond}
+            </span>
+          )}
         </span>
       </div>
 

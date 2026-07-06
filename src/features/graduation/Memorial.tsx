@@ -1,6 +1,7 @@
 import type { Graduate } from '../../utils/storage'
 import { tierName } from '../../utils/species'
 import { personalityDef } from '../../utils/personality'
+import { bondStage } from '../../utils/bond'
 import { graduateForm } from '../../utils/graduation'
 import Modal from '../../components/Modal'
 import './graduation.css'
@@ -43,6 +44,11 @@ export default function Memorial({ graduate: g, onClose }: MemorialProps) {
           {person && (
             <span className="grad-chip">
               {person.emoji} {person.name}
+            </span>
+          )}
+          {g.bond != null && (
+            <span className="grad-chip">
+              {bondStage(g.bond).emoji} {bondStage(g.bond).name}
             </span>
           )}
         </div>

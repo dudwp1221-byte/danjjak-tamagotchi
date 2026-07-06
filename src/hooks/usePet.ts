@@ -188,6 +188,11 @@ export function usePet(initialPet: Pet) {
     setPet((p) => ({ ...p, stats: adjustStats(p.stats, delta) }))
   }, [])
 
+  /** 유대감 상승 (감소 없음 — bond.ts 참고) */
+  const addBond = useCallback((amount: number) => {
+    setPet((p) => ({ ...p, bond: (p.bond ?? 0) + amount }))
+  }, [])
+
   /** 미션 이벤트 기록 (진행도 증가, 날짜 바뀌면 자동 초기화) */
   const recordMission = useCallback((event: MissionEvent) => {
     setPet((p) => {
@@ -319,6 +324,7 @@ export function usePet(initialPet: Pet) {
     update,
     reward,
     adjust,
+    addBond,
     unlock,
     claimDaily,
     addDiary,

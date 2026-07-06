@@ -94,6 +94,7 @@ export function createPet(params: {
     achievements: [],
     lastDailyClaim: 0,
     careStreak: 0,
+    bond: 0,
     species: starter.line,
     form: starter.id,
     personality: randomPersonality(),
@@ -131,6 +132,7 @@ export function normalizePet(raw: Partial<Pet> & Pick<Pet, 'id'>): Pet {
     achievements: raw.achievements ?? [],
     lastDailyClaim: raw.lastDailyClaim ?? 0,
     careStreak: raw.careStreak ?? 0,
+    bond: raw.bond ?? 0,
     ...(() => {
       const formId = raw.form ?? starterFromId(raw.id).id
       return { species: formById(formId).line, form: formId }

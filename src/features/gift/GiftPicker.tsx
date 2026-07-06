@@ -1,5 +1,7 @@
 import type { Pet } from '../../types/pet'
 import { GIFT_ITEMS, type ShopItem } from '../../utils/items'
+import { personalityDef } from '../../utils/personality'
+import { FAVORITE_GIFT, giftBondGain, objectParticle } from '../../utils/bond'
 import Modal from '../../components/Modal'
 import './gift.css'
 
@@ -14,10 +16,21 @@ interface GiftPickerProps {
 
 export default function GiftPicker({ pet, onClose, onGive, onGoShop }: GiftPickerProps) {
   const owned = GIFT_ITEMS.filter((g) => (pet.gifts[g.id] ?? 0) > 0)
+  const person = personalityDef(pet.personality)
+  const favId = FAVORITE_GIFT[pet.personality]
+  const fav = GIFT_ITEMS.find((g) => g.id === favId)
 
   return (
     <Modal title="🎁 선물하기" onClose={onClose}>
-      <p className="gift-desc">선물을 주면 애정이 올라가요. 상점에서 사거나 이벤트로 모을 수 있어요.</p>
+      <p className="gift-desc">
+        선물은 애정과 함께 <strong>유대</strong>를 쌓고, 일기에 추억으로 남아요.
+      </p>
+      {fav && (
+        <p className="gift-fav-hint">
+          💡 {person.emoji} {person.name} 성격은 {fav.emoji} <strong>{fav.name}</strong>
+          {objectParticle(fav.name)} 제일 좋아해요! (유대 2배)
+        </p>
+      )}
 
       {owned.length === 0 ? (
         <div className="gift-empty">
@@ -29,20 +42,26 @@ export default function GiftPicker({ pet, onClose, onGive, onGoShop }: GiftPicke
         </div>
       ) : (
         <div className="gift-list">
-          {owned.map((g) => (
-            <div key={g.id} className="gift-item">
-              <span className="gift-emoji">{g.emoji}</span>
-              <div className="gift-info">
-                <span className="gift-name">
-                  {g.name} <span className="gift-count">×{pet.gifts[g.id]}</span>
-                </span>
-                <span className="gift-aff">💗 애정 +{g.affection}</span>
+          {owned.map((g) => {
+            const favorite = g.id === favId
+            return (
+              <div key={g.id} className={'gift-item' + (favorite ? ' is-fav' : '')}>
+                <span className="gift-emoji">{g.emoji}</span>
+                <div className="gift-info">
+                  <span className="gift-name">
+                    {g.name} <span className="gift-count">×{pet.gifts[g.id]}</span>
+                    {favorite && <span className="gift-fav-badge">💖 최애</span>}
+                  </span>
+                  <span className="gift-aff">
+                    💗 애정 +{g.affection} · 💞 유대 +{giftBondGain(g.affection ?? 20, favorite)}
+                  </span>
+                </div>
+                <button type="button" className="gift-give" onClick={() => onGive(g)}>
+                  선물하기
+                </button>
               </div>
-              <button type="button" className="gift-give" onClick={() => onGive(g)}>
-                선물하기
-              </button>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
     </Modal>

@@ -21,6 +21,14 @@ import {
 import { ACHIEVEMENTS, newlyUnlocked } from '../../utils/achievements'
 import { personalityDef } from '../../utils/personality'
 import {
+  bondStage,
+  giftBondGain,
+  objectParticle,
+  subjectParticle,
+  FAVORITE_GIFT,
+  FAVORITE_REACTION,
+} from '../../utils/bond'
+import {
   formById,
   tierName,
 } from '../../utils/species'
@@ -150,6 +158,7 @@ export default function PetGame({
     care,
     reward,
     adjust,
+    addBond,
     update,
     spendCoins,
     unlock,
@@ -494,7 +503,21 @@ export default function PetGame({
     [pet, care, showToast, recordMission, triggerReaction],
   )
 
-  // 선물 주기 (선물함에서 아이템 1개 소모 → 애정 ↑)
+  // 유대감 상승 + 단계가 오르면 축하 (일기·토스트)
+  const gainBond = useCallback(
+    (amount: number) => {
+      const before = bondStage(pet.bond)
+      const after = bondStage(pet.bond + amount)
+      addBond(amount)
+      if (after.min > before.min) {
+        showToast(`${after.emoji} ${pet.name}와 "${after.name}"${subjectParticle(after.name)} 됐어요!`)
+        addDiary(after.emoji, `${pet.ownerName}님과 "${after.name}"${subjectParticle(after.name)} 되었어요. 마음이 몽글몽글해요.`)
+      }
+    },
+    [pet.bond, pet.name, pet.ownerName, addBond, showToast, addDiary],
+  )
+
+  // 선물 주기 (선물함에서 아이템 1개 소모 → 애정·유대 ↑, 일기에 남는다)
   const giveGift = useCallback(
     (item: ShopItem) => {
       if (!consumeGift(item.id)) return
@@ -502,13 +525,30 @@ export default function PetGame({
       reward(0, 4)
       recordMission('care')
       triggerReaction('wiggle')
-      setEffect('🎁')
-      setPop({ text: `💝 애정 +${item.affection ?? 20}`, key: Date.now() })
+      const favorite = FAVORITE_GIFT[pet.personality] === item.id
+      const bondGain = giftBondGain(item.affection ?? 20, favorite)
+      addDiary(
+        item.emoji,
+        favorite
+          ? `제일 좋아하는 ${item.name}${objectParticle(item.name)} 받았어요! 최고의 하루예요!`
+          : `${item.name}${objectParticle(item.name)} 선물받았어요. 마음이 따뜻해져요.`,
+      )
+      setEffect(favorite ? '💖' : '🎁')
+      setPop({
+        text: favorite ? `💖 최애 선물! 유대 +${bondGain}` : `💝 애정 +${item.affection ?? 20} · 유대 +${bondGain}`,
+        key: Date.now(),
+      })
       window.setTimeout(() => setEffect(null), 800)
       setModal(null)
-      showToast(`${item.emoji} 선물했어요! 좋아해요 💝`)
+      if (favorite) {
+        setSpeech(FAVORITE_REACTION[pet.personality])
+        window.setTimeout(() => setSpeech(null), 4500)
+      }
+      showToast(favorite ? `${item.emoji} 최애 선물이에요! 정말 좋아해요 💖` : `${item.emoji} 선물했어요! 좋아해요 💝`)
+      // 마지막에 호출 — 단계 상승 축하 토스트가 선물 토스트에 덮이지 않게
+      gainBond(bondGain)
     },
-    [adjust, reward, recordMission, triggerReaction, showToast],
+    [adjust, reward, recordMission, triggerReaction, showToast, pet.personality, gainBond, addDiary],
   )
 
   const toggleMute = () => {
@@ -594,6 +634,7 @@ export default function PetGame({
       setSpeech(`${base}, ${pet.name} 출근 완료! ☀️${week}`)
       window.setTimeout(() => setSpeech(null), 5200)
       reward(5)
+      gainBond(2) // 매일 만나는 것만으로도 유대가 깊어진다
       showToast('☀️ 오늘의 첫 인사 +5🪙')
       addDiary('☀️', '오늘도 함께 하루를 시작했어요.')
     }, 1500)
@@ -614,6 +655,7 @@ export default function PetGame({
       setSpeech(`우리가 함께한 지 벌써 ${hit}일이에요! 고마워요 💛`)
       window.setTimeout(() => setSpeech(null), 6000)
       reward(hit) // 기념일 숫자만큼 코인 선물
+      gainBond(10)
       showToast(`🎂 함께한 지 ${hit}일 기념 +${hit}🪙`)
       addDiary('🎂', `함께한 지 ${hit}일이 되었어요. 앞으로도 잘 부탁해요!`)
     }, 3800) // 출근 인사 말풍선이 끝난 뒤
@@ -1333,6 +1375,7 @@ export default function PetGame({
                 personality: gp.personality,
                 days: gDays,
                 totalActions: gp.totalActions,
+                bond: gp.bond,
                 highlights: memoir.highlights,
                 farewell: memoir.farewell || undefined,
                 lastWords: memoir.lastWords,

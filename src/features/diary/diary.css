@@ -41,6 +41,20 @@
   opacity: 0.5;
   margin-top: 0.2rem;
 }
+.diary-bond {
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-top: 0.35rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(244, 114, 182, 0.1);
+  border: 1px solid rgba(244, 114, 182, 0.3);
+}
+.diary-bond-next {
+  font-weight: 400;
+  font-size: 0.72rem;
+  opacity: 0.65;
+}
 
 .diary-empty {
   text-align: center;
