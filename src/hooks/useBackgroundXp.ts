@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import type { Pet } from '../types/pet'
 import type { WorkTickPayload } from '../utils/work-activity'
 import { applyWorkTick, WORK_PROFILE_TICK_MIN } from '../utils/work-activity'
-import { loadPets, getActiveId, upsertPet } from '../utils/storage'
+import { loadPets, getActiveId, upsertPet, trickleInactivePets } from '../utils/storage'
 import { normalizePet, todayIndex } from '../utils/pet'
 
 /** 방치 트리클: 10초마다 소량 (~47 XP/시간, 게임 창의 자율 행동 패시브와 비슷한 수준) */
@@ -59,9 +59,17 @@ export function useBackgroundXp(gameXpActiveRef: { current: boolean }) {
       upsertPet(normalizePet({ ...raw, growth: raw.growth + PASSIVE_XP, lastUpdated: Date.now() }))
     }, PASSIVE_TICK_MS)
 
+    // 게임 창이 닫혀 있을 땐 비활성 펫 트리클도 바탕화면 펫이 담당 (1분마다)
+    const trickleId = setInterval(() => {
+      if (gameXpActiveRef.current) return
+      const aid = getActiveId() ?? loadPets()[0]?.id
+      if (aid) trickleInactivePets(aid)
+    }, 60000)
+
     return () => {
       offWork?.()
       clearInterval(passiveId)
+      clearInterval(trickleId)
     }
   }, [gameXpActiveRef])
 }

@@ -1,6 +1,7 @@
 import type { Pet } from '../types/pet'
 import { normalizePet } from './pet'
 import { FORMS } from './species'
+import { levelFromXp, MAX_LEVEL } from './progression'
 
 const STORAGE_KEY = 'danjjak-pet'
 
@@ -97,6 +98,22 @@ export function upsertPet(pet: Pet): void {
   if (idx >= 0) pets[idx] = pet
   else pets.push(pet)
   savePets(pets)
+}
+
+/**
+ * 비활성 펫 트리클 성장 — 내 방에서 기다리는 펫들도 조금씩 자란다.
+ * 1분 간격 호출 기준 기본 0.15XP(≈9XP/시간, 활성 방치 성장의 ~20%). 만렙이면 생략.
+ */
+export function trickleInactivePets(activeId: string, xp = 0.15): void {
+  const pets = loadPets()
+  let changed = false
+  for (const p of pets) {
+    if (p.id === activeId) continue
+    if (levelFromXp(p.growth) >= MAX_LEVEL) continue
+    p.growth += xp
+    changed = true
+  }
+  if (changed) savePets(pets)
 }
 
 /** 펫을 삭제하고 남은 펫 목록을 반환한다. */

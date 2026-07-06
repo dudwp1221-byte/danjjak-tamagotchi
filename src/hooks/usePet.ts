@@ -12,7 +12,7 @@ import {
   missionDef,
   type MissionEvent,
 } from '../utils/missions'
-import { upsertPet, loadPets, PETS_KEY } from '../utils/storage'
+import { upsertPet, loadPets, trickleInactivePets, PETS_KEY } from '../utils/storage'
 import { PROFILE_KEYS } from '../utils/evolution-conditions'
 import { useAccount } from './useAccount'
 import { addCoins as acctAddCoins, spendCoins as acctSpendCoins, refreshAccount } from '../utils/account'
@@ -156,6 +156,13 @@ export function usePet(initialPet: Pet) {
   }, [])
 
   /** 코인(계정)/경험치(펫) 보상 지급 */
+  // 내 방에서 기다리는 비활성 펫들도 1분마다 조금씩 성장 (활성 펫의 ~20%)
+  useEffect(() => {
+    const id = window.setInterval(() => trickleInactivePets(pet.id), 60000)
+    return () => window.clearInterval(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pet.id])
+
   // 만렙 이후 넘치는 XP를 코인으로 바꿔주는 누산기 (OVERFLOW_XP_PER_COIN당 1코인)
   const overflowXp = useRef(0)
   const reward = useCallback((coins: number, xp = 0) => {
