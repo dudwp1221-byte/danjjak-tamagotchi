@@ -17,13 +17,32 @@ function snapshot(): Record<string, string> {
   return out
 }
 
-/** 클라우드에 현재 데이터 업로드 (덮어쓰기) */
-export async function pushCloud(uid: string): Promise<void> {
-  if (!db) return
-  await setDoc(doc(db, 'saves', uid), {
-    data: snapshot(),
-    updatedAt: Date.now(),
-  })
+// 마지막으로 업로드한 스냅샷 지문 — 변화 없으면 쓰기 생략 (Firestore 쿼터 보호)
+let lastPushed = ''
+// 업로드 최소 간격(ms) — 잦은 호출이 겹쳐도 이 간격 안에서는 1회만 쓴다
+const PUSH_MIN_INTERVAL = 120_000
+let lastPushAt = 0
+let pushing = false
+
+/**
+ * 클라우드에 현재 데이터 업로드 (덮어쓰기).
+ * - 데이터가 지난 업로드와 동일하면 생략
+ * - 2분 이내 재호출은 생략 (force로 무시 가능 — 종료/로그아웃 시)
+ */
+export async function pushCloud(uid: string, force = false): Promise<void> {
+  if (!db || pushing) return
+  const data = snapshot()
+  const fingerprint = JSON.stringify(data)
+  if (fingerprint === lastPushed) return
+  if (!force && Date.now() - lastPushAt < PUSH_MIN_INTERVAL) return
+  pushing = true
+  try {
+    await setDoc(doc(db, 'saves', uid), { data, updatedAt: Date.now() })
+    lastPushed = fingerprint
+    lastPushAt = Date.now()
+  } finally {
+    pushing = false
+  }
 }
 
 /**

@@ -48,16 +48,19 @@ function App() {
     if (!forceLobby) setPets(loadPets())
   }, [forceLobby])
 
-  // 로그인 상태면 진행 상황을 클라우드에 자동 저장 (30초마다 + 종료/로그아웃 시)
+  // 로그인 상태면 진행 상황을 클라우드에 자동 저장.
+  // pushCloud가 자체적으로 "변화 없으면 생략 + 최소 2분 간격"을 지켜 쿼터를 보호하고,
+  // 종료/로그아웃 시에만 간격 무시(force)로 마지막 상태를 확실히 남긴다.
   useEffect(() => {
     if (!user) return
     const push = () => { void pushCloud(user.uid) }
-    const id = window.setInterval(push, 30000)
-    window.addEventListener('beforeunload', push)
+    const flush = () => { void pushCloud(user.uid, true) }
+    const id = window.setInterval(push, 60000)
+    window.addEventListener('beforeunload', flush)
     return () => {
       window.clearInterval(id)
-      window.removeEventListener('beforeunload', push)
-      push()
+      window.removeEventListener('beforeunload', flush)
+      flush()
     }
   }, [user])
 
