@@ -44,7 +44,6 @@ export default function PetCreator({ onCreated, ownerName: existingOwner }: PetC
   const [brushSize, setBrushSize] = useState(6)
   const [tool, setTool] = useState<DrawTool>('pen')
   const [symmetry, setSymmetry] = useState(false)
-  const [ownerName, setOwnerName] = useState('')
   const [petName, setPetName] = useState('')
   const [error, setError] = useState('')
 
@@ -56,7 +55,7 @@ export default function PetCreator({ onCreated, ownerName: existingOwner }: PetC
     const imageDataUrl = canvasRef.current?.exportDataUrl() ?? ''
     onCreated(
       createPet({
-        ownerName: (existingOwner?.trim() || ownerName.trim() || '익명'),
+        ownerName: (existingOwner?.trim() || '익명'),
         // 비워두면 createPet이 뽑힌 종족의 기본 이름을 넣는다
         name: petName.trim(),
         imageDataUrl,
@@ -199,18 +198,6 @@ export default function PetCreator({ onCreated, ownerName: existingOwner }: PetC
       </div>
 
       <div className="pc-form">
-        {!existingOwner && (
-          <label className="pc-field">
-            <span>내 이름</span>
-            <input
-              type="text"
-              value={ownerName}
-              placeholder="(선택) 닉네임"
-              maxLength={20}
-              onChange={(e) => setOwnerName(e.target.value)}
-            />
-          </label>
-        )}
         <label className="pc-field">
           <span>펫 이름</span>
           <input
