@@ -184,7 +184,9 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
       onClose={onClose}
       headerExtra={
         <span className="shop-coins">
-          🪙 {pet.coins} · 💎 {gems}
+          {/* 보석 잔액은 프리미엄 탭에서만 노출 (과금 압박 최소화) */}
+          🪙 {pet.coins}
+          {tab === 'premium' && <> · 💎 {gems}</>}
         </span>
       }
     >

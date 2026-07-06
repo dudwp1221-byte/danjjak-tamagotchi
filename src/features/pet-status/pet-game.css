@@ -1409,17 +1409,6 @@
 .pg-coins-plus:hover { filter: brightness(1.08); }
 .pg-coins-plus:active { transform: scale(0.9); }
 
-/* 보석 펠릿 — 코인과 같은 형태, 색조만 청록 */
-.pg-gems {
-  background: rgba(56, 189, 248, 0.15);
-  border-color: rgba(56, 189, 248, 0.4);
-  color: var(--accent-text, #7dd3fc);
-}
-.pg-gems .pg-coins-plus {
-  background: linear-gradient(135deg, #38bdf8, #6366f1);
-  color: #01121f;
-}
-
 /* 프로필 아바타 칩 — 이름 왼쪽 원형 펫 썸네일 */
 .pg-avatar-chip {
   flex: 0 0 auto;

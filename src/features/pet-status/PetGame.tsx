@@ -31,7 +31,6 @@ import { pickPetLine } from '../../utils/petLines'
 import { lineQuestsFor } from '../../utils/quests'
 import { awakenCond, AWAKEN_CONDS, type AwakenCtx } from '../../utils/awaken'
 import { backgroundCss, type ShopItem } from '../../utils/items'
-import { loadGems } from '../../utils/premium'
 import { FURNITURE_ITEMS, type FurnitureItem } from '../../utils/furniture'
 import { PROFILE_KEYS } from '../../utils/evolution-conditions'
 import { WORK_MODE_META, WORK_XP_PER_TICK } from '../../utils/work-activity'
@@ -835,18 +834,7 @@ export default function PetGame({
               +
             </button>
           </span>
-          <span className="pg-coins pg-gems" title="보석">
-            💎 {loadGems()}
-            <button
-              type="button"
-              className="pg-coins-plus"
-              onClick={() => setTab(0)}
-              title="상점에서 보석 쓰기"
-              aria-label="상점 열기"
-            >
-              +
-            </button>
-          </span>
+          {/* 보석(유료 재화)은 상시 노출하지 않는다 — 상점 프리미엄 탭 안에서만 (치유 톤: 과금 압박 금지) */}
           <button
             type="button"
             className="pg-icon-btn"
