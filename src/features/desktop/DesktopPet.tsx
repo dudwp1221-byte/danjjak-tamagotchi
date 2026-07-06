@@ -185,7 +185,10 @@ export default function DesktopPet() {
       <div
         className="dp-pet-wrap"
         data-click
-        style={{ transform: `scaleX(${dir})` }}
+        // dir: 1=오른쪽 보기, -1=왼쪽 보기 (main.ts 레일 기준).
+        // 스프라이트 원본이 왼쪽 보기라 오른쪽을 보려면 뒤집어야 한다 — PetRoom과 동일 규칙.
+        // (반전은 wrap에 걸어야 함: .dp-img의 keyframes transform이 인라인 반전을 덮어씀)
+        style={{ transform: `scaleX(${dir === 1 ? -1 : 1})` }}
         onClick={handlePoke}
         onDoubleClick={() => bridge?.openFullUI?.()}
         title="클릭: 말 걸기 · 더블클릭: 게임 열기"
