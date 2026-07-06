@@ -1,6 +1,7 @@
 import type { Pet } from '../../types/pet'
 import { personalityDef } from '../../utils/personality'
 import { daysTogether } from '../../utils/pet'
+import { pickHighlights } from '../../utils/graduation'
 import Modal from '../../components/Modal'
 import './diary.css'
 
@@ -24,8 +25,15 @@ function formatDate(at: number): string {
   return `${mm}.${dd} ${hh}:${mi}`
 }
 
+function formatDay(at: number): string {
+  const d = new Date(at)
+  return `${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
+}
+
 export default function Diary({ pet, onClose, onWriteAi, writing, canWriteAi }: DiaryProps) {
   const p = personalityDef(pet.personality)
+  // 추억 앨범 — 기록이 어느 정도 쌓였을 때만 (적으면 전체 목록과 중복)
+  const highlights = pet.diary.length >= 5 ? pickHighlights(pet.diary, 8) : []
 
   return (
     <Modal title="📖 단짝 일기" onClose={onClose}>
@@ -51,9 +59,26 @@ export default function Diary({ pet, onClose, onWriteAi, writing, canWriteAi }: 
         </button>
       )}
 
+      {highlights.length > 0 && (
+        <div className="diary-hl">
+          <p className="diary-section-label">✨ 추억 앨범 — 함께한 여정</p>
+          <div className="diary-hl-strip">
+            {highlights.map((e, i) => (
+              <div key={i} className="diary-hl-card">
+                <span className="diary-hl-icon">{e.icon}</span>
+                <span className="diary-hl-text">{e.text}</span>
+                <span className="diary-hl-date">{formatDay(e.at)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {pet.diary.length === 0 ? (
         <p className="diary-empty">아직 기록이 없어요. 함께 추억을 쌓아봐요!</p>
       ) : (
+        <>
+        {highlights.length > 0 && <p className="diary-section-label">📖 전체 기록</p>}
         <ul className="diary-list">
           {pet.diary.map((e, i) => (
             <li key={i} className="diary-entry">
@@ -65,6 +90,7 @@ export default function Diary({ pet, onClose, onWriteAi, writing, canWriteAi }: 
             </li>
           ))}
         </ul>
+        </>
       )}
     </Modal>
   )
