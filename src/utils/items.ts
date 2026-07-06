@@ -69,17 +69,19 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'acc_wings', name: '빛의 날개', emoji: '🪽', price: 250, type: 'accessory', desc: '고귀한 단짝의 날개', honor: true },
   { id: 'bg_galaxy', name: '은하수', emoji: '🌌', price: 220, type: 'background', desc: '별이 쏟아지는 밤하늘', bg: 'linear-gradient(180deg, #312e81, #0f172a)', honor: true },
   { id: 'bg_throne', name: '왕좌의 방', emoji: '👑', price: 320, type: 'background', desc: '전설의 단짝을 위한 자리', bg: 'linear-gradient(180deg, #7c2d12, #1c1917)', honor: true },
-  // 컬렉션 라인 (후반 코인 소비처 — 졸업 보상·만렙 용돈이 향할 곳. 전부 코스메틱, 능력 없음)
-  { id: 'acc_starcrown', name: '별의 관', emoji: '🌟', price: 5000, type: 'accessory', desc: '밤하늘의 별을 엮어 만든 관', honor: true },
-  { id: 'acc_moonveil', name: '달빛 베일', emoji: '🌙', price: 8000, type: 'accessory', desc: '은은한 달빛이 감도는 베일', honor: true },
-  { id: 'acc_aurorascarf', name: '오로라 목도리', emoji: '🧣', price: 12000, type: 'accessory', desc: '극광을 짜 넣은 포근한 목도리', honor: true },
-  { id: 'acc_redstring', name: '인연의 붉은 실', emoji: '🧵', price: 20000, type: 'accessory', desc: '운명의 단짝이라는 증표', honor: true },
-  { id: 'acc_universe', name: '작은 우주', emoji: '🪐', price: 50000, type: 'accessory', desc: '단짝의 곁을 도는 작은 우주', honor: true },
-  { id: 'bg_hotspring', name: '노천 온천', emoji: '♨️', price: 5000, type: 'background', desc: '몸도 마음도 노곤노곤', bg: 'linear-gradient(180deg, #99f6e4, #57534e)', honor: true },
-  { id: 'bg_library', name: '오래된 서재', emoji: '📜', price: 8000, type: 'background', desc: '책 냄새 가득한 조용한 오후', bg: 'linear-gradient(180deg, #a16207, #292524)', honor: true },
-  { id: 'bg_cloudsea', name: '구름바다', emoji: '☁️', price: 15000, type: 'background', desc: '구름 위를 둥둥 떠다녀요', bg: 'linear-gradient(180deg, #e0f2fe, #93c5fd)', honor: true },
-  { id: 'bg_stargarden', name: '별의 정원', emoji: '🌠', price: 30000, type: 'background', desc: '별이 피어나는 비밀 정원', bg: 'linear-gradient(180deg, #1e1b4b, #6d28d9 70%, #0c0a09)', honor: true },
-  { id: 'bg_memoryroom', name: '추억의 방', emoji: '🖼️', price: 50000, type: 'background', desc: '함께한 날들이 걸려 있는 방', bg: 'linear-gradient(180deg, #e7d3b1, #8b5e34)', honor: true },
+  // 컬렉션 라인 — 후반 코인 소비처. 전부 코스메틱, 능력 없음.
+  // 가격 기준: 일일 실수입 ~130🪙 (출석~30+인사5+케어~40+미션37+미니게임~20), 졸업 보너스 ~1,000🪙/회.
+  // 입문 1,200(약 열흘) → 최고 12,000(2~3달 또는 졸업 몇 번) — 힐링 톤이라 과한 그라인딩 금지.
+  { id: 'acc_starcrown', name: '별의 관', emoji: '🌟', price: 1200, type: 'accessory', desc: '밤하늘의 별을 엮어 만든 관', honor: true },
+  { id: 'acc_moonveil', name: '달빛 베일', emoji: '🌙', price: 2000, type: 'accessory', desc: '은은한 달빛이 감도는 베일', honor: true },
+  { id: 'acc_aurorascarf', name: '오로라 목도리', emoji: '🧣', price: 3500, type: 'accessory', desc: '극광을 짜 넣은 포근한 목도리', honor: true },
+  { id: 'acc_redstring', name: '인연의 붉은 실', emoji: '🧵', price: 6000, type: 'accessory', desc: '운명의 단짝이라는 증표', honor: true },
+  { id: 'acc_universe', name: '작은 우주', emoji: '🪐', price: 12000, type: 'accessory', desc: '단짝의 곁을 도는 작은 우주', honor: true },
+  { id: 'bg_hotspring', name: '노천 온천', emoji: '♨️', price: 1200, type: 'background', desc: '몸도 마음도 노곤노곤', bg: 'linear-gradient(180deg, #99f6e4, #57534e)', honor: true },
+  { id: 'bg_library', name: '오래된 서재', emoji: '📜', price: 2000, type: 'background', desc: '책 냄새 가득한 조용한 오후', bg: 'linear-gradient(180deg, #a16207, #292524)', honor: true },
+  { id: 'bg_cloudsea', name: '구름바다', emoji: '☁️', price: 4000, type: 'background', desc: '구름 위를 둥둥 떠다녀요', bg: 'linear-gradient(180deg, #e0f2fe, #93c5fd)', honor: true },
+  { id: 'bg_stargarden', name: '별의 정원', emoji: '🌠', price: 8000, type: 'background', desc: '별이 피어나는 비밀 정원', bg: 'linear-gradient(180deg, #1e1b4b, #6d28d9 70%, #0c0a09)', honor: true },
+  { id: 'bg_memoryroom', name: '추억의 방', emoji: '🖼️', price: 12000, type: 'background', desc: '함께한 날들이 걸려 있는 방', bg: 'linear-gradient(180deg, #e7d3b1, #8b5e34)', honor: true },
   // 도구
   { id: 'item_evostone', name: '진화의 돌', emoji: '💠', price: 150, type: 'tool', desc: '특수(합성) 진화에 사용 (1회 소모)', honor: true },
 

@@ -4,6 +4,9 @@ import type { PetAction } from '../types/pet'
 export const ACTION_XP = 5
 export const ACTION_COINS = 2
 
+/** 미니게임으로 하루에 얻을 수 있는 코인 상한 — 파밍 방지 (기분 보상은 무제한) */
+export const MINIGAME_DAILY_COIN_CAP = 60
+
 /**
  * 케어(먹이/쓰다듬기/씻기기)는 직접 돌봐주는 보상이므로 큰 폭의 XP를 준다.
  * 단, 액션별로 시간당 횟수 제한을 둬서 노가다 클릭을 막는다.

@@ -33,7 +33,7 @@ import {
   formById,
   tierName,
 } from '../../utils/species'
-import { levelFromXp } from '../../utils/progression'
+import { levelFromXp, MINIGAME_DAILY_COIN_CAP } from '../../utils/progression'
 import { getEvolveOptions } from '../../utils/evolve'
 import { careRemaining, CARE_HOURLY_CAP } from '../../utils/care'
 import { pickPetLine } from '../../utils/petLines'
@@ -502,6 +502,35 @@ export default function PetGame({
       if (result.wasted) showToast('이미 충분한데 행복해요! 💕')
     },
     [pet, care, showToast, recordMission, triggerReaction],
+  )
+
+  // 미니게임 일일 코인 상한 — 반복 파밍으로 경제가 무너지지 않게. 기분 보상은 계속 준다 (힐링 톤)
+  const grantMinigameCoins = useCallback(
+    (coins: number): number => {
+      const KEY = 'danjjak-minigame-coins'
+      const today = todayIndex()
+      let rec = { day: today, total: 0 }
+      try {
+        const raw = JSON.parse(localStorage.getItem(KEY) ?? 'null') as { day: number; total: number } | null
+        if (raw && raw.day === today) rec = raw
+      } catch { /* 무시 */ }
+      const granted = Math.max(0, Math.min(coins, MINIGAME_DAILY_COIN_CAP - rec.total))
+      if (granted > 0) {
+        reward(granted)
+        try {
+          localStorage.setItem(KEY, JSON.stringify({ day: today, total: rec.total + granted }))
+        } catch { /* 무시 */ }
+      }
+      if (granted < coins) {
+        showToast(
+          granted > 0
+            ? `+${granted}🪙 — 오늘 미니게임 코인은 여기까지! (기분은 계속 올라요)`
+            : '오늘 미니게임 코인은 다 모았어요. 기분은 계속 올라요 😊',
+        )
+      }
+      return granted
+    },
+    [reward, showToast],
   )
 
   // 유대감 상승 + 단계가 오르면 축하 (일기·토스트)
@@ -1507,7 +1536,7 @@ export default function PetGame({
         <CatchGame
           petImageDataUrl={petSpriteUrl(pet)}
           onFinish={(coins, mood) => {
-            if (coins > 0) reward(coins)
+            if (coins > 0) grantMinigameCoins(coins)
             if (mood > 0) adjust({ mood })
             recordMission('minigame')
           }}
@@ -1517,7 +1546,7 @@ export default function PetGame({
       {modal === 'rps' && (
         <RockPaperScissors
           petImageDataUrl={petSpriteUrl(pet)}
-          onReward={(coins) => reward(coins)}
+          onReward={(coins) => grantMinigameCoins(coins)}
           onPlayed={() => recordMission('minigame')}
           onClose={() => setModal(null)}
         />
