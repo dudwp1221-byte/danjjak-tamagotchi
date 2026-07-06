@@ -241,11 +241,14 @@ export function usePet(initialPet: Pet) {
     setPet((p) => ({ ...p, lineQuestStage: p.lineQuestStage + 1 }))
   }, [])
 
-  /** 다이어리 기록 추가 (최신순, 최대 60개) */
+  /** 다이어리 기록 추가 (최신순, 최대 60개 — 단, 가장 오래된 "첫 만남" 기록은 지우지 않는다) */
   const addDiary = useCallback((icon: string, text: string) => {
     setPet((p) => {
       const entry: DiaryEntry = { at: Date.now(), icon, text }
-      return { ...p, diary: [entry, ...p.diary].slice(0, 60) }
+      const next = [entry, ...p.diary]
+      const diary =
+        next.length <= 60 ? next : [...next.slice(0, 59), next[next.length - 1]]
+      return { ...p, diary }
     })
   }, [])
 

@@ -30,11 +30,11 @@ function xpToReach(level: number): number {
   return 20 * (level - 1) * level
 }
 
-/** 누적 경험치로부터 현재 레벨 계산 (1부터) */
+/** 누적 경험치로부터 현재 레벨 계산 (1~만렙). 만렙 초과 XP가 남아 있어도 표시·보상은 만렙 기준. */
 export function levelFromXp(xp: number): number {
   // 20L^2 - 20L - xp <= 0  =>  L <= (20 + sqrt(400 + 80xp)) / 40
   const l = Math.floor((20 + Math.sqrt(400 + 80 * xp)) / 40)
-  return Math.max(1, l)
+  return Math.min(MAX_LEVEL, Math.max(1, l))
 }
 
 /** 현재 레벨 안에서의 진행도 */
