@@ -152,7 +152,6 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
                 style={{
                   left: `${rp.x}%`,
                   top: `${rp.y}%`,
-                  transform: `scaleX(${rp.dx > 0 ? 1 : -1})`,
                 }}
                 onClick={() => onSwitch(rp.id)}
                 title={`${pet.name} · ${score}점`}
@@ -165,6 +164,9 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
                     alt={pet.name}
                     className="room-pet-img"
                     draggable={false}
+                    // 스프라이트 기본이 왼쪽 보기 — 오른쪽 이동 시에만 뒤집는다.
+                    // 이름·기분 이모지는 버튼이 아닌 이미지만 뒤집어 정방향 유지.
+                    style={{ transform: `scaleX(${rp.dx > 0 ? -1 : 1})` }}
                   />
                 )}
                 <span className="room-pet-name">{pet.name}</span>
