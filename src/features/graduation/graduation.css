@@ -58,3 +58,234 @@
 .grad-no:hover {
   background: var(--border);
 }
+
+/* ── 돌아보기: 요약 칩 + 추억 일기 ── */
+.grad-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+.grad-chip {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.grad-memories {
+  list-style: none;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.grad-memory {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  text-align: left;
+  font-size: 0.82rem;
+}
+.grad-memory-icon {
+  flex-shrink: 0;
+}
+.grad-memory-text {
+  flex: 1;
+  line-height: 1.4;
+}
+.grad-memory-date {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  opacity: 0.5;
+}
+
+/* ── 작별 인사: 말풍선 + 한마디 입력 ── */
+.grad-bubble {
+  margin: 0.4rem 0 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  position: relative;
+}
+.grad-bubble::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+}
+.grad-farewell-input {
+  width: 100%;
+  resize: none;
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  padding: 0.6rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+}
+.grad-farewell-input:focus {
+  outline: none;
+  border-color: rgba(252, 211, 77, 0.6);
+}
+
+/* ── 배웅: 별가루 승천 연출 (SENDOFF_MS = 3000과 맞춤) ── */
+.grad-sendoff {
+  min-height: 280px;
+  justify-content: center;
+}
+.grad-sendoff-stage {
+  position: relative;
+  width: 200px;
+  height: 190px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.grad-sendoff-pet {
+  animation: grad-ascend 3s ease-in forwards;
+}
+@keyframes grad-ascend {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  25% {
+    transform: translateY(-6px) scale(1.02);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-150px) scale(0.55);
+    opacity: 0;
+  }
+}
+.grad-star {
+  position: absolute;
+  bottom: 10px;
+  font-size: 0.9rem;
+  opacity: 0;
+  animation: grad-star-rise 2.2s ease-out infinite;
+}
+@keyframes grad-star-rise {
+  0% {
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-160px) scale(1.1);
+    opacity: 0;
+  }
+}
+.grad-star-0 { left: 12%; animation-delay: 0s; }
+.grad-star-1 { left: 28%; animation-delay: 0.5s; font-size: 0.7rem; }
+.grad-star-2 { left: 44%; animation-delay: 0.9s; }
+.grad-star-3 { left: 60%; animation-delay: 0.2s; font-size: 1.1rem; }
+.grad-star-4 { left: 76%; animation-delay: 0.7s; }
+.grad-star-5 { left: 88%; animation-delay: 1.1s; font-size: 0.7rem; }
+.grad-star-6 { left: 20%; animation-delay: 1.4s; font-size: 1rem; }
+.grad-star-7 { left: 52%; animation-delay: 1.6s; }
+.grad-star-8 { left: 68%; animation-delay: 1.9s; font-size: 0.75rem; }
+.grad-star-9 { left: 36%; animation-delay: 2.1s; }
+.grad-sendoff-text {
+  margin: 0.8rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  animation: grad-fade-in 1.2s ease 0.4s both;
+}
+@keyframes grad-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── 명예의 전당 초상 (Memorial) ── */
+.grad-mem-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.55rem;
+}
+.grad-mem-frame {
+  width: 128px;
+  height: 128px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  border: 3px solid rgba(252, 211, 77, 0.55);
+  background:
+    radial-gradient(circle at 50% 35%, rgba(252, 211, 77, 0.14), transparent 70%),
+    var(--surface);
+  box-shadow: 0 0 18px rgba(252, 211, 77, 0.18);
+}
+.grad-mem-img {
+  width: 104px;
+  height: 104px;
+  object-fit: contain;
+}
+.grad-mem-emoji {
+  font-size: 3.4rem;
+}
+.grad-mem-name {
+  margin: 0.3rem 0 0;
+  font-size: 1.2rem;
+}
+.grad-mem-sub {
+  margin: 0;
+  font-size: 0.82rem;
+  opacity: 0.7;
+}
+.grad-mem-rows {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+}
+.grad-mem-quote {
+  margin: 0.4rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  padding: 0.65rem 0.85rem;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  width: 100%;
+}
+.grad-mem-quote-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  opacity: 0.55;
+  margin-bottom: 0.25rem;
+}
+.grad-mem-memories-label {
+  margin: 0.6rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  opacity: 0.6;
+  align-self: flex-start;
+}

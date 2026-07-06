@@ -1330,18 +1330,27 @@ export default function PetGame({
             pet={gp}
             level={levelFromXp(gp.growth)}
             onClose={() => setModal('roster')}
-            onGraduate={() => {
+            onGraduate={(memoir) => {
               const gLevel = levelFromXp(gp.growth)
-              const coins = graduateReward(gLevel, daysTogether(gp.createdAt))
+              const gDays = daysTogether(gp.createdAt)
+              const coins = graduateReward(gLevel, gDays)
               reward(coins) // 코인은 계정 지갑으로
               addGraduate({
                 name: gp.name,
                 species: formById(gp.form).name,
                 level: gLevel,
                 at: Date.now(),
+                form: gp.form,
+                ownerName: gp.ownerName,
+                personality: gp.personality,
+                days: gDays,
+                totalActions: gp.totalActions,
+                highlights: memoir.highlights,
+                farewell: memoir.farewell || undefined,
+                lastWords: memoir.lastWords,
               })
               setModal(null)
-              showToast(`🎓 ${gp.name} 졸업! 선물로 +${coins}🪙 받았어요`)
+              showToast(`🏛️ ${gp.name}의 초상이 명예의 전당에 걸렸어요 (+${coins}🪙)`)
               onDelete(gp.id)
             }}
           />

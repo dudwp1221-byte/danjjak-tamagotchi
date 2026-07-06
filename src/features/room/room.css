@@ -290,3 +290,68 @@
   padding: 0.1rem 0.35rem;
   font-weight: 700;
 }
+
+/* ── 명예의 전당 (졸업생 초상 목록) ── */
+.room-grads {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--border);
+}
+.room-grads-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  opacity: 0.6;
+}
+.room-grads-list {
+  max-height: 140px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.room-grad {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  font: inherit;
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: none;
+  color: inherit;
+}
+.room-grad:hover {
+  background: var(--surface);
+  border-color: var(--border);
+}
+.room-grad-thumb {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.room-grad-thumb-emoji {
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.room-grad-name {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.room-grad-sub {
+  flex: 1;
+  opacity: 0.6;
+  font-size: 0.7rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.room-grad-go {
+  opacity: 0.4;
+}

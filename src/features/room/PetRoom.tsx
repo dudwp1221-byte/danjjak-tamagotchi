@@ -4,6 +4,9 @@ import type { Pet } from '../../types/pet'
 import { wellbeing } from '../../utils/stats'
 import { MAX_PETS, GRADUATE_MIN_LEVEL, graduateReward, daysTogether, petSpriteUrl } from '../../utils/pet'
 import { levelFromXp } from '../../utils/progression'
+import { loadGraduates, type Graduate } from '../../utils/storage'
+import { graduateForm } from '../../utils/graduation'
+import Memorial from '../graduation/Memorial'
 import './room.css'
 
 interface RoomPet {
@@ -48,6 +51,8 @@ const FURNITURE_EMOJI = ['🛏️', '📚', '🌙', '🛋️', '🧸']
 
 export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGraduate, onClose }: Props) {
   const full = pets.length >= MAX_PETS
+  const [memorial, setMemorial] = useState<Graduate | null>(null)
+  const graduates = loadGraduates()
   const [roomPets, setRoomPets] = useState<RoomPet[]>(() =>
     pets.map((p, i) => initRoomPet(p, i, pets.length)),
   )
@@ -108,6 +113,7 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
 
   // 페이저 트랙(transform) 기준으로 붙지 않도록 body로 포탈
   return createPortal(
+    <>
     <div className="room-backdrop" onClick={onClose}>
       <div className="room-container" onClick={(e) => e.stopPropagation()}>
         {/* 헤더 */}
@@ -212,8 +218,44 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
             방이 가득 찼어요 ({pets.length}/{MAX_PETS}). 🎓 졸업을 보내면 새 단짝을 받을 수 있어요.
           </p>
         )}
+
+        {/* 명예의 전당 — 졸업한 단짝들의 초상 */}
+        {graduates.length > 0 && (
+          <div className="room-grads">
+            <p className="room-grads-label">🏛️ 명예의 전당</p>
+            <div className="room-grads-list">
+              {graduates.map((g, i) => {
+                const f = graduateForm(g)
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    className="room-grad"
+                    onClick={() => setMemorial(g)}
+                    title="초상 보기"
+                  >
+                    {f ? (
+                      <img className="room-grad-thumb" src={`/sprites/${f.id}.png`} alt="" />
+                    ) : (
+                      <span className="room-grad-thumb-emoji">🎓</span>
+                    )}
+                    <span className="room-grad-name">{g.name}</span>
+                    <span className="room-grad-sub">
+                      {f ? f.name : g.species} · Lv.{g.level}
+                    </span>
+                    <span className="room-grad-go">›</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
       </div>
-    </div>,
+    </div>
+
+    {/* 명전 초상 — room-backdrop 클릭 닫힘에 휩쓸리지 않게 형제로 렌더 */}
+    {memorial && <Memorial graduate={memorial} onClose={() => setMemorial(null)} />}
+    </>,
     document.body,
   )
 }

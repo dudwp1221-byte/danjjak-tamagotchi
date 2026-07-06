@@ -1,4 +1,4 @@
-import type { Pet } from '../types/pet'
+import type { DiaryEntry, Personality, Pet } from '../types/pet'
 import { normalizePet } from './pet'
 import { FORMS } from './species'
 import { levelFromXp, MAX_LEVEL } from './progression'
@@ -190,9 +190,25 @@ const GRADUATES_KEY = 'danjjak-graduates'
 
 export interface Graduate {
   name: string
+  /** 종족 표시 이름 (구버전 저장본은 이 값만 있음) */
   species: string
   level: number
   at: number
+  /* ── 아래는 졸업 정서화 이후 기록 — 구버전 졸업생에는 없다 ── */
+  /** 폼 id — 명전 초상 스프라이트용 */
+  form?: string
+  ownerName?: string
+  personality?: Personality
+  /** 함께한 일수 */
+  days?: number
+  /** 돌봐준 횟수 */
+  totalActions?: number
+  /** 추억 일기 하이라이트 (오래된 순, 최대 6개) */
+  highlights?: DiaryEntry[]
+  /** 주인이 남긴 한마디 */
+  farewell?: string
+  /** 펫이 남긴 마지막 인사 */
+  lastWords?: string
 }
 
 export function loadGraduates(): Graduate[] {
