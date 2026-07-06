@@ -119,6 +119,14 @@
 }
 .room-deco-left { left: 6% }
 .room-deco-right { right: 6% }
+/* 보유 가구 — 방 안에 실제 배치 */
+.room-furniture {
+  position: absolute;
+  font-size: 1.45rem;
+  opacity: 0.85;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+  pointer-events: none;
+}
 
 /* 펫 */
 .room-pet {

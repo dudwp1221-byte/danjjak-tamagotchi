@@ -6,6 +6,7 @@ import { MAX_PETS, GRADUATE_MIN_LEVEL, graduateReward, daysTogether, petSpriteUr
 import { levelFromXp } from '../../utils/progression'
 import { loadGraduates, type Graduate } from '../../utils/storage'
 import { graduateForm } from '../../utils/graduation'
+import { FURNITURE_ITEMS } from '../../utils/furniture'
 import Memorial from '../graduation/Memorial'
 import './room.css'
 
@@ -47,12 +48,13 @@ function initRoomPet(pet: Pet, index: number, total: number): RoomPet {
   }
 }
 
-const FURNITURE_EMOJI = ['🛏️', '📚', '🌙', '🛋️', '🧸']
-
 export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGraduate, onClose }: Props) {
   const full = pets.length >= MAX_PETS
   const [memorial, setMemorial] = useState<Graduate | null>(null)
   const graduates = loadGraduates()
+  // 돌보는 펫이 산 가구가 방에 실제로 놓인다
+  const activePet = pets.find((p) => p.id === activePetId)
+  const roomFurniture = FURNITURE_ITEMS.filter((f) => activePet?.furniture.includes(f.id))
   const [roomPets, setRoomPets] = useState<RoomPet[]>(() =>
     pets.map((p, i) => initRoomPet(p, i, pets.length)),
   )
@@ -132,9 +134,27 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
             <div className="room-window-inner">🌤️</div>
           </div>
 
-          {/* 가구 장식 */}
-          <div className="room-deco room-deco-left">{FURNITURE_EMOJI[0]}</div>
-          <div className="room-deco room-deco-right">{FURNITURE_EMOJI[1]}</div>
+          {/* 가구 — 보유 가구가 실제로 놓인다 (없으면 기본 장식) */}
+          {roomFurniture.length === 0 ? (
+            <>
+              <div className="room-deco room-deco-left">🛏️</div>
+              <div className="room-deco room-deco-right">📚</div>
+            </>
+          ) : (
+            roomFurniture.map((f, i) => (
+              <div
+                key={f.id}
+                className="room-furniture"
+                style={{
+                  left: `${6 + (i * 86) / roomFurniture.length}%`,
+                  bottom: `${30 + (i % 2) * 12}%`,
+                }}
+                title={f.name}
+              >
+                {f.emoji}
+              </div>
+            ))
+          )}
 
           {/* 펫들 */}
           {roomPets.map((rp) => {
