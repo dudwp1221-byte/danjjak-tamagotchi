@@ -28,6 +28,7 @@ import {
   FAVORITE_GIFT,
   FAVORITE_REACTION,
 } from '../../utils/bond'
+import { ITEM_SETS, isSetComplete } from '../../utils/sets'
 import {
   formById,
   tierName,
@@ -662,6 +663,30 @@ export default function PetGame({
     return () => window.clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pet.id])
+
+  // 세트 완성 감지 — 능력 보상 없이 연출로만 축하 (한마디 + 일기 + 소량 유대)
+  useEffect(() => {
+    const KEY = `danjjak-sets-${pet.id}`
+    let done: string[] = []
+    try {
+      done = JSON.parse(localStorage.getItem(KEY) ?? '[]') as string[]
+    } catch { /* 무시 */ }
+    const completed = ITEM_SETS.filter((s) => isSetComplete(s, pet.ownedItems, pet.furniture))
+    const fresh = completed.filter((s) => !done.includes(s.id))
+    if (fresh.length === 0) return
+    // 한 번에 하나만 축하하고 그 세트만 기록 — 남은 세트는 다음 렌더에서 이어서 축하.
+    // (타이머로 미루면 클린업에 잘려 축하가 영영 유실될 수 있어 동기로 처리)
+    const s = fresh[0]
+    try {
+      localStorage.setItem(KEY, JSON.stringify([...done, s.id]))
+    } catch { /* 무시 */ }
+    setSpeech(s.line)
+    window.setTimeout(() => setSpeech(null), 6000)
+    showToast(`${s.emoji} 세트 완성 — 「${s.name}」!`)
+    addDiary(s.emoji, `「${s.name}」 세트를 완성했어요. ${s.desc}!`)
+    gainBond(5)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pet.ownedItems.length, pet.furniture.length, pet.id])
 
   // 가끔 눈 깜빡이듯 생기 (blink)
   useEffect(() => {

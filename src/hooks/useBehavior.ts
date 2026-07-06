@@ -40,31 +40,25 @@ export function useBehavior(
       if (prev !== 'idle') {
         onLog(prev, duration)
 
-        // behaviorProfile 업데이트
+        // behaviorProfile 업데이트 — 해당 행동을 북돋는 보유 가구 중 최고 배율 적용 (중첩 없음)
+        const furnitureBoost = (behavior: BehaviorState): number => {
+          const p = petRef.current
+          return Math.max(
+            1,
+            ...FURNITURE_ITEMS.filter(
+              (f) =>
+                p.furniture.includes(f.id) &&
+                f.behaviorBonus?.activatesBehavior === behavior &&
+                f.evolutionBonus,
+            ).map((f) => f.evolutionBonus!.multiplier),
+          )
+        }
         if (prev === 'window_gazing') {
-          const p = petRef.current
-          const moonMultiplier =
-            p.furniture.includes('fur_moon_lamp')
-              ? (FURNITURE_ITEMS.find((f) => f.id === 'fur_moon_lamp')
-                  ?.evolutionBonus?.multiplier ?? 1)
-              : 1
-          onProfileRecord(PROFILE_KEYS.NIGHT_COMPANION, moonMultiplier)
+          onProfileRecord(PROFILE_KEYS.NIGHT_COMPANION, furnitureBoost('window_gazing'))
         } else if (prev === 'playing') {
-          const p = petRef.current
-          const toyMultiplier =
-            p.furniture.includes('fur_toy_box')
-              ? (FURNITURE_ITEMS.find((f) => f.id === 'fur_toy_box')
-                  ?.evolutionBonus?.multiplier ?? 1)
-              : 1
-          onProfileRecord(PROFILE_KEYS.PLAYFUL_MOMENTS, toyMultiplier)
+          onProfileRecord(PROFILE_KEYS.PLAYFUL_MOMENTS, furnitureBoost('playing'))
         } else if (prev === 'reading') {
-          const p = petRef.current
-          const bookMultiplier =
-            p.furniture.includes('fur_bookshelf')
-              ? (FURNITURE_ITEMS.find((f) => f.id === 'fur_bookshelf')
-                  ?.evolutionBonus?.multiplier ?? 1)
-              : 1
-          onProfileRecord(PROFILE_KEYS.READING_SESSIONS, bookMultiplier)
+          onProfileRecord(PROFILE_KEYS.READING_SESSIONS, furnitureBoost('reading'))
         }
       }
 

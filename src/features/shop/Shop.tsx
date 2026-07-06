@@ -20,6 +20,7 @@ import {
   PASS_DAILY_GEMS,
   PASS_DAILY_COINS,
 } from '../../utils/premium'
+import { ITEM_SETS, isSetComplete, pieceInfo } from '../../utils/sets'
 import PetAvatar from '../../components/PetAvatar'
 import Modal from '../../components/Modal'
 import './shop.css'
@@ -418,6 +419,40 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
             ✨ 프리미엄 <span className="shop-closet-rate">{ownedCount(CLOSET_PREMIUM)}/{CLOSET_PREMIUM.length}</span>
           </p>
           <div className="shop-list">{CLOSET_PREMIUM.map(renderClosetItem)}</div>
+
+          <p className="shop-section-label">
+            🧩 세트{' '}
+            <span className="shop-closet-rate">
+              {ITEM_SETS.filter((s) => isSetComplete(s, pet.ownedItems, pet.furniture)).length}/{ITEM_SETS.length}
+            </span>
+          </p>
+          <div className="shop-sets">
+            {ITEM_SETS.map((s) => {
+              const complete = isSetComplete(s, pet.ownedItems, pet.furniture)
+              return (
+                <div key={s.id} className={'shop-set' + (complete ? ' complete' : '')}>
+                  <div className="shop-set-head">
+                    <span className="shop-set-name">
+                      {s.emoji} {s.name}
+                    </span>
+                    {complete && <span className="shop-set-badge">완성!</span>}
+                  </div>
+                  <p className="shop-set-desc">{s.desc} — 완성하면 특별한 한마디를 들려줘요</p>
+                  <div className="shop-set-pieces">
+                    {s.pieces.map((pid) => {
+                      const info = pieceInfo(pid)
+                      const has = pet.ownedItems.includes(pid) || pet.furniture.includes(pid)
+                      return (
+                        <span key={pid} className={'shop-set-piece' + (has ? ' has' : '')}>
+                          {has ? '✔' : '·'} {info.emoji} {info.name}
+                        </span>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </>
       )}
 
