@@ -8,7 +8,7 @@ import { useBehavior } from '../../hooks/useBehavior'
 import { useElectron } from '../../hooks/useElectron'
 import { useWorkActivity } from '../../hooks/useWorkActivity'
 import { petMood, wellbeing } from '../../utils/stats'
-import { daysTogether, graduateReward, petSpriteUrl, displaySpecies } from '../../utils/pet'
+import { daysTogether, graduateReward, petSpriteUrl, displaySpecies, todayIndex } from '../../utils/pet'
 import { grantItem, addGift, useGift as consumeGift, setAvatarPet, recordAvatarPets } from '../../utils/account'
 import { useAccount } from '../../hooks/useAccount'
 import {
@@ -572,6 +572,34 @@ export default function PetGame({
       showToast('🌙 야근 버닝타임! XP 3배 가속')
     }
   }, [workMode, showToast])
+
+  // 하루 첫 만남 인사 — "출근하면 반겨주는 존재" 리듬의 시작점.
+  // 요일·시간대별 인사 + 소액 코인 + 일기 기록 (하루 1회)
+  useEffect(() => {
+    const KEY = 'danjjak-daily-greet'
+    const today = String(todayIndex())
+    if (localStorage.getItem(KEY) === today) return
+    localStorage.setItem(KEY, today)
+    const dow = new Date().getDay()
+    const h = new Date().getHours()
+    const base =
+      h < 6 ? '이 시간에… 무리하지 말아요' :
+      h < 12 ? '좋은 아침이에요' :
+      h < 18 ? '오늘도 만나서 반가워요' : '늦게라도 와줘서 좋아요'
+    const week =
+      dow === 1 ? ' 월요일은 가볍게 시작해요!' :
+      dow === 5 ? ' 조금만 힘내면 주말이에요!' :
+      dow === 0 || dow === 6 ? ' 주말에도 함께라 행복해요!' : ''
+    const t = window.setTimeout(() => {
+      setSpeech(`${base}, ${pet.name} 출근 완료! ☀️${week}`)
+      window.setTimeout(() => setSpeech(null), 5200)
+      reward(5)
+      showToast('☀️ 오늘의 첫 인사 +5🪙')
+      addDiary('☀️', '오늘도 함께 하루를 시작했어요.')
+    }, 1500)
+    return () => window.clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // 가끔 눈 깜빡이듯 생기 (blink)
   useEffect(() => {
