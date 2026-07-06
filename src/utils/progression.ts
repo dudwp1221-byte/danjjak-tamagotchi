@@ -50,7 +50,9 @@ export interface LevelProgress {
   maxed: boolean
 }
 
-const MAX_LEVEL = 20
+export const MAX_LEVEL = 30
+/** 만렙 이후 XP → 코인 전환 비율 (XP 몇 점당 1코인) */
+export const OVERFLOW_XP_PER_COIN = 40
 
 export function levelProgress(xp: number): LevelProgress {
   const level = Math.min(levelFromXp(xp), MAX_LEVEL)
@@ -74,11 +76,12 @@ export interface Stage {
   scale: number
 }
 
+// 진화 게이트: 5/10/15/20 (만렙 30 — 궁극체 이후 10레벨의 여생 구간)
 const STAGES: { minLevel: number; stage: Stage }[] = [
-  { minLevel: 14, stage: { key: 'legend', label: '궁극체', badge: '👑', scale: 1.3 } },
-  { minLevel: 10, stage: { key: 'adult', label: '완전체', badge: '✨', scale: 1.18 } },
-  { minLevel: 6, stage: { key: 'teen', label: '성숙기', badge: '🌱', scale: 1.05 } },
-  { minLevel: 3, stage: { key: 'baby', label: '성장기', badge: '🐣', scale: 0.9 } },
+  { minLevel: 20, stage: { key: 'legend', label: '궁극체', badge: '👑', scale: 1.3 } },
+  { minLevel: 15, stage: { key: 'adult', label: '완전체', badge: '✨', scale: 1.18 } },
+  { minLevel: 10, stage: { key: 'teen', label: '성숙기', badge: '🌱', scale: 1.05 } },
+  { minLevel: 5, stage: { key: 'baby', label: '성장기', badge: '🐣', scale: 0.9 } },
   { minLevel: 1, stage: { key: 'infant', label: '유년기', badge: '🥚', scale: 0.75 } },
 ]
 
@@ -88,9 +91,9 @@ export function stageFromLevel(level: number): Stage {
 
 /** 진화 단계 인덱스 (0:유년기 1:성장기 2:성숙기 3:완전체 4:궁극체) */
 export function stageIndexFromLevel(level: number): number {
-  if (level >= 14) return 4
-  if (level >= 10) return 3
-  if (level >= 6) return 2
-  if (level >= 3) return 1
+  if (level >= 20) return 4
+  if (level >= 15) return 3
+  if (level >= 10) return 2
+  if (level >= 5) return 1
   return 0
 }

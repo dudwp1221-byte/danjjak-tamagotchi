@@ -601,6 +601,26 @@ export default function PetGame({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // 함께한 날 기념일 — 만렙 이후에도 이어지는 정서적 성장축 (펫별 1회씩)
+  useEffect(() => {
+    const MILESTONES = [7, 30, 50, 100, 200, 365]
+    const KEY = `danjjak-anniv-${pet.id}`
+    const days = daysTogether(pet.createdAt)
+    const done = Number(localStorage.getItem(KEY) ?? 0)
+    const hit = [...MILESTONES].reverse().find((m) => days >= m && m > done)
+    if (!hit) return
+    localStorage.setItem(KEY, String(hit))
+    const t = window.setTimeout(() => {
+      setSpeech(`우리가 함께한 지 벌써 ${hit}일이에요! 고마워요 💛`)
+      window.setTimeout(() => setSpeech(null), 6000)
+      reward(hit) // 기념일 숫자만큼 코인 선물
+      showToast(`🎂 함께한 지 ${hit}일 기념 +${hit}🪙`)
+      addDiary('🎂', `함께한 지 ${hit}일이 되었어요. 앞으로도 잘 부탁해요!`)
+    }, 3800) // 출근 인사 말풍선이 끝난 뒤
+    return () => window.clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pet.id])
+
   // 가끔 눈 깜빡이듯 생기 (blink)
   useEffect(() => {
     const id = window.setInterval(() => {

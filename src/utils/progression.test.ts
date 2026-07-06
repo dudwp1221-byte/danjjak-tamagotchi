@@ -36,11 +36,12 @@ describe('levelProgress', () => {
 })
 
 describe('stageFromLevel', () => {
-  it('레벨대별 진화 단계', () => {
+  it('레벨대별 진화 단계 (게이트 5/10/15/20, 만렙 30)', () => {
     expect(stageFromLevel(1).key).toBe('infant')
-    expect(stageFromLevel(3).key).toBe('baby')
-    expect(stageFromLevel(6).key).toBe('teen')
-    expect(stageFromLevel(10).key).toBe('adult')
-    expect(stageFromLevel(14).key).toBe('legend')
+    expect(stageFromLevel(5).key).toBe('baby')
+    expect(stageFromLevel(10).key).toBe('teen')
+    expect(stageFromLevel(15).key).toBe('adult')
+    expect(stageFromLevel(20).key).toBe('legend')
+    expect(stageFromLevel(30).key).toBe('legend')
   })
 })

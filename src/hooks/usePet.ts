@@ -3,7 +3,7 @@ import type { BehaviorEvent, BehaviorState, DiaryEntry, Pet, PetAction, PetStats
 import { useInterval } from './useInterval'
 import { adjustStats, applyDecay, type CareResult } from '../utils/stats'
 import { resolveCare } from '../utils/care'
-import { levelFromXp, levelProgress, stageFromLevel } from '../utils/progression'
+import { levelFromXp, levelProgress, stageFromLevel, MAX_LEVEL, OVERFLOW_XP_PER_COIN } from '../utils/progression'
 import { todayIndex } from '../utils/pet'
 import { personalityDef } from '../utils/personality'
 import { isGameNight } from '../utils/gametime'
@@ -156,9 +156,24 @@ export function usePet(initialPet: Pet) {
   }, [])
 
   /** 코인(계정)/경험치(펫) 보상 지급 */
+  // 만렙 이후 넘치는 XP를 코인으로 바꿔주는 누산기 (OVERFLOW_XP_PER_COIN당 1코인)
+  const overflowXp = useRef(0)
   const reward = useCallback((coins: number, xp = 0) => {
     if (coins) acctAddCoins(coins)
-    if (xp) setPet((p) => ({ ...p, growth: p.growth + xp }))
+    if (!xp) return
+    setPet((p) => {
+      if (levelFromXp(p.growth) >= MAX_LEVEL) {
+        // 성장은 끝났지만, 함께 일한 시간이 용돈으로 돌아온다
+        overflowXp.current += xp
+        const earned = Math.floor(overflowXp.current / OVERFLOW_XP_PER_COIN)
+        if (earned > 0) {
+          overflowXp.current -= earned * OVERFLOW_XP_PER_COIN
+          acctAddCoins(earned)
+        }
+        return p
+      }
+      return { ...p, growth: p.growth + xp }
+    })
   }, [])
 
   /** 스탯 증감 (보상/페널티/간식 등) */

@@ -149,8 +149,9 @@ describe('fusionResult (합체)', () => {
 describe('stageIndexFromLevel', () => {
   it('레벨대별 진화 인덱스', () => {
     expect(stageIndexFromLevel(1)).toBe(0)
-    expect(stageIndexFromLevel(3)).toBe(1)
-    expect(stageIndexFromLevel(6)).toBe(2)
-    expect(stageIndexFromLevel(10)).toBe(3)
+    expect(stageIndexFromLevel(5)).toBe(1)
+    expect(stageIndexFromLevel(10)).toBe(2)
+    expect(stageIndexFromLevel(15)).toBe(3)
+    expect(stageIndexFromLevel(20)).toBe(4)
   })
 })
