@@ -324,3 +324,25 @@
     opacity: 1 !important;
   }
 }
+
+/* 타이틀 장면 별가루 — 은은히 떠오르며 반짝 */
+.intro-star {
+  position: absolute;
+  color: #fde68a;
+  opacity: 0;
+  animation: intro-star-float 4.5s ease-in-out infinite;
+  pointer-events: none;
+  text-shadow: 0 0 10px rgba(253, 230, 138, 0.7);
+}
+.intro-star-a { left: 28%; top: 32%; font-size: 1rem; animation-delay: 0.4s; }
+.intro-star-b { right: 26%; top: 26%; font-size: 0.8rem; animation-delay: 1.6s; }
+.intro-star-c { right: 34%; bottom: 30%; font-size: 0.7rem; animation-delay: 2.8s; }
+@keyframes intro-star-float {
+  0% { opacity: 0; transform: translateY(8px) scale(0.8); }
+  25% { opacity: 0.9; }
+  60% { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-26px) scale(1.1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro-star { animation: none; opacity: 0.5; }
+}

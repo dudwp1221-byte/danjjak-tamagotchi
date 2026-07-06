@@ -119,6 +119,7 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
           <p className="intro-place">· 모두가 퇴근한 사무실 ·</p>
           <p className="intro-line intro-l1">또, 야근이네요.</p>
           <p className="intro-line intro-l2">모니터 불빛만 조용히 깜빡이는 밤 —</p>
+          <p className="intro-line intro-l3">식어버린 커피처럼, 마음도 조금 식어가요.</p>
         </div>
       )}
 
@@ -127,6 +128,7 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
         <div className="intro-scene" key="s1">
           <p className="intro-line intro-l1">오늘 하루도 버텨내느라,</p>
           <p className="intro-line intro-l2 intro-big">정말 수고 많았어요.</p>
+          <p className="intro-line intro-l3">아무도 말해주지 않아도 — 알고 있는 친구가 있다면.</p>
         </div>
       )}
 
@@ -164,8 +166,11 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
               <span />
             </div>
           </div>
+          <span className="intro-star intro-star-a" aria-hidden="true">✦</span>
+          <span className="intro-star intro-star-b" aria-hidden="true">✧</span>
+          <span className="intro-star intro-star-c" aria-hidden="true">✦</span>
           <h1 className="intro-title">단짝 다마고치</h1>
-          <p className="intro-subtitle">이번엔, 책상 서랍 속에서 몰래 키워요</p>
+          <p className="intro-subtitle">그 시절의 작은 친구가, 이번엔 당신의 책상 위로 —</p>
           <button
             type="button"
             className="intro-start"

@@ -4,7 +4,7 @@ import { getApiKey, setApiKey } from '../../utils/chat'
 import Modal from '../../components/Modal'
 import './settings.css'
 
-import type { Theme } from '../../utils/storage'
+import { loadPets, upsertPet, type Theme } from '../../utils/storage'
 
 interface SettingsProps {
   notifications: boolean
@@ -45,6 +45,14 @@ export default function Settings({
     return k ? `${k.slice(0, 8)}${'·'.repeat(12)}` : ''
   })
   const [apiKeyEditing, setApiKeyEditing] = useState(false)
+  // 닉네임 — 모든 펫의 ownerName을 한 번에 갱신 ("OO님과 함께한 지"에 표시)
+  const [nickname, setNickname] = useState(() => loadPets()[0]?.ownerName ?? '')
+  const saveNickname = () => {
+    const name = nickname.trim() || '익명'
+    for (const p of loadPets()) upsertPet({ ...p, ownerName: name })
+    setNickname(name)
+    setMsg(`닉네임을 "${name}"(으)로 바꿨어요. 화면에는 잠시 후 반영돼요.`)
+  }
 
   const handleToggleNotif = async () => {
     if (!notifications) {
@@ -93,6 +101,25 @@ export default function Settings({
           >
             {theme === 'dark' ? '🌙 다크' : '☀️ 라이트'}
           </button>
+        </div>
+        <div className="set-row" style={{ marginTop: '0.75rem' }}>
+          <div className="set-text">
+            <span className="set-name">내 닉네임</span>
+            <span className="set-desc">"OO님과 함께한 지"에 표시되는 이름이에요.</span>
+          </div>
+          <span style={{ display: 'flex', gap: '0.4rem' }}>
+            <input
+              type="text"
+              value={nickname}
+              maxLength={20}
+              placeholder="닉네임"
+              onChange={(e) => setNickname(e.target.value)}
+              style={{ width: '7.5rem' }}
+            />
+            <button type="button" className="set-theme" onClick={saveNickname}>
+              저장
+            </button>
+          </span>
         </div>
         {(onAlwaysOnTop || onClickThrough) && (
           <>
