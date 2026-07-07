@@ -81,7 +81,8 @@
   width: 2rem;
   text-align: center;
 }
-.shop-emoji .furn-sprite {
+.shop-emoji .furn-sprite,
+.shop-emoji .acc-sprite {
   display: block;
   margin: 0 auto;
   width: auto;

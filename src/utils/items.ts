@@ -148,9 +148,13 @@ export function accessoryAura(id: string | null): string | null {
   return item?.type === 'accessory' && item.aura ? item.id : null
 }
 
-/** 배경 CSS 값 (무대 표시용) */
+/** 배경 CSS 값 (무대 표시용) — 테마 일러스트(public/themes) 우선, 로드 실패 시 그라데이션 폴백 */
 export function backgroundCss(id: string | null): string | null {
   if (!id) return null
   const item = getItem(id)
-  return item?.type === 'background' ? (item.bg ?? null) : null
+  if (item?.type !== 'background') return null
+  const grad = item.bg ?? null
+  if (!grad) return null
+  // CSS 다중 배경: 이미지가 앞, 그라데이션이 뒤 — 이미지 파일이 없으면 그라데이션이 보인다
+  return `url('/themes/${id}.webp') center / cover no-repeat, ${grad}`
 }

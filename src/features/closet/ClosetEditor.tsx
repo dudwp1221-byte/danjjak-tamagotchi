@@ -6,6 +6,7 @@ import { levelFromXp, stageFromLevel } from '../../utils/progression'
 import { formById } from '../../utils/species'
 import { petSpriteUrl } from '../../utils/pet'
 import PetAvatar from '../../components/PetAvatar'
+import AccessorySprite from '../../components/AccessorySprite'
 import Modal from '../../components/Modal'
 import './closet.css'
 
@@ -137,7 +138,11 @@ export default function ClosetEditor({ pet, onClose, onUpdatePet }: ClosetEditor
                   fontSize: AVATAR_SIZE * 0.28 * pos.s,
                 }}
               >
-                {selItem.emoji}
+                <AccessorySprite
+                  id={selItem.id}
+                  emoji={selItem.emoji}
+                  width={AVATAR_SIZE * 0.32 * pos.s}
+                />
               </span>
             )}
           </div>
@@ -188,7 +193,9 @@ export default function ClosetEditor({ pet, onClose, onUpdatePet }: ClosetEditor
               onClick={() => setSelId(i.id)}
               title={i.desc}
             >
-              <span className="closet-slot-emoji">{i.emoji}</span>
+              <span className="closet-slot-emoji">
+                {i.aura ? i.emoji : <AccessorySprite id={i.id} emoji={i.emoji} width="1.4em" />}
+              </span>
               <span className="closet-slot-name">{i.name}</span>
               {i.aura && <span className="closet-slot-tag">오라</span>}
             </button>

@@ -507,6 +507,12 @@
 .pa-accessory.pa-acc-custom {
   transform: translate(-50%, -50%);
 }
+/* 악세서리 도트 스프라이트 (이모지 폴백은 span의 font-size를 따른다) */
+.acc-sprite {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+}
 
 /* ── 프리미엄 오라 (착용형 대신 펫 주변 발광 이펙트) ── */
 .pa-acc-aura {

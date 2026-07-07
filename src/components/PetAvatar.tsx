@@ -4,6 +4,7 @@ import type { Stage } from '../utils/progression'
 import type { Form } from '../utils/species'
 import { overlaysFor } from '../utils/expression'
 import { accessoryEmoji, accessoryAura } from '../utils/items'
+import AccessorySprite from './AccessorySprite'
 import { spriteUrl as formSpriteUrl } from '../utils/pet'
 import './pet-avatar.css'
 
@@ -160,7 +161,7 @@ export default function PetAvatar({
           <i />
         </span>
       )}
-      {acc && (
+      {acc && accessory && (
         <span
           className={'pa-accessory' + (accessoryPos ? ' pa-acc-custom' : '')}
           style={
@@ -173,7 +174,11 @@ export default function PetAvatar({
               : { fontSize: size * 0.28 }
           }
         >
-          {acc}
+          <AccessorySprite
+            id={accessory}
+            emoji={acc}
+            width={size * 0.32 * (accessoryPos?.s ?? 1)}
+          />
         </span>
       )}
       {overlays.map((o, i) => (

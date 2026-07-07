@@ -9,6 +9,7 @@ import { levelFromXp } from '../../utils/progression'
 import { canEvolveNow } from '../../utils/evolve'
 import { needLine, ambientLine, pokeLine } from '../../utils/desktopTalk'
 import { accessoryEmoji, accessoryPlacementFor } from '../../utils/items'
+import AccessorySprite from '../../components/AccessorySprite'
 import { normalizePet, petSpriteUrl } from '../../utils/pet'
 import type { Pet } from '../../types/pet'
 import type { PetAction } from '../../types/pet'
@@ -234,7 +235,11 @@ export default function DesktopPet() {
             }
             aria-hidden="true"
           >
-            {accEmoji}
+            <AccessorySprite
+              id={pet.accessory!}
+              emoji={accEmoji}
+              width={`${1.4 * (accPos?.s ?? 1)}em`}
+            />
           </span>
         )}
       </div>

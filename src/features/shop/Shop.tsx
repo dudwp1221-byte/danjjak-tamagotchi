@@ -22,6 +22,7 @@ import {
 import { ITEM_SETS, isSetComplete, pieceInfo } from '../../utils/sets'
 import PetAvatar from '../../components/PetAvatar'
 import FurnitureSprite from '../../components/FurnitureSprite'
+import AccessorySprite from '../../components/AccessorySprite'
 import Modal from '../../components/Modal'
 import './shop.css'
 
@@ -108,7 +109,13 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
         onClick={wearable ? () => setPreview(item) : undefined}
         title={wearable ? '눌러서 미리 입어보기' : undefined}
       >
-        <span className="shop-emoji">{item.emoji}</span>
+        <span className="shop-emoji">
+          {item.type === 'accessory' && !item.aura ? (
+            <AccessorySprite id={item.id} emoji={item.emoji} width="1.6rem" />
+          ) : (
+            item.emoji
+          )}
+        </span>
         <div className="shop-info">
           <span className="shop-name">{item.name}</span>
           <span className="shop-desc">{item.desc}</span>
@@ -194,7 +201,13 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
         onClick={() => setPreview(item)}
         title="눌러서 미리 입어보기"
       >
-        <span className="shop-emoji">{item.emoji}</span>
+        <span className="shop-emoji">
+          {item.type === 'accessory' && !item.aura ? (
+            <AccessorySprite id={item.id} emoji={item.emoji} width="1.6rem" />
+          ) : (
+            item.emoji
+          )}
+        </span>
         <div className="shop-info">
           <span className="shop-name">{item.name}</span>
           <span className="shop-desc">{item.desc}</span>
@@ -232,7 +245,13 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
         onClick={() => setPreview(item)}
         title="눌러서 미리 입어보기"
       >
-        <span className="shop-emoji">{item.emoji}</span>
+        <span className="shop-emoji">
+          {item.type === 'accessory' && !item.aura ? (
+            <AccessorySprite id={item.id} emoji={item.emoji} width="1.6rem" />
+          ) : (
+            item.emoji
+          )}
+        </span>
         <div className="shop-info">
           <span className="shop-name">{item.name}</span>
           <span className="shop-desc">{item.desc}</span>
