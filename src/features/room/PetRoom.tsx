@@ -55,7 +55,9 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
   const graduates = loadGraduates()
   // 돌보는 펫이 산 가구가 방에 실제로 놓인다
   const activePet = pets.find((p) => p.id === activePetId)
-  const roomFurniture = FURNITURE_ITEMS.filter((f) => activePet?.furniture.includes(f.id))
+  const roomFurniture = FURNITURE_ITEMS.filter((f) =>
+    (activePet?.furniturePlaced ?? activePet?.furniture)?.includes(f.id),
+  )
   const [roomPets, setRoomPets] = useState<RoomPet[]>(() =>
     pets.map((p, i) => initRoomPet(p, i, pets.length)),
   )

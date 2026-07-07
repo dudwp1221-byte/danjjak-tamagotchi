@@ -224,7 +224,29 @@ export function awakenCond(id: string): AwakenCond | undefined {
   return AWAKEN_CONDS[id]
 }
 
+/**
+ * 일반 각성 게이트 — 일반 계통의 최종 진화(궁극체)를 마친, 각성 이력 없는 펫만.
+ * 유년기·중간 단계에서 바로 각성하거나, 각성체/합성체(fuse)가 또 각성하는 것을 막아
+ * "유년기 → 진화 → 궁극체 → 각성"의 단방향 트리를 보장한다.
+ */
+function normalAwakenGate(pet: Pet): boolean {
+  if (pet.awakened) return false
+  const f = formById(pet.form)
+  return !f.hidden && f.line !== 'fuse' && f.next.length === 0 && f.tier >= 4
+}
+
+/** 각성 버튼 노출용 — 일반 각성 또는 초각성(황룡: 사신수 → 한 단계 더)이 가능한 상태인지 */
+export function canAttemptAwaken(pet: Pet): boolean {
+  return normalAwakenGate(pet) || FOUR_SYMBOLS.some((s) => s.id === pet.form)
+}
+
+/** 개별 각성 판정 — 황룡은 사신수 상태에서만, 나머지는 일반 게이트를 먼저 통과해야 한다 */
 export function isAwakenEligible(id: string, ctx: AwakenCtx): boolean {
+  if (id === 'hid_huanglong') {
+    if (!FOUR_SYMBOLS.some((s) => s.id === ctx.pet.form)) return false
+  } else if (!normalAwakenGate(ctx.pet)) {
+    return false
+  }
   const c = AWAKEN_CONDS[id]
   return c ? c.check(ctx) : false
 }

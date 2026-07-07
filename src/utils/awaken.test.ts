@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { AWAKEN_CONDS, awakenCond, type AwakenCtx } from './awaken'
+import { AWAKEN_CONDS, awakenCond, canAttemptAwaken, isAwakenEligible, type AwakenCtx } from './awaken'
 import { HIDDEN_FORMS, FOUR_SYMBOLS, ZODIAC } from './species'
 import { normalizePet } from './pet'
 import type { Pet } from '../types/pet'
@@ -86,6 +86,48 @@ describe('awaken conditions', () => {
       stats: { hunger: 90, mood: 90, cleanliness: 90, energy: 90 },
     })
     expect(cond.check(ctxFor(lizard, { season: 'summer' }))).toBe(false)
+  })
+
+  it('게이트: 유년기·중간 단계는 조건을 채워도 각성 불가 (궁극체만)', () => {
+    // 12지신 조건 자체는 만족하지만(부적+1월생) 유년기라 게이트에서 막힘
+    const ratId = ZODIAC[0].id
+    const baby = pet({ form: 'baby_warm_coal', ownedItems: [`charm_${ratId}`] })
+    expect(canAttemptAwaken(baby)).toBe(false)
+    expect(isAwakenEligible(ratId, ctxFor(baby, { birthMonth: 1 }))).toBe(false)
+    // 중간 단계(next가 남은 형태)도 불가
+    const mid = pet({ form: 'liz_fire2', ownedItems: [`charm_${ratId}`] })
+    expect(isAwakenEligible(ratId, ctxFor(mid, { birthMonth: 1 }))).toBe(false)
+    // 궁극체(말단)는 가능
+    const ultimate = pet({ form: 'liz_fire3', ownedItems: [`charm_${ratId}`] })
+    expect(isAwakenEligible(ratId, ctxFor(ultimate, { birthMonth: 1 }))).toBe(true)
+  })
+
+  it('게이트: 각성 이력이 있으면 다시 각성 불가 (합성 자손 포함)', () => {
+    const ratId = ZODIAC[0].id
+    const done = pet({ form: 'liz_fire3', awakened: true, ownedItems: [`charm_${ratId}`] })
+    expect(canAttemptAwaken(done)).toBe(false)
+    expect(isAwakenEligible(ratId, ctxFor(done, { birthMonth: 1 }))).toBe(false)
+  })
+
+  it('게이트: 합성 전용 형태(fuse)는 각성 불가', () => {
+    const ratId = ZODIAC[0].id
+    const fused = pet({ form: 'fuse_light', ownedItems: [`charm_${ratId}`] })
+    expect(canAttemptAwaken(fused)).toBe(false)
+    expect(isAwakenEligible(ratId, ctxFor(fused, { birthMonth: 1 }))).toBe(false)
+  })
+
+  it('게이트: 사신수는 황룡(초각성)만 가능, 다른 각성은 불가', () => {
+    const ratId = ZODIAC[0].id
+    const azure = pet({ form: 'hid_azure', ownedItems: [`charm_${ratId}`] })
+    const dexAll = new Set(FOUR_SYMBOLS.map((f) => f.id))
+    expect(canAttemptAwaken(azure)).toBe(true)
+    expect(isAwakenEligible('hid_huanglong', ctxFor(azure, { dex: dexAll }))).toBe(true)
+    expect(isAwakenEligible(ratId, ctxFor(azure, { birthMonth: 1 }))).toBe(false)
+  })
+
+  it('게이트: 히든 형태 저장본은 normalizePet에서 각성 이력으로 보정된다', () => {
+    const legacy = pet({ form: 'hid_gabriel' })
+    expect(legacy.awakened).toBe(true)
   })
 
   it('12지신: 태어난 달이 맞고 부적이 있을 때만 그 띠로 각성', () => {

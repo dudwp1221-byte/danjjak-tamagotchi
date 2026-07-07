@@ -10,7 +10,7 @@ import {
   HUANGLONG,
   type Form,
 } from '../../utils/species'
-import { awakenCond, type AwakenCtx } from '../../utils/awaken'
+import { awakenCond, isAwakenEligible, type AwakenCtx } from '../../utils/awaken'
 import { gameSeasonKey, birthMonth } from '../../utils/gametime'
 import { petSpriteUrl } from '../../utils/pet'
 import { loadDex } from '../../utils/storage'
@@ -120,7 +120,7 @@ export default function Awaken({ pet, level, onAwaken, onClose }: AwakenProps) {
         <div className="aw-grid">
           {cat.forms.map((f) => {
             const cond = awakenCond(f.id)
-            const ok = cond ? cond.check(ctx) : false
+            const ok = isAwakenEligible(f.id, ctx)
             return (
               <button
                 key={f.id}
@@ -142,10 +142,7 @@ export default function Awaken({ pet, level, onAwaken, onClose }: AwakenProps) {
         {/* 잠긴 형태들의 암시 */}
         <div className="aw-hints">
           {cat.forms
-            .filter((f) => {
-              const c = awakenCond(f.id)
-              return c && !c.check(ctx)
-            })
+            .filter((f) => awakenCond(f.id) && !isAwakenEligible(f.id, ctx))
             .map((f) => (
               <p key={f.id} className="aw-hint-line">
                 🔒 {awakenCond(f.id)!.hint}
@@ -168,10 +165,7 @@ export default function Awaken({ pet, level, onAwaken, onClose }: AwakenProps) {
       <div className="aw-cats">
         {CATS.map((c) => {
           // 그룹 내 하나라도 각성 가능하면 빛남
-          const anyOk = c.forms.some((f) => {
-            const cond = awakenCond(f.id)
-            return cond && cond.check(ctx)
-          })
+          const anyOk = c.forms.some((f) => isAwakenEligible(f.id, ctx))
           return (
             <button
               key={c.id}

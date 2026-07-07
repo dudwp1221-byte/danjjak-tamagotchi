@@ -524,6 +524,27 @@
   pointer-events: none;
   z-index: 1;
 }
+/* 이펙트 스프라이트가 있으면 이미지가 대신하고 CSS 합성 이펙트는 숨긴다 */
+.pa-acc-aura.has-img i {
+  display: none;
+}
+.pa-aura-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: pa-aura-spin 14s linear infinite, pa-aura-imgpulse 3s ease-in-out infinite;
+}
+@keyframes pa-aura-imgpulse {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
 .pa-acc-aura i {
   position: absolute;
   inset: 0;

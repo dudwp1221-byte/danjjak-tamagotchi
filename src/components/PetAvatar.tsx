@@ -10,6 +10,35 @@ import './pet-avatar.css'
 
 export type ReactionType = 'hop' | 'munch' | 'wiggle' | 'blink' | 'breathe'
 
+/**
+ * 프리미엄 오라 이펙트 — 이펙트 스프라이트(public/deco/{id}.webp)가 있으면 회전·맥동 이미지로,
+ * 없으면 CSS 합성 이펙트(<i> 3개)로 폴백.
+ */
+function AuraFx({ id, size }: { id: string; size: number }) {
+  const [imgOk, setImgOk] = useState(true)
+  useEffect(() => setImgOk(true), [id])
+  return (
+    <span
+      className={`pa-acc-aura pa-acc-aura-${id}` + (imgOk ? ' has-img' : '')}
+      style={{ width: size, height: size }}
+      aria-hidden="true"
+    >
+      {imgOk && (
+        <img
+          className="pa-aura-img"
+          src={`/deco/${id}.webp`}
+          alt=""
+          draggable={false}
+          onError={() => setImgOk(false)}
+        />
+      )}
+      <i />
+      <i />
+      <i />
+    </span>
+  )
+}
+
 function careVibe(stats: PetStats, distressed: boolean): string {
   if (distressed) return 'distressed'
   if (stats.energy < 25) return 'sleepy'
@@ -150,17 +179,7 @@ export default function PetAvatar({
           </span>
         )}
       </span>
-      {auraId && (
-        <span
-          className={`pa-acc-aura pa-acc-aura-${auraId}`}
-          style={{ width: imgSize * 1.5, height: imgSize * 1.5 }}
-          aria-hidden="true"
-        >
-          <i />
-          <i />
-          <i />
-        </span>
-      )}
+      {auraId && <AuraFx id={auraId} size={imgSize * 1.5} />}
       {acc && accessory && (
         <span
           className={'pa-accessory' + (accessoryPos ? ' pa-acc-custom' : '')}

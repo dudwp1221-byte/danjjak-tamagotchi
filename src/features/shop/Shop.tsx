@@ -125,19 +125,15 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
           className={
             'shop-buy' +
             (equipped ? ' equipped' : '') +
-            (!owned && !affordable ? ' disabled' : '')
+            ((wearable && owned) || (!owned && !affordable) ? ' disabled' : '')
           }
-          disabled={!owned && !affordable}
+          disabled={(wearable && owned) || (!owned && !affordable)}
           onClick={(e) => {
             e.stopPropagation()
             onBuy(item)
           }}
         >
-          {wearable && owned
-            ? equipped
-              ? '착용 중'
-              : '착용하기'
-            : `🪙 ${item.price}`}
+          {wearable && owned ? '보유 중 🎒' : `🪙 ${item.price}`}
         </button>
       </div>
     )
@@ -171,22 +167,12 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
     )
   }
 
-  // 프리미엄 코스메틱: 보석으로 구매(계정 소유) → 펫에 착용
-  const equipPremium = (item: ShopItem) => {
-    if (item.type === 'background') onUpdatePet({ background: item.id })
-    else if (item.type === 'accessory') onUpdatePet({ accessory: item.id })
-  }
-
+  // 프리미엄 코스메틱: 보석으로 구매(계정 소유) — 착용/해제는 인게임 🎒 가방에서
   const handlePremiumBuy = (item: ShopItem) => {
-    if (ownsPremium(item.id)) {
-      equipPremium(item)
-      refresh()
-      return
-    }
+    if (ownsPremium(item.id)) return
     const cost = item.gemPrice ?? 0
     if (!spendGems(cost)) return
     grantPremium(item.id)
-    equipPremium(item)
     refresh()
   }
 
@@ -219,13 +205,13 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
             (equipped ? ' equipped' : '') +
             (!owned && !affordable ? ' disabled' : '')
           }
-          disabled={!owned && !affordable}
+          disabled={owned || !affordable}
           onClick={(e) => {
             e.stopPropagation()
             handlePremiumBuy(item)
           }}
         >
-          {owned ? (equipped ? '착용 중' : '착용하기') : `💎 ${item.gemPrice}`}
+          {owned ? '보유 중 🎒' : `💎 ${item.gemPrice}`}
         </button>
       </div>
     )
@@ -261,7 +247,7 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
           className={
             'shop-buy' + (equipped ? ' equipped' : '') + (!owned && !buyable ? ' disabled' : '')
           }
-          disabled={!owned && !buyable}
+          disabled={owned || !buyable}
           onClick={(e) => {
             e.stopPropagation()
             if (item.premium) handlePremiumBuy(item)
@@ -269,9 +255,7 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
           }}
         >
           {owned
-            ? equipped
-              ? '착용 중'
-              : '착용하기'
+            ? '보유 중 🎒'
             : offSeason
               ? '🔒 시즌 한정'
               : item.premium

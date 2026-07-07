@@ -2,6 +2,7 @@ import {
   FORMS,
   STARTERS,
   GROWTH_ROOTS,
+  FUSION_FORMS,
   lineForms,
   FOUR_SYMBOLS,
   FIENDS,
@@ -295,6 +296,37 @@ export default function Dex({ currentForm, onReward, onClose, embedded }: DexPro
           </div>
         )
       })}
+      {/* 합체 전용 형태 — 합성 진화로만 얻는다 */}
+      {(() => {
+        const gotAny = FUSION_FORMS.some((f) => discovered.has(f.id))
+        return (
+          <div className="dex-line dex-fusion">
+            <p className="dex-line-title">{gotAny ? '⚗️ 합체 형태' : '??? (합체)'}</p>
+            <div className="dex-grid">
+              {FUSION_FORMS.map((f) => {
+                const got = discovered.has(f.id)
+                return (
+                  <div
+                    key={f.id}
+                    className={'dex-form' + (got ? ' got' : ' locked')}
+                    title={got ? `합체 · ${f.type} · 크게 보기` : '미발견 — 펫 합성으로 만나요'}
+                    role={got ? 'button' : undefined}
+                    tabIndex={got ? 0 : undefined}
+                    onClick={got ? () => setZoom(zoomFor(f.id)) : undefined}
+                  >
+                    <span className="dex-form-emoji">
+                      {got ? <DexSprite id={f.id} emoji={f.emoji} /> : '❔'}
+                    </span>
+                    <span className="dex-form-name">{got ? f.name : '???'}</span>
+                    {got && <span className="dex-form-attr">{f.type}</span>}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )
+      })()}
+
       {/* 히든(각성) 종족 */}
       {(
         [

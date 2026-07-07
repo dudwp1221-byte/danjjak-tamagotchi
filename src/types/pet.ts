@@ -134,6 +134,8 @@ export interface Pet {
   species: string
   /** 현재 진화 형태 id (분기 진화로 변함) */
   form: string
+  /** 각성 이력 — 한 번 각성한 펫(과 그 합성 자손)은 다시 각성할 수 없다 */
+  awakened?: boolean
   /** 타고난 기질 */
   personality: Personality
   /** 성장 기록 (최신순) */
@@ -150,8 +152,10 @@ export interface Pet {
   lineQuestStage: number
 
   // --- 가구 / 행동 ---
-  /** 보유한 가구 id 목록 */
+  /** 보유한 가구 id 목록 (구매하면 가방에 들어온다) */
   furniture: string[]
+  /** 방에 꺼내 놓은 가구 id 목록 — 가방에서 꺼내기/넣기로 관리 */
+  furniturePlaced?: string[]
   /** 방에서 직접 옮긴 가구 배치 — 키: 가구 id, 값: 무대 기준 % 좌표 */
   furniturePos?: Record<string, { x: number; y: number }>
   /** 행동 기반 진화 조건 추적 카운터 */

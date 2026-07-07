@@ -1,0 +1,135 @@
+.bag-tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.7rem;
+}
+.bag-tab {
+  flex: 1;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 0.4rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+}
+.bag-tab.active {
+  border-color: var(--accent, #8b5cf6);
+  box-shadow: 0 0 0 1px var(--accent, #8b5cf6);
+}
+.bag-tab em {
+  font-style: normal;
+  font-size: 0.72rem;
+  opacity: 0.6;
+}
+
+.bag-hint {
+  margin: 0 0 0.6rem;
+  font-size: 0.78rem;
+  opacity: 0.7;
+  text-align: center;
+}
+
+.bag-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+.bag-grid-theme {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.bag-slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  font: inherit;
+  cursor: pointer;
+  padding: 0.5rem 0.25rem 0.4rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+}
+.bag-slot.active {
+  border-color: var(--accent, #8b5cf6);
+  box-shadow: 0 0 0 1px var(--accent, #8b5cf6);
+}
+
+.bag-slot-icon {
+  height: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+.bag-slot-icon .acc-sprite,
+.bag-slot-icon .furn-sprite {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 2.2rem;
+  max-height: 2.2rem;
+  image-rendering: pixelated;
+}
+
+.bag-slot-name {
+  font-size: 0.68rem;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.bag-slot-tag {
+  font-style: normal;
+  font-size: 0.6rem;
+  padding: 0.06rem 0.35rem;
+  border-radius: 999px;
+  background: rgba(139, 92, 246, 0.18);
+  border: 1px solid rgba(139, 92, 246, 0.45);
+  color: #c4b5fd;
+}
+
+.bag-theme-thumb {
+  width: 100%;
+  height: 52px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid var(--border);
+}
+
+.bag-warn {
+  margin: 0 0 0.5rem;
+  text-align: center;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #fca5a5;
+}
+
+.bag-empty {
+  margin: 0.6rem 0 0;
+  text-align: center;
+  font-size: 0.82rem;
+  opacity: 0.7;
+}
+
+.bag-closet-btn {
+  width: 100%;
+  margin-top: 0.7rem;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.55rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: inherit;
+}

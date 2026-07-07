@@ -40,7 +40,7 @@ import { getEvolveOptions } from '../../utils/evolve'
 import { careRemaining, CARE_HOURLY_CAP } from '../../utils/care'
 import { pickPetLine } from '../../utils/petLines'
 import { lineQuestsFor } from '../../utils/quests'
-import { awakenCond, AWAKEN_CONDS, type AwakenCtx } from '../../utils/awaken'
+import { awakenCond, AWAKEN_CONDS, canAttemptAwaken, isAwakenEligible, type AwakenCtx } from '../../utils/awaken'
 import { backgroundCss, accessoryPlacementFor, type ShopItem } from '../../utils/items'
 import { focusBuffInfo } from '../../utils/focus'
 import { FURNITURE_ITEMS, type FurnitureItem } from '../../utils/furniture'
@@ -86,6 +86,7 @@ import GiftPicker from '../gift/GiftPicker'
 import Graduation from '../graduation/Graduation'
 import MoodCheck, { getTodayMood } from '../mood/MoodCheck'
 import ClosetEditor from '../closet/ClosetEditor'
+import Bag from '../bag/Bag'
 import FurnitureSprite from '../../components/FurnitureSprite'
 import PomodoroTimer from '../timer/PomodoroTimer'
 import ScheduleManager from '../schedule/ScheduleManager'
@@ -119,6 +120,7 @@ type ModalKind =
   | 'graduate'
   | 'profile'
   | 'closet'
+  | 'bag'
   | null
 
 type GrowthFx = {
@@ -251,8 +253,9 @@ export default function PetGame({
   // 진화 가능 형태 + 잠금 판정 (게임·바탕화면 펫 공용 로직)
   const evolveList = getEvolveOptions(pet, level)
   const canEvolve = evolveList.length > 0
-  // 각성 자격: 히든 조건을 하나라도 충족했을 때만 버튼 노출 (평소엔 숨겨 미스터리 유지)
+  // 각성 자격: 궁극체 게이트(canAttemptAwaken) + 히든 조건을 하나라도 충족했을 때만 버튼 노출
   const canAwaken = useMemo(() => {
+    if (!canAttemptAwaken(pet)) return false
     const ctx: AwakenCtx = {
       pet,
       level,
@@ -260,7 +263,7 @@ export default function PetGame({
       season: gameSeasonKey(pet.createdAt),
       birthMonth: birthMonth(pet.createdAt),
     }
-    return Object.values(AWAKEN_CONDS).some((c) => c.check(ctx))
+    return Object.keys(AWAKEN_CONDS).some((id) => isAwakenEligible(id, ctx))
   }, [pet, level])
   const giftCount = Object.values(pet.gifts).reduce((a, b) => a + b, 0)
   // 집중 타이머 버프 — usePet 틱(2초)마다 리렌더되므로 매 렌더 재계산으로 충분
@@ -791,12 +794,9 @@ export default function PetGame({
       }
       const wearable = item.type === 'accessory' || item.type === 'background'
       if (wearable) {
-        const equipped =
-          item.type === 'accessory' ? pet.accessory : pet.background
-        // 이미 보유한 건 착용/해제 토글
+        // 상점은 구매만 — 착용/해제는 인게임 🎒 가방에서
         if (pet.ownedItems.includes(item.id)) {
-          const next = equipped === item.id ? null : item.id
-          update(item.type === 'accessory' ? { accessory: next } : { background: next })
+          showToast('이미 보유 중이에요 — 🎒 가방에서 착용해요')
           return
         }
         if (pet.coins < item.price) {
@@ -805,8 +805,7 @@ export default function PetGame({
         }
         if (spendCoins(item.price)) {
           grantItem(item.id)
-          update(item.type === 'accessory' ? { accessory: item.id } : { background: item.id })
-          showToast(`${item.emoji} ${item.name} 구매 완료!`)
+          showToast(`${item.emoji} ${item.name} 구매! 🎒 가방에 담겼어요`)
         }
       } else {
         if (pet.coins < item.price) {
@@ -823,7 +822,7 @@ export default function PetGame({
         }
       }
     },
-    [pet, update, spendCoins, adjust, showToast, recordProfile],
+    [pet, spendCoins, adjust, showToast, recordProfile],
   )
 
   const buyFurniture = useCallback(
@@ -835,7 +834,7 @@ export default function PetGame({
       }
       if (spendCoins(item.price)) {
         update({ furniture: [...pet.furniture, item.id] })
-        showToast(`${item.emoji} ${item.name} 배치 완료!`)
+        showToast(`${item.emoji} ${item.name} 구매! 🎒 가방에서 방에 꺼내 놓아요`)
       }
     },
     [pet, spendCoins, update, showToast],
@@ -966,11 +965,11 @@ export default function PetGame({
           <button
             type="button"
             className="pg-icon-btn"
-            onClick={() => setModal('closet')}
-            title="옷장 (악세서리 착용·위치 조정)"
-            aria-label="옷장 (악세서리 착용·위치 조정)"
+            onClick={() => setModal('bag')}
+            title="가방 (치장·테마·가구 꺼내 쓰기)"
+            aria-label="가방 (치장·테마·가구 꺼내 쓰기)"
           >
-            👗
+            🎒
           </button>
           {/* 내 방은 새 펫 입양 입구이기도 하므로 펫 수와 무관하게 항상 노출 */}
           <button
@@ -1037,16 +1036,16 @@ export default function PetGame({
             💤
           </span>
         )}
-        {/* 보유 가구 — 방에 실배치. 끌어서 원하는 자리로 옮길 수 있다 (배치는 저장됨) */}
-        {pet.furniture.length > 0 && (
+        {/* 방에 꺼내 놓은 가구 — 끌어서 자리 이동, 꺼내기/보관은 🎒 가방에서 */}
+        {(pet.furniturePlaced ?? pet.furniture).length > 0 && (
           <div className="pg-furniture">
-            {FURNITURE_ITEMS.filter((f) => pet.furniture.includes(f.id)).map((f, i, arr) => {
+            {FURNITURE_ITEMS.filter((f) => (pet.furniturePlaced ?? pet.furniture).includes(f.id)).map((f, i, arr) => {
               const dragPos = furnDrag?.id === f.id ? furnDrag : null
               const saved = pet.furniturePos?.[f.id]
-              // 저장된 배치가 없으면 바닥을 따라 균등 분산 (지그재그로 겹침 방지, 레벨바 위)
+              // 저장된 배치가 없으면 바닥을 따라 균등 분산 (지그재그로 겹침 방지, 바닥 라인)
               const pos = dragPos ?? saved ?? {
                 x: 10 + (i * 80) / Math.max(arr.length - 1, 1),
-                y: 60 + (i % 2) * 9,
+                y: 58 + (i % 2) * 10,
               }
               return (
                 <span
@@ -1066,7 +1065,8 @@ export default function PetGame({
                     const r = stageRef.current?.getBoundingClientRect()
                     if (!r) return
                     const x = Math.min(96, Math.max(4, ((e.clientX - r.left) / r.width) * 100))
-                    const y = Math.min(94, Math.max(6, ((e.clientY - r.top) / r.height) * 100))
+                    // 가구는 바닥 영역(하단 절반)에만 — 벽에 뜬 침대 같은 난잡함 방지
+                    const y = Math.min(88, Math.max(45, ((e.clientY - r.top) / r.height) * 100))
                     setFurnDrag({ id: f.id, x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 })
                   }}
                   onPointerUp={(e) => {
@@ -1397,7 +1397,13 @@ export default function PetGame({
           onFuse={(partnerId, resultFormId) => {
             const partner = pets.find((p) => p.id === partnerId)
             const result = formById(resultFormId)
-            update({ form: resultFormId, species: result.line, growth: Math.max(pet.growth, 1800) })
+            update({
+              form: resultFormId,
+              species: result.line,
+              // 각성 이력은 합성 자손에게 계승 — 각성↔합성 무한 반복 차단
+              awakened: pet.awakened || !!partner?.awakened || formById(pet.form).hidden || (partner ? formById(partner.form).hidden : false),
+              growth: Math.max(pet.growth, 1800),
+            })
             discoverSpecies(resultFormId)
             addDiary('🧬', `${partner?.name ?? '단짝'}와 합성해 ${result.name}이(가) 되었어요!`)
             playLevelUp()
@@ -1725,6 +1731,7 @@ export default function PetGame({
                 form: formId,
                 species: next.line,
                 ownedItems: owned,
+                awakened: true,
                 growth: Math.max(pet.growth, 1800),
               })
             } else {
@@ -1735,6 +1742,7 @@ export default function PetGame({
               update({
                 form: formId,
                 species: next.line,
+                awakened: true,
                 growth: Math.max(pet.growth, 1800),
               })
             }
@@ -1761,8 +1769,16 @@ export default function PetGame({
           onClose={() => setModal(null)}
         />
       )}
+      {modal === 'bag' && (
+        <Bag
+          pet={pet}
+          onUpdatePet={update}
+          onOpenCloset={() => setModal('closet')}
+          onClose={() => setModal(null)}
+        />
+      )}
       {modal === 'closet' && (
-        <ClosetEditor pet={pet} onUpdatePet={update} onClose={() => setModal(null)} />
+        <ClosetEditor pet={pet} onUpdatePet={update} onClose={() => setModal('bag')} />
       )}
       {modal === 'timer' && (
         <PomodoroTimer

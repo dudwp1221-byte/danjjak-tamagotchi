@@ -1769,6 +1769,9 @@ export const GROWTH_ROOTS = FORMS.filter((f) => f.tier === 1 && f.id === f.line)
 /** 히든(각성 전용) 형태 전체 */
 export const HIDDEN_FORMS = FORMS.filter((f) => f.hidden)
 
+/** 합체 전용 형태 (합성 진화 결과 — 도감 별도 섹션) */
+export const FUSION_FORMS = lineForms('fuse')
+
 /** 각성 세트 (히든 컨셉별) */
 export const FOUR_SYMBOLS = lineForms('div_four')
 export const ZODIAC = lineForms('div_zodiac')

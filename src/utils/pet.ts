@@ -144,12 +144,16 @@ export function normalizePet(raw: Partial<Pet> & Pick<Pet, 'id'>): Pet {
       return { species: formById(formId).line, form: formId }
     })(),
     personality: raw.personality ?? personalityFromId(raw.id),
+    // 구버전 저장본 보정: 이미 히든 형태면 각성 이력 있는 것으로 간주
+    awakened: raw.awakened ?? !!formById(raw.form ?? '').hidden,
     diary: raw.diary ?? [],
     background: raw.background ?? null,
     missions: raw.missions ?? { day: 0, progress: {}, claimed: [] },
     questStage: raw.questStage ?? 0,
     lineQuestStage: raw.lineQuestStage ?? 0,
     furniture: raw.furniture ?? [],
+    // 구버전 보정: 배치 목록이 없으면 보유 가구 전부가 방에 있던 상태
+    furniturePlaced: raw.furniturePlaced ?? raw.furniture ?? [],
     furniturePos: raw.furniturePos ?? {},
     behaviorProfile: raw.behaviorProfile ?? {},
     behaviorLog: raw.behaviorLog ?? [],
