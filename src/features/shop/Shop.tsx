@@ -14,7 +14,6 @@ import {
   grantPremium,
   loadPass,
   activatePass,
-  cancelPass,
   canClaimPassDaily,
   claimPassDaily,
   PASS_DAILY_GEMS,
@@ -482,16 +481,6 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
                   }}
                 >
                   {passClaimable ? '오늘 보상 받기' : '오늘 받음'}
-                </button>
-                <button
-                  type="button"
-                  className="shop-pass-cancel"
-                  onClick={() => {
-                    cancelPass()
-                    refresh()
-                  }}
-                >
-                  구독 해지
                 </button>
               </div>
             ) : (

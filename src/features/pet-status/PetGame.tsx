@@ -41,7 +41,8 @@ import { careRemaining, CARE_HOURLY_CAP } from '../../utils/care'
 import { pickPetLine } from '../../utils/petLines'
 import { lineQuestsFor } from '../../utils/quests'
 import { awakenCond, AWAKEN_CONDS, type AwakenCtx } from '../../utils/awaken'
-import { backgroundCss, type ShopItem } from '../../utils/items'
+import { backgroundCss, accessoryPlacementFor, type ShopItem } from '../../utils/items'
+import { focusBuffInfo } from '../../utils/focus'
 import { FURNITURE_ITEMS, type FurnitureItem } from '../../utils/furniture'
 import { PROFILE_KEYS } from '../../utils/evolution-conditions'
 import { WORK_MODE_META, WORK_XP_PER_TICK } from '../../utils/work-activity'
@@ -84,7 +85,7 @@ import PetChat from '../chat/PetChat'
 import GiftPicker from '../gift/GiftPicker'
 import Graduation from '../graduation/Graduation'
 import MoodCheck, { getTodayMood } from '../mood/MoodCheck'
-import AmbientPlayer from '../ambient/AmbientPlayer'
+import ClosetEditor from '../closet/ClosetEditor'
 import PomodoroTimer from '../timer/PomodoroTimer'
 import ScheduleManager from '../schedule/ScheduleManager'
 import ScheduleAlarm from '../schedule/ScheduleAlarm'
@@ -116,6 +117,7 @@ type ModalKind =
   | 'gift'
   | 'graduate'
   | 'profile'
+  | 'closet'
   | null
 
 type GrowthFx = {
@@ -194,6 +196,7 @@ export default function PetGame({
     todayOvertimeMin,
   } = useWorkActivity({
     workToday: pet.workToday,
+    furniture: pet.furniture,
     onRewardXp: (xp) => {
       reward(0, xp)
       // 가속 체감: 틱마다 레벨바에 +XP 플로팅
@@ -231,9 +234,12 @@ export default function PetGame({
       { id: pet.id, name: pet.name, form: pet.form },
     ])
   }, [pets, pet.id, pet.name, pet.form])
-  // 대표 펫의 표시용 폼/이름 (현재 보유 → 이력 pool → 활성 펫 순)
+  // 대표 펫의 표시용 폼/이름 (활성 펫이면 라이브 객체 → 보유 목록 → 이력 pool 순).
+  // App의 pets 배열은 스냅샷이라 활성 펫이 진화해도 옛 폼을 들고 있음 — 라이브 pet을 먼저 봐야 한다.
   const avatarEntry = account.avatarPetId
-    ? pets.find((p) => p.id === account.avatarPetId) ?? account.avatarPool?.[account.avatarPetId]
+    ? account.avatarPetId === pet.id
+      ? pet
+      : pets.find((p) => p.id === account.avatarPetId) ?? account.avatarPool?.[account.avatarPetId]
     : undefined
   const avatarForm = avatarEntry?.form ?? pet.form
   const avatarName = avatarEntry?.name ?? pet.name
@@ -256,6 +262,8 @@ export default function PetGame({
     return Object.values(AWAKEN_CONDS).some((c) => c.check(ctx))
   }, [pet, level])
   const giftCount = Object.values(pet.gifts).reduce((a, b) => a + b, 0)
+  // 집중 타이머 버프 — usePet 틱(2초)마다 리렌더되므로 매 렌더 재계산으로 충분
+  const focusBuff = focusBuffInfo()
   const { stats } = pet
   const [settings, setSettings] = useState<AppSettings>(loadSettings)
 
@@ -287,6 +295,9 @@ export default function PetGame({
   )
   const [, forceRerender] = useState(0)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  // 가구 드래그 배치 (놓는 순간 pet.furniturePos에 저장)
+  const stageRef = useRef<HTMLDivElement>(null)
+  const [furnDrag, setFurnDrag] = useState<{ id: string; x: number; y: number } | null>(null)
 
   // 하단 탭 = 가로 페이저 (시각 순서). 0:상점 1:놀이 2:케어(홈) 3:합성 4:도감
   // 페이지 DOM 순서는 그대로 두고 CSS order로 위치를 잡는다(홈 블록 이동 방지).
@@ -929,7 +940,6 @@ export default function PetGame({
               {weather.emoji} {weather.temp}°
             </span>
           )}
-          <AmbientPlayer />
           <span className="pg-coins" title="코인">
             🪙 {pet.coins}
             <button
@@ -951,6 +961,15 @@ export default function PetGame({
             aria-label={muted ? '소리 켜기' : '소리 끄기'}
           >
             {muted ? '🔇' : '🔊'}
+          </button>
+          <button
+            type="button"
+            className="pg-icon-btn"
+            onClick={() => setModal('closet')}
+            title="옷장 (악세서리 착용·위치 조정)"
+            aria-label="옷장 (악세서리 착용·위치 조정)"
+          >
+            👗
           </button>
           {/* 내 방은 새 펫 입양 입구이기도 하므로 펫 수와 무관하게 항상 노출 */}
           <button
@@ -990,11 +1009,14 @@ export default function PetGame({
         }}
       >
       <section className="pg-page pg-page-home" style={{ order: 2 }} data-tab={2}>
+      {/* 방 테마는 무대 전체가 아니라 "방 영역"(::before)에 칠한다 —
+          .pg-stage 자체는 room-first 레이아웃에서 transparent!important 고정이라 인라인 배경이 안 먹음 */}
       <div
-        className="pg-stage"
+        ref={stageRef}
+        className={'pg-stage' + (backgroundCss(pet.background) ? ' has-bg' : '')}
         style={
           backgroundCss(pet.background)
-            ? { background: backgroundCss(pet.background)! }
+            ? ({ '--stage-bg': backgroundCss(pet.background)! } as React.CSSProperties)
             : undefined
         }
       >
@@ -1014,14 +1036,52 @@ export default function PetGame({
             💤
           </span>
         )}
-        {/* 보유 가구 */}
+        {/* 보유 가구 — 방에 실배치. 끌어서 원하는 자리로 옮길 수 있다 (배치는 저장됨) */}
         {pet.furniture.length > 0 && (
           <div className="pg-furniture">
-            {FURNITURE_ITEMS.filter((f) => pet.furniture.includes(f.id)).map((f) => (
-              <span key={f.id} className={`pg-furniture-item pg-furniture-${f.position ?? 'back'}`} title={f.name}>
-                {f.emoji}
-              </span>
-            ))}
+            {FURNITURE_ITEMS.filter((f) => pet.furniture.includes(f.id)).map((f, i, arr) => {
+              const dragPos = furnDrag?.id === f.id ? furnDrag : null
+              const saved = pet.furniturePos?.[f.id]
+              // 저장된 배치가 없으면 바닥을 따라 균등 분산 (지그재그로 겹침 방지)
+              const pos = dragPos ?? saved ?? {
+                x: 10 + (i * 80) / Math.max(arr.length - 1, 1),
+                y: 72 + (i % 2) * 10,
+              }
+              return (
+                <span
+                  key={f.id}
+                  className={'pg-furniture-item' + (dragPos ? ' dragging' : '')}
+                  style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
+                  title={`${f.name} — ${f.desc} (끌어서 옮기기)`}
+                  onPointerDown={(e) => {
+                    // 페이저 스와이프에 먹히지 않게
+                    e.stopPropagation()
+                    e.currentTarget.setPointerCapture?.(e.pointerId)
+                    setFurnDrag({ id: f.id, x: pos.x, y: pos.y })
+                  }}
+                  onPointerMove={(e) => {
+                    if (furnDrag?.id !== f.id) return
+                    e.stopPropagation()
+                    const r = stageRef.current?.getBoundingClientRect()
+                    if (!r) return
+                    const x = Math.min(96, Math.max(4, ((e.clientX - r.left) / r.width) * 100))
+                    const y = Math.min(94, Math.max(6, ((e.clientY - r.top) / r.height) * 100))
+                    setFurnDrag({ id: f.id, x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 })
+                  }}
+                  onPointerUp={(e) => {
+                    if (furnDrag?.id !== f.id) return
+                    e.stopPropagation()
+                    update({
+                      furniturePos: { ...(pet.furniturePos ?? {}), [f.id]: { x: furnDrag.x, y: furnDrag.y } },
+                    })
+                    setFurnDrag(null)
+                  }}
+                  onPointerCancel={() => setFurnDrag(null)}
+                >
+                  {f.emoji}
+                </span>
+              )
+            })}
           </div>
         )}
 
@@ -1045,6 +1105,7 @@ export default function PetGame({
             stats={stats}
             stage={stage}
             accessory={pet.accessory}
+            accessoryPos={accessoryPlacementFor(pet.accessory, pet.form, pet.accessoryPos)}
             species={displaySpecies(pet)}
             stageIndex={form.tier}
             size={150}
@@ -1123,15 +1184,27 @@ export default function PetGame({
           {tierName(form.tier)} · {form.type}
         </p>
 
-        {/* 업무 성장 상태 칩 — 항상 표시. 일하면 가속, 아니면 방치 성장 */}
-        <div
+        {/* 업무 성장 상태 칩 — 항상 표시. 일하면 가속, 아니면 방치 성장.
+            웹은 시스템 입력 감지가 불가능하므로 집중 타이머가 가속 수단 — 칩을 누르면 타이머로 */}
+        <button
+          type="button"
           className={`pg-work-badge pg-work-${workMode}`}
-          title={`펫은 가만히 둬도 자라고(방치), 컴퓨터로 일하면 더 빨리 자라요.${isElectron ? ` 오늘 업무 ${todayWorkMin}분${todayOvertimeMin > 0 ? ` · 야근 ${todayOvertimeMin}분` : ''}` : ''}`}
+          onClick={() => setModal('timer')}
+          title={
+            isElectron
+              ? `펫은 가만히 둬도 자라고(방치), 컴퓨터로 일하면 더 빨리 자라요. 오늘 업무 ${todayWorkMin}분${todayOvertimeMin > 0 ? ` · 야근 ${todayOvertimeMin}분` : ''} · 누르면 집중 타이머`
+              : '웹에서는 업무 자동 감지가 안 돼요 (데스크톱 앱 전용). 집중 타이머를 완주하면 XP 버프를 받아요!'
+          }
         >
           {workMode === 'idle'
-            ? `💤 방치 성장중${isElectron ? ' · 일하면 XP 가속' : ''}`
+            ? `💤 방치 성장중 · ${isElectron ? '일하면 XP 가속' : '🍅 타이머로 가속'}`
             : `${WORK_MODE_META[workMode].emoji} ${WORK_MODE_META[workMode].label} · XP 가속 중 ⚡`}
-        </div>
+        </button>
+        {focusBuff && (
+          <div className="pg-work-badge pg-focus-buff" title="집중 타이머 버프 — 업무·케어 XP에 곱해져요">
+            ⚡ 집중 버프 ×{focusBuff.mult} · {focusBuff.remainMin}분 남음
+          </div>
+        )}
 
         {canEvolve && (
           <button
@@ -1262,7 +1335,7 @@ export default function PetGame({
               <span className="pg-drawer-label">케어</span>
               <div className="pg-drawer-row">
                 <button type="button" className="pg-drawer-btn" onClick={() => setModal('chat')} title="펫과 대화 (AI · 설정에서 키 입력)">💬 대화</button>
-                <button type="button" className="pg-drawer-btn" onClick={() => setModal('timer')} title="뽀모도로 집중 타이머 — 집중 시간만큼 XP 보너스">🍅 집중 타이머</button>
+                <button type="button" className="pg-drawer-btn" onClick={() => setModal('timer')} title="1시간 집중 타이머 — 완주하면 XP 버프">🍅 집중 타이머</button>
                 <button type="button" className="pg-drawer-btn" onClick={() => setModal('schedule')} title="일정 등록 — 시간 되면 펫이 알려줘요">📅 일정</button>
               </div>
             </div>
@@ -1687,10 +1760,15 @@ export default function PetGame({
           onClose={() => setModal(null)}
         />
       )}
+      {modal === 'closet' && (
+        <ClosetEditor pet={pet} onUpdatePet={update} onClose={() => setModal(null)} />
+      )}
       {modal === 'timer' && (
         <PomodoroTimer
           petName={pet.name}
-          onXpReward={(xp) => { reward(0, xp); showToast(`🍅 집중 완료! +${xp} XP`) }}
+          isElectron={isElectron}
+          workMode={workMode}
+          onReward={(xp, coins, m) => { reward(coins, xp); showToast(m) }}
           onClose={() => setModal(null)}
         />
       )}

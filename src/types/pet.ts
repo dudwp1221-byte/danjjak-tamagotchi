@@ -53,6 +53,16 @@ export interface PetStats {
 /** 회복/상호작용 액션 종류 */
 export type PetAction = 'feed' | 'pet' | 'wash' | 'sleep' | 'play' | 'gift'
 
+/** 옷장에서 저장하는 악세서리 커스텀 배치 — 아바타 기준 % 좌표 + 크기 배율 */
+export interface AccessoryPlacement {
+  /** 가로 위치 (0~100, 아바타 컨테이너 기준 %) */
+  x: number
+  /** 세로 위치 (0~100) */
+  y: number
+  /** 크기 배율 (0.5~2) */
+  s: number
+}
+
 /** 펫 기질(성격) */
 export type Personality =
   | 'foodie'
@@ -104,6 +114,8 @@ export interface Pet {
   // --- 아이템 / 꾸미기 ---
   /** 착용 중인 악세서리 id (없으면 null) */
   accessory: string | null
+  /** 옷장에서 조정한 악세서리 배치 — 키: `${악세서리id}@${형태id}` (진화하면 형태별로 다시 조정) */
+  accessoryPos?: Record<string, AccessoryPlacement>
   /** 보유한 아이템 id 목록 */
   ownedItems: string[]
 
@@ -140,6 +152,8 @@ export interface Pet {
   // --- 가구 / 행동 ---
   /** 보유한 가구 id 목록 */
   furniture: string[]
+  /** 방에서 직접 옮긴 가구 배치 — 키: 가구 id, 값: 무대 기준 % 좌표 */
+  furniturePos?: Record<string, { x: number; y: number }>
   /** 행동 기반 진화 조건 추적 카운터 */
   behaviorProfile: Record<string, number>
   /** 최근 자율 행동 이력 (최대 100개) */

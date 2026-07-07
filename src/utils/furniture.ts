@@ -1,4 +1,4 @@
-import type { BehaviorState } from '../types/pet'
+import type { BehaviorState, PetAction } from '../types/pet'
 
 export interface FurnitureItem {
   id: string
@@ -14,6 +14,13 @@ export interface FurnitureItem {
     profileKey: string
     multiplier: number
   }
+  /** 케어 보너스 — 해당 케어 액션의 XP에 곱해진다 (예: 간식 바구니 → 먹이주기 ×1.5) */
+  careBonus?: {
+    action: PetAction
+    xpMult: number
+  }
+  /** 전역 성장 배율 — 모든 XP(케어·업무)에 곱해진다. 고가 가구용 */
+  xpMult?: number
   position?: 'left' | 'right' | 'back'
 }
 
@@ -23,8 +30,9 @@ export const FURNITURE_ITEMS: FurnitureItem[] = [
     name: '아늑한 침대',
     emoji: '🛏️',
     price: 80,
-    desc: '잠을 더 잘 자게 돼요',
+    desc: '잠을 더 잘 자게 돼요 · 재우기 XP +50%',
     behaviorBonus: { activatesBehavior: 'sleeping', weight: 2.0 },
+    careBonus: { action: 'sleep', xpMult: 1.5 },
     position: 'right',
   },
   {
@@ -61,9 +69,10 @@ export const FURNITURE_ITEMS: FurnitureItem[] = [
     name: '장난감 상자',
     emoji: '🧸',
     price: 70,
-    desc: '혼자서도 잘 놀아요',
+    desc: '혼자서도 잘 놀아요 · 놀아주기 XP +50%',
     behaviorBonus: { activatesBehavior: 'playing', weight: 2.0 },
     evolutionBonus: { profileKey: 'playful_moments', multiplier: 1.5 },
+    careBonus: { action: 'play', xpMult: 1.5 },
     position: 'right',
   },
   {
@@ -80,8 +89,9 @@ export const FURNITURE_ITEMS: FurnitureItem[] = [
     name: '포근한 러그',
     emoji: '🧶',
     price: 70,
-    desc: '바닥에서 뒹굴뒹굴 낮잠을 자요',
+    desc: '바닥에서 뒹굴뒹굴 · 쓰다듬기 XP +30%',
     behaviorBonus: { activatesBehavior: 'sleeping', weight: 1.3 },
+    careBonus: { action: 'pet', xpMult: 1.3 },
     position: 'back',
   },
   {
@@ -89,8 +99,9 @@ export const FURNITURE_ITEMS: FurnitureItem[] = [
     name: '간식 바구니',
     emoji: '🧺',
     price: 80,
-    desc: '군것질을 즐기게 돼요',
+    desc: '군것질을 즐기게 돼요 · 먹이주기 XP +50%',
     behaviorBonus: { activatesBehavior: 'eating', weight: 2.0 },
+    careBonus: { action: 'feed', xpMult: 1.5 },
     position: 'right',
   },
   {
@@ -132,8 +143,56 @@ export const FURNITURE_ITEMS: FurnitureItem[] = [
     evolutionBonus: { profileKey: 'night_companion', multiplier: 2 },
     position: 'left',
   },
+  {
+    id: 'fur_soccer',
+    name: '축구공',
+    emoji: '⚽',
+    price: 50,
+    desc: '데굴데굴 공놀이 · 놀아주기 XP +30%',
+    behaviorBonus: { activatesBehavior: 'playing', weight: 1.5 },
+    careBonus: { action: 'play', xpMult: 1.3 },
+    position: 'left',
+  },
+  {
+    id: 'fur_bathtub',
+    name: '거품 욕조',
+    emoji: '🛁',
+    price: 90,
+    desc: '목욕을 좋아하게 돼요 · 씻기기 XP +50%',
+    careBonus: { action: 'wash', xpMult: 1.5 },
+    position: 'right',
+  },
+  {
+    id: 'fur_crystal_lamp',
+    name: '수정 램프',
+    emoji: '🔮',
+    price: 800,
+    desc: '신비한 기운이 방을 채워요 · 모든 XP +10%',
+    xpMult: 1.1,
+    position: 'back',
+  },
 ]
 
 export function getFurniture(id: string): FurnitureItem | undefined {
   return FURNITURE_ITEMS.find((f) => f.id === id)
+}
+
+/** 보유 가구의 케어 액션 XP 배율 (같은 액션 가구가 여럿이면 가장 큰 것만 — 중첩 방지) */
+export function furnitureCareXpMult(furniture: string[], action: PetAction): number {
+  let best = 1
+  for (const id of furniture) {
+    const f = getFurniture(id)
+    if (f?.careBonus && f.careBonus.action === action) best = Math.max(best, f.careBonus.xpMult)
+  }
+  return best
+}
+
+/** 보유 가구의 전역 XP 배율 (곱연산 중첩) */
+export function furnitureXpMult(furniture: string[]): number {
+  let mult = 1
+  for (const id of furniture) {
+    const f = getFurniture(id)
+    if (f?.xpMult) mult *= f.xpMult
+  }
+  return mult
 }

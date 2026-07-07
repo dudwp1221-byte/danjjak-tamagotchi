@@ -185,21 +185,6 @@
   display: flex;
   gap: 0.5rem;
 }
-.shop-pass-cancel {
-  font: inherit;
-  font-size: 0.85rem;
-  cursor: pointer;
-  padding: 0.45rem 0.8rem;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text-secondary);
-}
-.shop-pass-cancel:hover {
-  border-color: rgba(239, 68, 68, 0.5);
-  color: #fca5a5;
-}
-
 /* 보석 충전 */
 .shop-charge {
   display: flex;

@@ -36,7 +36,7 @@ const conds: Record<string, AwakenCond> = {
   // 청룡=봄·용족/주작=여름·조류/백호=가을·짐승/현무=겨울·수생.
   hid_azure: {
     hint: '“봄바람이 불 때, 용과 초목의 피를 이은 자에게…”',
-    cost: { coins: 200 },
+    cost: { coins: 1000 },
     check: ({ pet, level, season }) =>
       level >= 15 &&
       season === 'spring' &&
@@ -46,13 +46,13 @@ const conds: Record<string, AwakenCond> = {
   },
   hid_vermilion: {
     hint: '“한여름 하늘을 나는 새의 혼이 절정에 달할 때…”',
-    cost: { coins: 200 },
+    cost: { coins: 1000 },
     check: ({ pet, level, season }) =>
       level >= 15 && season === 'summer' && bio(pet) && isKind(pet, ['조류형']) && lo(pet) >= 85,
   },
   hid_white: {
     hint: '“가을 들판을 달리는 짐승의 강인함으로…”',
-    cost: { coins: 200 },
+    cost: { coins: 1000 },
     check: ({ pet, level, season }) =>
       level >= 15 &&
       season === 'autumn' &&
@@ -62,7 +62,7 @@ const conds: Record<string, AwakenCond> = {
   },
   hid_black: {
     hint: '“한겨울 깊은 물에 사는 자의 지혜에 다다를 때…”',
-    cost: { coins: 200 },
+    cost: { coins: 1000 },
     check: ({ pet, level, season }) =>
       level >= 15 &&
       season === 'winter' &&
@@ -112,7 +112,7 @@ const conds: Record<string, AwakenCond> = {
   // ── 4대천사: 천사형 종족 + 선행(업적) + 성격 ──
   hid_michael: {
     hint: '“용맹한 장난기를 지닌 빛의 권속에게…”',
-    cost: { coins: 250 },
+    cost: { coins: 800 },
     check: ({ pet, level }) =>
       level >= 15 &&
       holy(pet) &&
@@ -122,7 +122,7 @@ const conds: Record<string, AwakenCond> = {
   },
   hid_gabriel: {
     hint: '“다정한 전령의 마음을 지닌 자에게…”',
-    cost: { coins: 250 },
+    cost: { coins: 800 },
     check: ({ pet, level }) =>
       level >= 15 &&
       holy(pet) &&
@@ -132,7 +132,7 @@ const conds: Record<string, AwakenCond> = {
   },
   hid_raphael: {
     hint: '“정결함으로 모두를 치유하는 손길에게…”',
-    cost: { coins: 250 },
+    cost: { coins: 800 },
     check: ({ pet, level }) =>
       level >= 15 &&
       holy(pet) &&
@@ -142,7 +142,7 @@ const conds: Record<string, AwakenCond> = {
   },
   hid_uriel: {
     hint: '“고요한 명상 속 지혜에 다다른 자에게…”',
-    cost: { coins: 250 },
+    cost: { coins: 800 },
     check: ({ pet, level }) =>
       level >= 15 &&
       holy(pet) &&
@@ -154,43 +154,43 @@ const conds: Record<string, AwakenCond> = {
   // ── 7대 죄악마: 어둠 계열 종족 + 죄에 맞는 성격/상태 ──
   hid_gluttony: {
     hint: '“멈추지 않는 식탐에 영혼이 잠식될 때…”',
-    cost: { coins: 250 },
+    cost: { coins: 800 },
     check: ({ pet, level }) =>
       level >= 15 && holy(pet) && isKind(pet, DARK_KINDS) && pet.personality === 'foodie',
   },
   hid_sloth: {
     hint: '“끝없는 나태에 몸을 맡길 때…”',
-    cost: { coins: 250 },
+    cost: { coins: 800 },
     check: ({ pet, level }) =>
       level >= 15 && holy(pet) && isKind(pet, DARK_KINDS) && pet.personality === 'sleepyhead',
   },
   hid_lust: {
     hint: '“채울 수 없는 갈망에 사로잡힐 때…”',
-    cost: { coins: 250 },
+    cost: { coins: 800 },
     check: ({ pet, level }) =>
       level >= 15 && holy(pet) && isKind(pet, DARK_KINDS) && pet.personality === 'cuddler',
   },
   hid_wrath: {
     hint: '“터져나오는 분노를 주체할 수 없을 때…”',
-    cost: { coins: 250 },
+    cost: { coins: 800 },
     check: ({ pet, level }) =>
       level >= 15 && holy(pet) && isKind(pet, DARK_KINDS) && pet.personality === 'playful',
   },
   hid_pride: {
     hint: '“완벽함에 도취된 오만한 자에게…”',
-    cost: { coins: 250 },
+    cost: { coins: 800 },
     check: ({ pet, level }) =>
       level >= 15 && holy(pet) && isKind(pet, DARK_KINDS) && pet.personality === 'cleanfreak',
   },
   hid_greed: {
     hint: '“산처럼 쌓인 황금에 눈먼 자에게…”',
-    cost: { coins: 250 },
+    cost: { coins: 800 },
     check: ({ pet, level }) =>
       level >= 15 && holy(pet) && isKind(pet, DARK_KINDS) && pet.coins >= 800,
   },
   hid_envy: {
     hint: '“비참함과 시기심이 마음을 가득 채울 때…”',
-    cost: { coins: 250 },
+    cost: { coins: 800 },
     check: ({ pet, level }) =>
       level >= 15 && holy(pet) && isKind(pet, DARK_KINDS) && lo(pet) < 40,
   },
@@ -198,7 +198,7 @@ const conds: Record<string, AwakenCond> = {
   // ── 황룡: 사신수를 모두 거느린 자 ──
   hid_huanglong: {
     hint: '“사방신을 모두 거느린 자, 중앙의 황제를 마주하리…”',
-    cost: { coins: 300 },
+    cost: { coins: 2000 },
     check: ({ pet, dex }) =>
       FOUR_SYMBOLS.some((f) => f.id === pet.form) &&
       FOUR_SYMBOLS.every((f) => dex.has(f.id)),

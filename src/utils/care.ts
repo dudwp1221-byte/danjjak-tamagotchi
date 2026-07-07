@@ -1,6 +1,7 @@
 import type { Pet, PetAction } from '../types/pet'
 import { performCare, type CareResult } from './stats'
 import { CARE_XP, CARE_XP_OVER, CARE_HOURLY_CAP } from './progression'
+import { furnitureCareXpMult, furnitureXpMult } from './furniture'
 
 type LimitedAction = 'feed' | 'pet' | 'wash' | 'sleep' | 'play'
 const LIMITED: LimitedAction[] = ['feed', 'pet', 'wash', 'sleep', 'play']
@@ -58,7 +59,11 @@ export function resolveCare(
   const used = limited ? cx[action as LimitedAction] : 0
   const withinCap = limited ? used < CARE_HOURLY_CAP : true
 
-  const xp = limited ? (withinCap ? CARE_XP : CARE_XP_OVER) : result.xp
+  // 가구 보너스 — 케어 액션별(예: 간식 바구니→먹이) + 전역(수정 램프) 배율
+  const baseXp = limited ? (withinCap ? CARE_XP : CARE_XP_OVER) : result.xp
+  const xp = Math.round(
+    baseXp * furnitureCareXpMult(pet.furniture, action) * furnitureXpMult(pet.furniture),
+  )
   const coins = result.coins
 
   const nextCareXp =

@@ -503,6 +503,135 @@
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
   z-index: 2;
 }
+/* 옷장에서 배치를 저장한 경우 — 좌표는 인라인 스타일(left/top %)로, 중심 기준 정렬 */
+.pa-accessory.pa-acc-custom {
+  transform: translate(-50%, -50%);
+}
+
+/* ── 프리미엄 오라 (착용형 대신 펫 주변 발광 이펙트) ── */
+.pa-acc-aura {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+.pa-acc-aura i {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+/* 반짝임 오라 — 은은한 금빛 맥동 + 반짝이 점 */
+.pa-acc-aura-pacc_sparkle i:nth-child(1) {
+  background: radial-gradient(circle, rgba(253, 224, 71, 0.35), transparent 65%);
+  animation: pa-aura-pulse 2.6s ease-in-out infinite;
+}
+.pa-acc-aura-pacc_sparkle i:nth-child(2)::before,
+.pa-acc-aura-pacc_sparkle i:nth-child(2)::after {
+  content: '✦';
+  position: absolute;
+  color: #fde047;
+  font-size: 0.9rem;
+  animation: pa-aura-twinkle 1.8s ease-in-out infinite;
+}
+.pa-acc-aura-pacc_sparkle i:nth-child(2)::before {
+  top: 12%;
+  left: 16%;
+}
+.pa-acc-aura-pacc_sparkle i:nth-child(2)::after {
+  bottom: 18%;
+  right: 12%;
+  animation-delay: 0.9s;
+}
+.pa-acc-aura-pacc_sparkle i:nth-child(3)::before {
+  content: '✧';
+  position: absolute;
+  top: 28%;
+  right: 8%;
+  color: #fef9c3;
+  font-size: 0.7rem;
+  animation: pa-aura-twinkle 2.2s ease-in-out 0.4s infinite;
+}
+/* 오로라 오라 — 무지갯빛 회전 링 */
+.pa-acc-aura-pacc_aurora i:nth-child(1) {
+  background: conic-gradient(
+    from 0deg,
+    rgba(74, 222, 128, 0.25),
+    rgba(96, 165, 250, 0.3),
+    rgba(192, 132, 252, 0.3),
+    rgba(45, 212, 191, 0.25),
+    rgba(74, 222, 128, 0.25)
+  );
+  filter: blur(10px);
+  animation: pa-aura-spin 7s linear infinite;
+}
+.pa-acc-aura-pacc_aurora i:nth-child(2) {
+  background: radial-gradient(circle, transparent 55%, rgba(148, 233, 210, 0.18) 70%, transparent 85%);
+  animation: pa-aura-pulse 3.4s ease-in-out infinite;
+}
+/* 달무리 오라 — 푸른 달빛 링 + 느린 숨쉬기 */
+.pa-acc-aura-pacc_moonglow i:nth-child(1) {
+  background: radial-gradient(circle, rgba(191, 219, 254, 0.3), transparent 60%);
+  animation: pa-aura-pulse 4.2s ease-in-out infinite;
+}
+.pa-acc-aura-pacc_moonglow i:nth-child(2) {
+  border: 2px solid rgba(191, 219, 254, 0.25);
+  transform: scale(0.82);
+  animation: pa-aura-ring 4.2s ease-in-out infinite;
+}
+.pa-acc-aura-pacc_moonglow i:nth-child(3)::before {
+  content: '🌙';
+  position: absolute;
+  top: 6%;
+  right: 14%;
+  font-size: 0.85rem;
+  opacity: 0.7;
+  animation: pa-aura-twinkle 3s ease-in-out infinite;
+}
+
+@keyframes pa-aura-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+@keyframes pa-aura-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes pa-aura-twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+@keyframes pa-aura-ring {
+  0%,
+  100% {
+    transform: scale(0.82);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(0.9);
+    opacity: 0.9;
+  }
+}
 
 .pa-overlay {
   position: absolute;

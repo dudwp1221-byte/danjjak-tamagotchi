@@ -7,6 +7,8 @@ import { todayIndex } from '../utils/pet'
 
 interface UseWorkActivityOptions {
   workToday: WorkToday
+  /** 펫 보유 가구 (전역 XP 배율 반영) */
+  furniture?: string[]
   onRewardXp: (xp: number) => void
   onRecordProfile: (key: string, amount: number) => void
   onUpdateWorkToday: (wt: WorkToday) => void
@@ -33,6 +35,7 @@ let lastKnownMode: WorkMode = 'idle'
 
 export function useWorkActivity({
   workToday,
+  furniture,
   onRewardXp,
   onRecordProfile,
   onUpdateWorkToday,
@@ -47,6 +50,8 @@ export function useWorkActivity({
   // 로컬 뮤터블 ref로 틱마다 최신값 유지 (stale closure 방지)
   const wtRef = useRef<WorkToday>(workToday)
   const lastTickRef = useRef(0)
+  const furnitureRef = useRef<string[]>(furniture ?? [])
+  furnitureRef.current = furniture ?? []
 
   const handleWorkTick = useCallback(
     (payload: WorkTickPayload) => {
@@ -57,7 +62,7 @@ export function useWorkActivity({
       lastTickRef.current = Date.now()
 
       // 야근 상한·통계 갱신·XP 계산은 공용 규칙으로 (바탕화면 펫과 동일)
-      const tick = applyWorkTick(wtRef.current, mode, todayIndex())
+      const tick = applyWorkTick(wtRef.current, mode, todayIndex(), furnitureRef.current)
       if (!tick) return
       wtRef.current = tick.workToday
 

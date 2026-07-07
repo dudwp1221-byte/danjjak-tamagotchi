@@ -1,5 +1,7 @@
-import type { PetStats } from '../types/pet'
+import type { PetStats, AccessoryPlacement } from '../types/pet'
 import { ZODIAC } from './species'
+
+export type { AccessoryPlacement }
 
 export type ItemType = 'accessory' | 'treat' | 'background' | 'tool' | 'gift'
 
@@ -26,6 +28,23 @@ export interface ShopItem {
   gemPrice?: number
   /** gift인 경우: 선물 시 오르는 애정 */
   affection?: number
+  /** accessory인 경우: 이모지 착용이 아니라 펫 주변 발광 이펙트 (위치 조정 불필요) */
+  aura?: boolean
+}
+
+/** 형태(진화)마다 스프라이트가 달라지므로 배치는 악세서리+형태 조합으로 저장한다 */
+export function placementKey(accessoryId: string, formId: string): string {
+  return `${accessoryId}@${formId}`
+}
+
+/** 현재 착용 악세서리의 저장된 배치 (없으면 null → 기본 위치) */
+export function accessoryPlacementFor(
+  accessoryId: string | null,
+  formId: string,
+  saved: Record<string, AccessoryPlacement> | undefined,
+): AccessoryPlacement | null {
+  if (!accessoryId || !saved) return null
+  return saved[placementKey(accessoryId, formId)] ?? null
 }
 
 /** 선물 아이템 카탈로그 (상점 구매/이벤트로 획득 → 보관 → 선물하기로 사용) */
@@ -49,6 +68,7 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'acc_glasses', name: '선글라스', emoji: '🕶️', price: 60, type: 'accessory', desc: '시크한 선글라스' },
   { id: 'acc_crown', name: '왕관', emoji: '👑', price: 120, type: 'accessory', desc: '진정한 단짝의 증표' },
   { id: 'acc_flower', name: '꽃', emoji: '🌸', price: 40, type: 'accessory', desc: '머리에 꽂는 꽃' },
+  { id: 'acc_headphone', name: '헤드폰', emoji: '🎧', price: 60, type: 'accessory', desc: '작업용 무드 — 옷장에서 위치를 맞춰 주세요' },
   // 시즌 한정 악세서리
   { id: 'acc_butterfly', name: '나비', emoji: '🦋', price: 45, type: 'accessory', desc: '봄 한정!', season: 'spring' },
   { id: 'acc_strawhat', name: '밀짚모자', emoji: '👒', price: 55, type: 'accessory', desc: '여름 한정!', season: 'summer' },
@@ -83,15 +103,18 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'bg_stargarden', name: '별의 정원', emoji: '🌠', price: 8000, type: 'background', desc: '별이 피어나는 비밀 정원', bg: 'linear-gradient(180deg, #1e1b4b, #6d28d9 70%, #0c0a09)', honor: true },
   { id: 'bg_memoryroom', name: '추억의 방', emoji: '🖼️', price: 12000, type: 'background', desc: '함께한 날들이 걸려 있는 방', bg: 'linear-gradient(180deg, #e7d3b1, #8b5e34)', honor: true },
   // 도구
-  { id: 'item_evostone', name: '진화의 돌', emoji: '💠', price: 150, type: 'tool', desc: '특수(합성) 진화에 사용 (1회 소모)', honor: true },
+  // 각성 재료 — 일일 실수입 ~130🪙 기준 3~5일치. 히든은 후반 목표라 싸게 풀지 않는다.
+  { id: 'item_evostone', name: '진화의 돌', emoji: '💠', price: 500, type: 'tool', desc: '특수(합성) 진화에 사용 (1회 소모)', honor: true },
 
   // ── 프리미엄 코스메틱 (보석 구매 · 계정 단위 소유) ──
   // 코인으로는 못 사고, 시각적 차이만 — 능력/성장에 영향 없음 (힐링 톤 유지)
   { id: 'pbg_aurora', name: '오로라 밤하늘', emoji: '🌌', type: 'background', desc: '일렁이는 극광 (프리미엄)', price: 0, premium: true, gemPrice: 40, bg: 'linear-gradient(180deg, #134e4a, #4c1d95 60%, #1e1b4b)' },
   { id: 'pbg_cafe', name: '아늑한 카페', emoji: '☕', type: 'background', desc: '비 오는 날의 창가 카페 (프리미엄)', price: 0, premium: true, gemPrice: 40, bg: 'linear-gradient(180deg, #d6c2a8, #6f5640)' },
   { id: 'pbg_sakura_night', name: '밤 벚꽃', emoji: '🌸', type: 'background', desc: '달빛 아래 흩날리는 벚꽃 (프리미엄)', price: 0, premium: true, gemPrice: 50, bg: 'linear-gradient(180deg, #4c1d3d, #831843 70%, #1e1b4b)' },
-  { id: 'pacc_headphone', name: '헤드폰', emoji: '🎧', type: 'accessory', desc: '작업용 무드 (프리미엄)', price: 0, premium: true, gemPrice: 30 },
-  { id: 'pacc_sparkle', name: '반짝임 오라', emoji: '✨', type: 'accessory', desc: '은은하게 빛나는 단짝 (프리미엄)', price: 0, premium: true, gemPrice: 35 },
+  // 프리미엄 치장은 오라(펫 주변 이펙트)만 — 착용형은 펫마다 body가 달라 어색해서 넣지 않는다
+  { id: 'pacc_sparkle', name: '반짝임 오라', emoji: '✨', type: 'accessory', desc: '은은하게 반짝이는 단짝 (프리미엄)', price: 0, premium: true, gemPrice: 35, aura: true },
+  { id: 'pacc_aurora', name: '오로라 오라', emoji: '🌈', type: 'accessory', desc: '무지갯빛 극광이 감도는 단짝 (프리미엄)', price: 0, premium: true, gemPrice: 45, aura: true },
+  { id: 'pacc_moonglow', name: '달무리 오라', emoji: '🌖', type: 'accessory', desc: '포근한 달빛이 어리는 단짝 (프리미엄)', price: 0, premium: true, gemPrice: 40, aura: true },
 ]
 
 // 십이지 띠별 전용 부적 (각 띠 전용, 1회 소모)
@@ -100,7 +123,7 @@ for (const z of ZODIAC) {
     id: `charm_${z.id}`,
     name: `${z.name} 부적`,
     emoji: '🧧',
-    price: 90,
+    price: 600,
     type: 'tool',
     desc: `${z.name}(으)로 각성 (1회 소모)`,
     zodiacCharm: true,
@@ -111,11 +134,18 @@ export function getItem(id: string): ShopItem | undefined {
   return SHOP_ITEMS.find((i) => i.id === id)
 }
 
-/** 악세서리 emoji (아바타 표시용) */
+/** 악세서리 emoji (아바타 표시용). 오라형은 이모지 착용이 아니므로 null */
 export function accessoryEmoji(id: string | null): string | null {
   if (!id) return null
   const item = getItem(id)
-  return item?.type === 'accessory' ? item.emoji : null
+  return item?.type === 'accessory' && !item.aura ? item.emoji : null
+}
+
+/** 착용 중인 악세서리가 오라형이면 해당 오라 id (아바타 이펙트용) */
+export function accessoryAura(id: string | null): string | null {
+  if (!id) return null
+  const item = getItem(id)
+  return item?.type === 'accessory' && item.aura ? item.id : null
 }
 
 /** 배경 CSS 값 (무대 표시용) */

@@ -305,9 +305,12 @@ export default function Dex({ currentForm, onReward, onClose, embedded }: DexPro
           ['😈 7대 죄악마', SINS],
           ['🐉 황룡', [HUANGLONG]],
         ] as const
-      ).map(([label, forms]) => (
+      ).map(([label, forms]) => {
+        // 하나도 발견 못 한 히든 계통은 이름조차 비밀 — 전부 ???(히든)
+        const gotAny = forms.some((f) => discovered.has(f.id))
+        return (
         <div key={label} className="dex-line dex-hidden">
-          <p className="dex-line-title">{label} (히든)</p>
+          <p className="dex-line-title">{gotAny ? `${label} (히든)` : '??? (히든)'}</p>
           <div className="dex-grid">
             {forms.map((f) => {
               const got = discovered.has(f.id)
@@ -329,7 +332,8 @@ export default function Dex({ currentForm, onReward, onClose, embedded }: DexPro
             })}
           </div>
         </div>
-      ))}
+        )
+      })}
 
       <p className="dex-hint">
         펫을 그리면 랜덤 계통을 얻고, 키우면서 갈래마다 다른 모습으로 진화해요.

@@ -32,7 +32,7 @@ export function useBackgroundXp(gameXpActiveRef: { current: boolean }) {
       if (gameXpActiveRef.current) return
       const raw = loadActivePet()
       if (!raw) return
-      const tick = applyWorkTick(raw.workToday, payload.mode, todayIndex())
+      const tick = applyWorkTick(raw.workToday, payload.mode, todayIndex(), raw.furniture)
       if (!tick) return
       const behaviorProfile = tick.profileKey
         ? {

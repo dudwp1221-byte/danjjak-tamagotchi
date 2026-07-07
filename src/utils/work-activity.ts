@@ -1,4 +1,6 @@
 import type { WorkMode, WorkToday } from '../types/pet'
+import { focusMultiplier } from './focus'
+import { furnitureXpMult } from './furniture'
 
 export type { WorkMode }
 
@@ -64,6 +66,8 @@ export function applyWorkTick(
   prev: WorkToday,
   mode: WorkMode,
   today: number,
+  /** 펫 보유 가구 (전역 XP 배율 가구 반영) */
+  furniture: string[] = [],
 ): WorkTickResult | null {
   if (mode === 'idle') return null
 
@@ -81,5 +85,10 @@ export function applyWorkTick(
   const profileKey =
     mode === 'overtime' ? 'work_overtime' : mode === 'focused' ? 'work_focused' : null
 
-  return { workToday, xp: WORK_XP_PER_TICK[mode] ?? 0, profileKey }
+  // 집중 타이머 버프(utils/focus.ts) + 가구 전역 배율(수정 램프 등)
+  return {
+    workToday,
+    xp: (WORK_XP_PER_TICK[mode] ?? 0) * focusMultiplier() * furnitureXpMult(furniture),
+    profileKey,
+  }
 }

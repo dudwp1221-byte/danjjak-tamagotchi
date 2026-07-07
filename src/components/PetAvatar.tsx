@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import type { PetStats } from '../types/pet'
+import type { PetStats, AccessoryPlacement } from '../types/pet'
 import type { Stage } from '../utils/progression'
 import type { Form } from '../utils/species'
 import { overlaysFor } from '../utils/expression'
-import { accessoryEmoji } from '../utils/items'
+import { accessoryEmoji, accessoryAura } from '../utils/items'
 import { spriteUrl as formSpriteUrl } from '../utils/pet'
 import './pet-avatar.css'
 
@@ -31,6 +31,8 @@ interface PetAvatarProps {
   stats: PetStats
   stage: Stage
   accessory?: string | null
+  /** 옷장에서 저장한 악세서리 배치 (없으면 기본 위치) */
+  accessoryPos?: AccessoryPlacement | null
   /** 현재 형태 (오라/색조/희귀도 발광) */
   species?: Form
   /** 진화 단계 인덱스 0~3 (오라 강도) */
@@ -57,6 +59,7 @@ export default function PetAvatar({
   stats,
   stage,
   accessory = null,
+  accessoryPos = null,
   species,
   stageIndex = 0,
   size = 200,
@@ -69,6 +72,7 @@ export default function PetAvatar({
 }: PetAvatarProps) {
   const overlays = showOverlays ? overlaysFor(stats) : []
   const acc = accessoryEmoji(accessory)
+  const auraId = accessoryAura(accessory)
   const imgSize = Math.round(size * stage.scale)
   const [spriteFailed, setSpriteFailed] = useState(false)
   const spriteUrl = species && !spriteFailed ? formSpriteUrl(species.id) : imageDataUrl
@@ -145,8 +149,30 @@ export default function PetAvatar({
           </span>
         )}
       </span>
+      {auraId && (
+        <span
+          className={`pa-acc-aura pa-acc-aura-${auraId}`}
+          style={{ width: imgSize * 1.5, height: imgSize * 1.5 }}
+          aria-hidden="true"
+        >
+          <i />
+          <i />
+          <i />
+        </span>
+      )}
       {acc && (
-        <span className="pa-accessory" style={{ fontSize: size * 0.28 }}>
+        <span
+          className={'pa-accessory' + (accessoryPos ? ' pa-acc-custom' : '')}
+          style={
+            accessoryPos
+              ? {
+                  fontSize: size * 0.28 * accessoryPos.s,
+                  left: `${accessoryPos.x}%`,
+                  top: `${accessoryPos.y}%`,
+                }
+              : { fontSize: size * 0.28 }
+          }
+        >
           {acc}
         </span>
       )}

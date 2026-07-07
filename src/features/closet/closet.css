@@ -1,0 +1,132 @@
+.closet {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.closet-hint {
+  margin: 0;
+  font-size: 0.82rem;
+  opacity: 0.75;
+  text-align: center;
+}
+
+.closet-stage {
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.closet-avatar-box {
+  position: relative;
+  touch-action: none;
+}
+.closet-avatar-box.editable {
+  cursor: crosshair;
+}
+
+/* 편집 중인 악세서리 — PetAvatar의 pa-acc-custom과 같은 중심 기준 좌표계 */
+.closet-acc {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+  z-index: 4;
+  cursor: grab;
+  user-select: none;
+}
+.closet-avatar-box.editable:active .closet-acc {
+  cursor: grabbing;
+}
+
+.closet-scale {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  padding: 0 0.25rem;
+}
+.closet-scale input {
+  flex: 1;
+}
+
+.closet-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.closet-btn {
+  flex: 1;
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+  padding: 0.55rem 0.8rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: inherit;
+}
+.closet-btn.closet-save {
+  background: var(--accent, #8b5cf6);
+  border-color: transparent;
+  color: #fff;
+  font-weight: 600;
+}
+
+.closet-list {
+  display: flex;
+  gap: 0.45rem;
+  overflow-x: auto;
+  padding: 0.25rem 0.1rem 0.4rem;
+}
+
+.closet-slot {
+  position: relative;
+  flex: 0 0 auto;
+  width: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  font: inherit;
+  cursor: pointer;
+  padding: 0.45rem 0.3rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+}
+.closet-slot.active {
+  border-color: var(--accent, #8b5cf6);
+  box-shadow: 0 0 0 1px var(--accent, #8b5cf6);
+}
+.closet-slot-emoji {
+  font-size: 1.4rem;
+}
+.closet-slot-name {
+  font-size: 0.68rem;
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.closet-slot-tag {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  font-size: 0.58rem;
+  padding: 0.05rem 0.3rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #a78bfa, #f472b6);
+  color: #fff;
+}
+
+.closet-empty {
+  margin: 0;
+  text-align: center;
+  font-size: 0.82rem;
+  opacity: 0.7;
+}
