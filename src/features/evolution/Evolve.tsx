@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { spriteUrl } from '../../utils/pet'
 import type { Form } from '../../utils/species'
 import { tierName } from '../../utils/species'
 import { EVOLUTION_CONDITIONS, checkCondition } from '../../utils/evolution-conditions'
@@ -12,7 +13,7 @@ function EvoSprite({ id, emoji }: { id: string; emoji: string }) {
   return (
     <img
       className="evo-img"
-      src={`/sprites/${id}.png`}
+      src={spriteUrl(id)}
       alt=""
       draggable={false}
       onError={() => setFailed(true)}

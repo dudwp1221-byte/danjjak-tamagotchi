@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Pet } from '../../types/pet'
 import { wellbeing } from '../../utils/stats'
-import { MAX_PETS, GRADUATE_MIN_LEVEL, graduateReward, daysTogether, petSpriteUrl } from '../../utils/pet'
+import { MAX_PETS, GRADUATE_MIN_LEVEL, graduateReward, daysTogether, petSpriteUrl, spriteUrl } from '../../utils/pet'
 import { levelFromXp } from '../../utils/progression'
 import { loadGraduates, type Graduate } from '../../utils/storage'
 import { graduateForm } from '../../utils/graduation'
@@ -257,7 +257,7 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
                     title="초상 보기"
                   >
                     {f ? (
-                      <img className="room-grad-thumb" src={`/sprites/${f.id}.png`} alt="" />
+                      <img className="room-grad-thumb" src={spriteUrl(f.id)} alt="" />
                     ) : (
                       <span className="room-grad-thumb-emoji">🎓</span>
                     )}

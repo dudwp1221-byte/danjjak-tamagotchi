@@ -3,6 +3,7 @@ import { tierName } from '../../utils/species'
 import { personalityDef } from '../../utils/personality'
 import { bondStage } from '../../utils/bond'
 import { graduateForm } from '../../utils/graduation'
+import { spriteUrl } from '../../utils/pet'
 import Modal from '../../components/Modal'
 import './graduation.css'
 
@@ -26,7 +27,7 @@ export default function Memorial({ graduate: g, onClose }: MemorialProps) {
       <div className="grad-mem-body">
         <div className="grad-mem-frame">
           {form ? (
-            <img className="grad-mem-img" src={`/sprites/${form.id}.png`} alt={g.name} />
+            <img className="grad-mem-img" src={spriteUrl(form.id)} alt={g.name} />
           ) : (
             <span className="grad-mem-emoji">🎓</span>
           )}

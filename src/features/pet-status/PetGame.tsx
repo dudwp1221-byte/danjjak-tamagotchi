@@ -8,7 +8,7 @@ import { useBehavior } from '../../hooks/useBehavior'
 import { useElectron } from '../../hooks/useElectron'
 import { useWorkActivity } from '../../hooks/useWorkActivity'
 import { petMood, wellbeing } from '../../utils/stats'
-import { daysTogether, graduateReward, petSpriteUrl, displaySpecies, todayIndex } from '../../utils/pet'
+import { daysTogether, graduateReward, petSpriteUrl, spriteUrl, displaySpecies, todayIndex } from '../../utils/pet'
 import { grantItem, addGift, useGift as consumeGift, setAvatarPet, recordAvatarPets } from '../../utils/account'
 import { useAccount } from '../../hooks/useAccount'
 import {
@@ -1078,13 +1078,13 @@ export default function PetGame({
               <span className="pg-evo-morph">
                 <img
                   className="pg-evo-sprite pg-evo-before"
-                  src={`/sprites/${growthFx.fromFormId}.png`}
+                  src={spriteUrl(growthFx.fromFormId)}
                   alt=""
                   draggable={false}
                 />
                 <img
                   className="pg-evo-sprite pg-evo-after"
-                  src={`/sprites/${growthFx.toFormId}.png`}
+                  src={spriteUrl(growthFx.toFormId)}
                   alt=""
                   draggable={false}
                 />

@@ -35,13 +35,18 @@ export function graduateReward(level: number, days: number): number {
   return Math.max(0, Math.round(levelPart + dayPart))
 }
 
+/** 폼 id → 스프라이트 이미지 URL. 파일 형식이 바뀌면 여기만 고친다 (현재 WebP). */
+export function spriteUrl(formId: string): string {
+  return `/sprites/${formId}.webp`
+}
+
 /**
  * 펫의 "현재 모습" 프로필 이미지 URL (종족 스프라이트).
  * 최초에 유저가 그린 스케치(imageDataUrl)가 아니라 현재 진화한 형태를 쓴다.
  * 프로필/썸네일이 필요한 모든 곳에서 이 헬퍼로 통일한다.
  */
 export function petSpriteUrl(pet: { form: string }): string {
-  return `/sprites/${formById(pet.form).id}.png`
+  return spriteUrl(formById(pet.form).id)
 }
 
 /** 새 펫의 초기 스탯 (모두 가득 찬 상태) */

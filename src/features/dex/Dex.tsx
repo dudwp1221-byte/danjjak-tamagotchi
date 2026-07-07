@@ -13,6 +13,7 @@ import {
   formById,
   babyFormsForStarter,
 } from '../../utils/species'
+import { spriteUrl } from '../../utils/pet'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { loadDex, loadDexClaims, addDexClaim } from '../../utils/storage'
@@ -37,7 +38,7 @@ function DexSprite({ id, emoji, large }: { id: string; emoji: string; large?: bo
   return (
     <img
       className={large ? 'dex-zoom-img' : 'dex-form-img'}
-      src={`/sprites/${id}.png`}
+      src={spriteUrl(id)}
       alt=""
       draggable={false}
       onError={() => setFailed(true)}

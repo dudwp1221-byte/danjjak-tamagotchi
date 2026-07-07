@@ -1,5 +1,6 @@
 import type { Letter } from '../../utils/letters'
 import { graduateForm } from '../../utils/graduation'
+import { spriteUrl } from '../../utils/pet'
 import Modal from '../../components/Modal'
 import './graduation.css'
 
@@ -20,7 +21,7 @@ export default function LetterModal({ letter, ownerName, onKeep }: LetterProps) 
       <div className="grad-letter">
         <div className="grad-letter-head">
           {form ? (
-            <img className="grad-letter-thumb" src={`/sprites/${form.id}.png`} alt="" />
+            <img className="grad-letter-thumb" src={spriteUrl(form.id)} alt="" />
           ) : (
             <span className="grad-letter-thumb-emoji">🎓</span>
           )}

@@ -4,6 +4,7 @@ import type { Stage } from '../utils/progression'
 import type { Form } from '../utils/species'
 import { overlaysFor } from '../utils/expression'
 import { accessoryEmoji } from '../utils/items'
+import { spriteUrl as formSpriteUrl } from '../utils/pet'
 import './pet-avatar.css'
 
 export type ReactionType = 'hop' | 'munch' | 'wiggle' | 'blink' | 'breathe'
@@ -70,7 +71,7 @@ export default function PetAvatar({
   const acc = accessoryEmoji(accessory)
   const imgSize = Math.round(size * stage.scale)
   const [spriteFailed, setSpriteFailed] = useState(false)
-  const spriteUrl = species && !spriteFailed ? `/sprites/${species.id}.png` : imageDataUrl
+  const spriteUrl = species && !spriteFailed ? formSpriteUrl(species.id) : imageDataUrl
   const vibe = careVibe(stats, distressed)
   const tier = Math.min(Math.max(species?.tier ?? stageIndex, 0), 4)
   // 진화 단계가 높을수록 반짝임 증가 (완전체 2, 궁극체 3)
