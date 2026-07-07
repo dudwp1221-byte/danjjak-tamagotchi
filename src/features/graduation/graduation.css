@@ -289,3 +289,45 @@
   opacity: 0.6;
   align-self: flex-start;
 }
+
+/* ── 졸업 펫의 편지 ── */
+.grad-letter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+}
+.grad-letter-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.grad-letter-thumb {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+.grad-letter-thumb-emoji {
+  font-size: 1.6rem;
+}
+.grad-letter-from {
+  font-size: 0.88rem;
+}
+.grad-letter-paper {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: rgba(252, 211, 77, 0.06);
+  border: 1px solid rgba(252, 211, 77, 0.3);
+}
+.grad-letter-body {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+.grad-letter-sign {
+  margin: 0.7rem 0 0;
+  text-align: right;
+  font-size: 0.84rem;
+  opacity: 0.75;
+}

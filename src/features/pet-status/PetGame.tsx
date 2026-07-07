@@ -29,6 +29,8 @@ import {
   FAVORITE_REACTION,
 } from '../../utils/bond'
 import { ITEM_SETS, isSetComplete } from '../../utils/sets'
+import { checkForLetter, type Letter } from '../../utils/letters'
+import LetterModal from '../graduation/Letter'
 import {
   formById,
   tierName,
@@ -692,6 +694,16 @@ export default function PetGame({
     return () => window.clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pet.id])
+
+  // 졸업 펫의 편지 — 접속 후 한 번, 출근인사·기념일 말풍선이 끝난 뒤 확인 (letters.ts가 쿨다운·확률 관리)
+  const [letter, setLetter] = useState<Letter | null>(null)
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      const l = checkForLetter()
+      if (l) setLetter(l)
+    }, 7000)
+    return () => window.clearTimeout(t)
+  }, [])
 
   // 세트 완성 감지 — 능력 보상 없이 연출로만 축하 (한마디 + 일기 + 소량 유대)
   useEffect(() => {
@@ -1396,6 +1408,16 @@ export default function PetGame({
       )}
       {showMoodCheck && !showWelcome && (
         <MoodCheck petName={pet.name} onClose={() => setShowMoodCheck(false)} />
+      )}
+      {letter && !showWelcome && (
+        <LetterModal
+          letter={letter}
+          ownerName={pet.ownerName}
+          onKeep={() => {
+            addDiary('💌', `졸업한 ${letter.from.name}에게서 편지가 왔어요. 소중히 간직했어요.`)
+            setLetter(null)
+          }}
+        />
       )}
 
       {modal === 'gift' && (
