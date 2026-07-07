@@ -5,6 +5,10 @@ import {
   focusBuffInfo,
   completeFocusSession,
   failFocusSession,
+  startFocusSession,
+  activeFocusSession,
+  completeDueFocusSession,
+  abortFocusSession,
   FOCUS_DAILY_CAP,
   FOCUS_SESSION_XP,
   FOCUS_FINISHER,
@@ -60,6 +64,29 @@ describe('집중 타이머 규칙', () => {
     expect(focusMultiplier(now + 1000)).toBe(1.75) // 이미 받은 버프는 유지
     const r = completeFocusSession(now)
     expect(r.mult).toBe(1.5) // 스트릭이 끊겨 처음부터
+  })
+
+  it('세션 영속화: 시작 → 시간 전엔 완료 없음 → 시간 지나면 1회만 완료', () => {
+    const now = Date.now()
+    const s = startFocusSession(now)
+    expect(activeFocusSession()?.endsAt).toBe(s.endsAt)
+    // 아직 안 끝남
+    expect(completeDueFocusSession(now + 1000)).toBeNull()
+    expect(activeFocusSession()).not.toBeNull()
+    // 끝난 뒤 — 완료 + 세션 소거 (중복 지급 없음)
+    const r = completeDueFocusSession(s.endsAt + 1)
+    expect(r?.capped).toBe(false)
+    expect(activeFocusSession()).toBeNull()
+    expect(completeDueFocusSession(s.endsAt + 2)).toBeNull()
+  })
+
+  it('세션 중단(abort): 세션 제거 + 스트릭 리셋', () => {
+    const now = Date.now()
+    completeFocusSession(now) // streak 1
+    startFocusSession(now)
+    abortFocusSession()
+    expect(activeFocusSession()).toBeNull()
+    expect(loadFocus().streak).toBe(0)
   })
 
   it('하루 4세션 상한 + 4번째에 피니셔 보너스', () => {

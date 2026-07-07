@@ -42,7 +42,13 @@ import { pickPetLine } from '../../utils/petLines'
 import { lineQuestsFor } from '../../utils/quests'
 import { awakenCond, AWAKEN_CONDS, canAttemptAwaken, isAwakenEligible, type AwakenCtx } from '../../utils/awaken'
 import { backgroundCss, accessoryPlacementFor, type ShopItem } from '../../utils/items'
-import { focusBuffInfo } from '../../utils/focus'
+import {
+  focusBuffInfo,
+  activeFocusSession,
+  completeDueFocusSession,
+  abortFocusSession,
+  FOCUS_IDLE_FAIL_SEC,
+} from '../../utils/focus'
 import { FURNITURE_ITEMS, type FurnitureItem } from '../../utils/furniture'
 import { PROFILE_KEYS } from '../../utils/evolution-conditions'
 import { WORK_MODE_META, WORK_XP_PER_TICK } from '../../utils/work-activity'
@@ -266,8 +272,9 @@ export default function PetGame({
     return Object.keys(AWAKEN_CONDS).some((id) => isAwakenEligible(id, ctx))
   }, [pet, level])
   const giftCount = Object.values(pet.gifts).reduce((a, b) => a + b, 0)
-  // 집중 타이머 버프 — usePet 틱(2초)마다 리렌더되므로 매 렌더 재계산으로 충분
+  // 집중 타이머 버프/세션 — usePet 틱(2초)마다 리렌더되므로 매 렌더 재계산으로 충분
   const focusBuff = focusBuffInfo()
+  const focusSession = activeFocusSession()
   const { stats } = pet
   const [settings, setSettings] = useState<AppSettings>(loadSettings)
 
@@ -765,6 +772,40 @@ export default function PetGame({
     return () => window.clearInterval(id)
   }, [reward, showToast])
 
+  // 집중 세션 상시 판정 — 타이머 창이 닫혀 있어도 완료 보상·자리 비움 실패가 동작한다
+  const focusIdleSecRef = useRef(0)
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      const r = completeDueFocusSession()
+      if (r) {
+        focusIdleSecRef.current = 0
+        if (r.capped) {
+          showToast('🍅 세션 완료! (오늘 보상은 이미 다 받았어요)')
+        } else {
+          const parts = [`+${r.xp} XP`, `${r.buffMin}분간 ${r.mult}배 성장`]
+          if (r.coins > 0) parts.push(`+${r.coins}🪙`)
+          reward(r.coins, r.xp)
+          showToast(`🍅 집중 완주! ${parts.join(' · ')}`)
+        }
+        return
+      }
+      // 데스크톱: 세션 중 3분 연속 자리 비움이면 실패
+      if (isElectron && activeFocusSession()) {
+        if (workMode === 'idle') {
+          focusIdleSecRef.current += 1
+          if (focusIdleSecRef.current >= FOCUS_IDLE_FAIL_SEC) {
+            focusIdleSecRef.current = 0
+            abortFocusSession()
+            showToast('🍅 자리를 오래 비워서 집중이 끊겼어요 😢')
+          }
+        } else {
+          focusIdleSecRef.current = 0
+        }
+      }
+    }, 1000)
+    return () => window.clearInterval(id)
+  }, [isElectron, workMode, reward, showToast])
+
   // 상점 구매/사용/착용
   const buyItem = useCallback(
     (item: ShopItem) => {
@@ -1205,9 +1246,22 @@ export default function PetGame({
             ? `💤 방치 성장중 · ${isElectron ? '일하면 XP 가속' : '🍅 타이머로 가속'}`
             : `${WORK_MODE_META[workMode].emoji} ${WORK_MODE_META[workMode].label} · XP 가속 중 ⚡`}
         </button>
+        {focusSession && (
+          <button
+            type="button"
+            className="pg-work-badge pg-focus-buff"
+            onClick={() => setModal('timer')}
+            title="집중 세션 진행 중 — 창을 닫아도 계속 돌아가요. 누르면 타이머 열기"
+          >
+            🍅 집중 중 · {(() => {
+              const left = Math.max(0, Math.ceil((focusSession.endsAt - Date.now()) / 1000))
+              return `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`
+            })()} 남음
+          </button>
+        )}
         {focusBuff && (
-          <div className="pg-work-badge pg-focus-buff" title="집중 타이머 버프 — 업무·케어 XP에 곱해져요">
-            ⚡ 집중 버프 ×{focusBuff.mult} · {focusBuff.remainMin}분 남음
+          <div className="pg-work-badge pg-focus-buff" title="집중 버프 — 그동안 업무·케어 XP가 배로 붙어요">
+            ⚡ ×{focusBuff.mult} 성장 중 · {focusBuff.remainMin}분
           </div>
         )}
 
@@ -1793,13 +1847,7 @@ export default function PetGame({
         <ClosetEditor pet={pet} onUpdatePet={update} onClose={() => setModal('bag')} />
       )}
       {modal === 'timer' && (
-        <PomodoroTimer
-          petName={pet.name}
-          isElectron={isElectron}
-          workMode={workMode}
-          onReward={(xp, coins, m) => { reward(coins, xp); showToast(m) }}
-          onClose={() => setModal(null)}
-        />
+        <PomodoroTimer petName={pet.name} isElectron={isElectron} onClose={() => setModal(null)} />
       )}
       {modal === 'schedule' && (
         <ScheduleManager

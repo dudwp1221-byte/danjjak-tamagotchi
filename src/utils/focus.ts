@@ -138,3 +138,58 @@ export function failFocusSession(): void {
   const s = loadFocus()
   save({ ...s, streak: 0 })
 }
+
+// ── 진행 중인 세션 — localStorage에 영속화되어 타이머 창을 닫아도 계속 돈다 ──
+
+const SESSION_KEY = 'danjjak-focus-session'
+
+export interface FocusSessionState {
+  startedAt: number
+  endsAt: number
+}
+
+export function activeFocusSession(): FocusSessionState | null {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY)
+    if (!raw) return null
+    const s = JSON.parse(raw) as FocusSessionState
+    return typeof s.endsAt === 'number' ? s : null
+  } catch {
+    return null
+  }
+}
+
+export function startFocusSession(now: number = Date.now()): FocusSessionState {
+  const s: FocusSessionState = { startedAt: now, endsAt: now + FOCUS_SESSION_MIN * 60000 }
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(s))
+  } catch {
+    // 무시
+  }
+  return s
+}
+
+export function clearFocusSession(): void {
+  try {
+    localStorage.removeItem(SESSION_KEY)
+  } catch {
+    // 무시
+  }
+}
+
+/**
+ * 세션이 끝났으면 완료 처리하고 결과를 반환 (아니면 null).
+ * 세션 제거가 원자적으로 함께 일어나 중복 지급이 없다 — 완료 판정은 이 함수로만.
+ */
+export function completeDueFocusSession(now: number = Date.now()): FocusCompleteResult | null {
+  const s = activeFocusSession()
+  if (!s || now < s.endsAt) return null
+  clearFocusSession()
+  return completeFocusSession(s.endsAt)
+}
+
+/** 진행 중 세션 중단/실패 — 세션 제거 + 스트릭 리셋 */
+export function abortFocusSession(): void {
+  clearFocusSession()
+  failFocusSession()
+}
