@@ -11,7 +11,7 @@ import Modal from '../../components/Modal'
 import './closet.css'
 
 /** 기본 배치 — 머리 위 중앙 (기존 고정 오프셋과 비슷한 자리) */
-const DEFAULT_POS: AccessoryPlacement = { x: 50, y: 10, s: 1 }
+const DEFAULT_POS: AccessoryPlacement = { x: 50, y: 10, s: 1, r: 0, flip: false }
 const AVATAR_SIZE = 200
 
 interface ClosetEditorProps {
@@ -142,32 +142,58 @@ export default function ClosetEditor({ pet, onClose, onUpdatePet }: ClosetEditor
                   id={selItem.id}
                   emoji={selItem.emoji}
                   width={AVATAR_SIZE * 0.32 * pos.s}
+                  rotate={pos.r ?? 0}
+                  flip={pos.flip ?? false}
                 />
               </span>
             )}
           </div>
         </div>
 
-        {/* 크기 조절 — 진화하면 몸집이 달라지니 형태별로 따로 저장된다 */}
+        {/* 크기·회전·반전 — 진화하면 몸집이 달라지니 형태별로 따로 저장된다 */}
         {selItem && !isAura && (
-          <label className="closet-scale">
-            <span>크기</span>
-            <input
-              type="range"
-              min={0.6}
-              max={1.8}
-              step={0.05}
-              value={pos.s}
-              onChange={(e) => setPos((p) => ({ ...p, s: Number(e.target.value) }))}
-            />
-          </label>
+          <>
+            <label className="closet-scale">
+              <span>크기</span>
+              <input
+                type="range"
+                min={0.6}
+                max={1.8}
+                step={0.05}
+                value={pos.s}
+                onChange={(e) => setPos((p) => ({ ...p, s: Number(e.target.value) }))}
+              />
+            </label>
+            <label className="closet-scale">
+              <span>회전</span>
+              <input
+                type="range"
+                min={-180}
+                max={180}
+                step={5}
+                value={pos.r ?? 0}
+                onChange={(e) => setPos((p) => ({ ...p, r: Number(e.target.value) }))}
+              />
+              <em className="closet-deg">{pos.r ?? 0}°</em>
+            </label>
+          </>
         )}
 
         <div className="closet-actions">
           {selItem && !isAura && (
-            <button type="button" className="closet-btn" onClick={() => setPos(DEFAULT_POS)}>
-              기본 위치
-            </button>
+            <>
+              <button
+                type="button"
+                className={'closet-btn' + (pos.flip ? ' closet-btn-on' : '')}
+                onClick={() => setPos((p) => ({ ...p, flip: !p.flip }))}
+                title="좌우 반전"
+              >
+                🪞 반전
+              </button>
+              <button type="button" className="closet-btn" onClick={() => setPos(DEFAULT_POS)}>
+                초기화
+              </button>
+            </>
           )}
           <button type="button" className="closet-btn closet-save" onClick={save}>
             {savedFlash ? '저장했어요 ✔' : selId ? '이 모습으로 저장' : '벗은 모습으로 저장'}

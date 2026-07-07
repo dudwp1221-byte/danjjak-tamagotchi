@@ -53,7 +53,7 @@ export interface PetStats {
 /** 회복/상호작용 액션 종류 */
 export type PetAction = 'feed' | 'pet' | 'wash' | 'sleep' | 'play' | 'gift'
 
-/** 옷장에서 저장하는 악세서리 커스텀 배치 — 아바타 기준 % 좌표 + 크기 배율 */
+/** 옷장에서 저장하는 악세서리 커스텀 배치 — 아바타 기준 % 좌표 + 크기/회전/반전 */
 export interface AccessoryPlacement {
   /** 가로 위치 (0~100, 아바타 컨테이너 기준 %) */
   x: number
@@ -61,6 +61,10 @@ export interface AccessoryPlacement {
   y: number
   /** 크기 배율 (0.5~2) */
   s: number
+  /** 회전 각도 (도, -180~180) */
+  r?: number
+  /** 좌우 반전 */
+  flip?: boolean
 }
 
 /** 펫 기질(성격) */

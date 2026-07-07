@@ -73,6 +73,17 @@
 .closet-scale input {
   flex: 1;
 }
+.closet-deg {
+  font-style: normal;
+  font-size: 0.72rem;
+  opacity: 0.6;
+  min-width: 2.4rem;
+  text-align: right;
+}
+.closet-btn.closet-btn-on {
+  border-color: var(--accent, #8b5cf6);
+  box-shadow: 0 0 0 1px var(--accent, #8b5cf6);
+}
 
 .closet-actions {
   display: flex;

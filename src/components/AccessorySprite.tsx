@@ -8,19 +8,33 @@ export default function AccessorySprite({
   id,
   emoji,
   width,
+  rotate = 0,
+  flip = false,
 }: {
   id: string
   emoji: string
   width: number | string
+  /** 회전 각도 (도) */
+  rotate?: number
+  /** 좌우 반전 */
+  flip?: boolean
 }) {
   const [failed, setFailed] = useState(false)
   useEffect(() => setFailed(false), [id])
-  if (failed) return <>{emoji}</>
+  const transform =
+    rotate || flip ? `rotate(${rotate}deg) scaleX(${flip ? -1 : 1})` : undefined
+  if (failed) {
+    return transform ? (
+      <span style={{ display: 'inline-block', transform }}>{emoji}</span>
+    ) : (
+      <>{emoji}</>
+    )
+  }
   return (
     <img
       className="acc-sprite"
       src={`/deco/${id}.webp`}
-      style={{ width }}
+      style={{ width, transform }}
       alt=""
       draggable={false}
       onError={() => setFailed(true)}

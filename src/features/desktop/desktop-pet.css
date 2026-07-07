@@ -60,28 +60,37 @@ body, html {
   transition: transform 0.3s ease;
   cursor: pointer;
 }
+/* 펫 몸통 레이어 — 둥실거림·케어 반응 애니메이션은 여기서.
+   악세서리가 이 안에 있어 펫과 함께 바운스한다 */
+.dp-body {
+  position: relative;
+  display: block;
+  transform-origin: center bottom;
+  will-change: transform;
+  animation: dp-bob 2.4s ease-in-out infinite;
+}
 .dp-img {
   width: 72px;
   height: 72px;
   object-fit: contain;
   filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5));
-  animation: dp-bob 2.4s ease-in-out infinite;
   display: block;
-  transform-origin: center bottom;
 }
 @keyframes dp-bob {
   0%,100% { transform: translateY(0) scale(1) }
   50%      { transform: translateY(-5px) scale(1.02, 0.98) }
 }
-.dp-tier-0 .dp-img {
+.dp-tier-0 .dp-body {
   animation-duration: 1.8s;
 }
-.dp-tier-3 .dp-img,
-.dp-tier-4 .dp-img {
+.dp-tier-3 .dp-body,
+.dp-tier-4 .dp-body {
   animation-duration: 3.2s;
 }
-.dp-root.is-distressed .dp-img {
+.dp-root.is-distressed .dp-body {
   animation: dp-distress 0.45s ease-in-out infinite;
+}
+.dp-root.is-distressed .dp-img {
   filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5)) saturate(0.82) brightness(0.92);
 }
 @keyframes dp-distress {
@@ -93,16 +102,16 @@ body, html {
   animation: dp-breathe 3s ease-in-out infinite;
   opacity: 0.8;
 }
-.dp-root.dp-action-feed .dp-img {
+.dp-root.dp-action-feed .dp-body {
   animation: dp-feed-react 0.72s ease;
 }
-.dp-root.dp-action-pet .dp-img {
+.dp-root.dp-action-pet .dp-body {
   animation: dp-pet-react 0.72s cubic-bezier(0.2, 0.9, 0.24, 1.1);
 }
-.dp-root.dp-action-wash .dp-img {
+.dp-root.dp-action-wash .dp-body {
   animation: dp-wash-react 0.72s ease;
 }
-.dp-root.dp-action-sleep .dp-img {
+.dp-root.dp-action-sleep .dp-body {
   animation: dp-sleep-react 0.9s ease;
 }
 @keyframes dp-feed-react {
@@ -330,6 +339,8 @@ body, html {
 
 @media (prefers-reduced-motion: reduce) {
   .dp-img,
+  .dp-body,
+  .dp-root.is-distressed .dp-body,
   .dp-root.is-distressed .dp-img,
   .dp-particle,
   .dp-action-burst span,

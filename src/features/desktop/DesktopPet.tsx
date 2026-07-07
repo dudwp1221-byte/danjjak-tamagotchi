@@ -217,29 +217,33 @@ export default function DesktopPet() {
             <span className="dp-zzz">💤</span>
           </div>
         ) : (
-          <img src={spriteUrl(pet)} alt={pet.name} className="dp-img" draggable={false} />
-        )}
-        {accEmoji && (
-          <span
-            className="dp-accessory"
-            // wrap의 좌우반전과 같은 값을 곱해 이모지는 항상 정방향 (s×s=1)
-            style={
-              accPos
-                ? {
-                    left: `${accPos.x}%`,
-                    top: `${accPos.y}%`,
-                    fontSize: `${1.15 * accPos.s}rem`,
-                    transform: `translate(-50%, -50%) scaleX(${dir === 1 ? -1 : 1})`,
-                  }
-                : { transform: `translateX(-50%) scaleX(${dir === 1 ? -1 : 1})` }
-            }
-            aria-hidden="true"
-          >
-            <AccessorySprite
-              id={pet.accessory!}
-              emoji={accEmoji}
-              width={`${1.4 * (accPos?.s ?? 1)}em`}
-            />
+          // dp-body가 둥실거림·케어 반응 애니메이션을 담당 — 악세서리도 함께 바운스한다.
+          // 몸이 좌우반전되면 착용 장비도 몸에 붙은 채 같이 뒤집힌다.
+          <span className="dp-body">
+            <img src={spriteUrl(pet)} alt={pet.name} className="dp-img" draggable={false} />
+            {accEmoji && (
+              <span
+                className="dp-accessory"
+                style={
+                  accPos
+                    ? {
+                        left: `${accPos.x}%`,
+                        top: `${accPos.y}%`,
+                        fontSize: `${1.15 * accPos.s}rem`,
+                      }
+                    : undefined
+                }
+                aria-hidden="true"
+              >
+                <AccessorySprite
+                  id={pet.accessory!}
+                  emoji={accEmoji}
+                  width={`${1.4 * (accPos?.s ?? 1)}em`}
+                  rotate={accPos?.r ?? 0}
+                  flip={accPos?.flip ?? false}
+                />
+              </span>
+            )}
           </span>
         )}
       </div>

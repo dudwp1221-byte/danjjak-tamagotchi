@@ -208,7 +208,13 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
                               : undefined
                           }
                         >
-                          <AccessorySprite id={pet.accessory} emoji={emoji} width={`${1.1 * (pos?.s ?? 1)}em`} />
+                          <AccessorySprite
+                            id={pet.accessory}
+                            emoji={emoji}
+                            width={`${1.1 * (pos?.s ?? 1)}em`}
+                            rotate={pos?.r ?? 0}
+                            flip={pos?.flip ?? false}
+                          />
                         </span>
                       )
                     })()}

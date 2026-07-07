@@ -178,28 +178,33 @@ export default function PetAvatar({
             {react === 'breathe' && <b>Z</b>}
           </span>
         )}
+        {/* 악세서리 — 애니메이션 레이어(img-wrap) 안에 넣어 펫의 둥실거림·반응 바운스를 함께 탄다.
+            저장 좌표는 아바타 컨테이너(%) 기준이므로 wrap 좌표계로 변환 */}
+        {acc && accessory && (() => {
+          const p = accessoryPos ?? { x: 50, y: 10, s: 1 }
+          const offset = (size - imgSize) / 2
+          const toWrap = (pct: number) => ((((pct / 100) * size - offset) / imgSize) * 100)
+          return (
+            <span
+              className="pa-accessory pa-acc-custom"
+              style={{
+                fontSize: size * 0.28 * p.s,
+                left: `${toWrap(p.x)}%`,
+                top: `${toWrap(p.y)}%`,
+              }}
+            >
+              <AccessorySprite
+                id={accessory}
+                emoji={acc}
+                width={size * 0.32 * p.s}
+                rotate={p.r ?? 0}
+                flip={p.flip ?? false}
+              />
+            </span>
+          )
+        })()}
       </span>
       {auraId && <AuraFx id={auraId} size={imgSize * 1.5} />}
-      {acc && accessory && (
-        <span
-          className={'pa-accessory' + (accessoryPos ? ' pa-acc-custom' : '')}
-          style={
-            accessoryPos
-              ? {
-                  fontSize: size * 0.28 * accessoryPos.s,
-                  left: `${accessoryPos.x}%`,
-                  top: `${accessoryPos.y}%`,
-                }
-              : { fontSize: size * 0.28 }
-          }
-        >
-          <AccessorySprite
-            id={accessory}
-            emoji={acc}
-            width={size * 0.32 * (accessoryPos?.s ?? 1)}
-          />
-        </span>
-      )}
       {overlays.map((o, i) => (
         <span key={i} className={`pa-overlay pa-${o.position} pa-anim-${o.anim}`}>
           {o.symbol}
