@@ -8,6 +8,7 @@ import { formById } from '../../utils/species'
 import { levelFromXp } from '../../utils/progression'
 import { canEvolveNow } from '../../utils/evolve'
 import { needLine, ambientLine, pokeLine } from '../../utils/desktopTalk'
+import { accessoryEmoji } from '../../utils/items'
 import { normalizePet, petSpriteUrl } from '../../utils/pet'
 import type { Pet } from '../../types/pet'
 import type { PetAction } from '../../types/pet'
@@ -150,6 +151,8 @@ export default function DesktopPet() {
   const mood = pet ? petMood(pet.stats) : null
   const sleeping = pet ? pet.stats.energy < 25 : false
   const form = pet ? formById(pet.form) : null
+  // 게임 창에서 착용한 악세서리를 바탕화면에서도 보여준다
+  const accEmoji = pet ? accessoryEmoji(pet.accessory) : null
   const distressed = pet
     ? Math.min(pet.stats.hunger, pet.stats.mood, pet.stats.cleanliness, pet.stats.energy) < 30
     : false
@@ -213,6 +216,16 @@ export default function DesktopPet() {
           </div>
         ) : (
           <img src={spriteUrl(pet)} alt={pet.name} className="dp-img" draggable={false} />
+        )}
+        {accEmoji && (
+          <span
+            className="dp-accessory"
+            // wrap의 좌우반전과 같은 값을 곱해 이모지는 항상 정방향 (s×s=1)
+            style={{ transform: `translateX(-50%) scaleX(${dir === 1 ? -1 : 1})` }}
+            aria-hidden="true"
+          >
+            {accEmoji}
+          </span>
         )}
       </div>
 

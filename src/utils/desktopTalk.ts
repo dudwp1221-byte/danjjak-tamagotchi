@@ -3,6 +3,7 @@ import { levelFromXp } from './progression'
 import { canEvolveNow } from './evolve'
 import { formById } from './species'
 import { typeLine } from './typeLines'
+import { bondStage } from './bond'
 
 /* ── 진화 가능 ── */
 const EVOLVE_LINES = [
@@ -89,8 +90,40 @@ const PERSONALITY_LINES: Record<Personality, string[]> = {
   calm: ['천천히 해도 괜찮아요 🧘', '숨 한번 고르고 가요~', '여유가 제일이에요 ☕'],
 }
 
-/** 평상시(필요 없을 때) 갈래·성격·시간대 섞은 힐링 한마디 */
+/* ── 유대 단계별 친밀 대사 — 관계가 깊어질수록 말이 가까워진다 (bond.ts 단계명 기준) ── */
+const BOND_LINES: Record<string, string[]> = {
+  '처음 만난 사이': [
+    '아직은 조금 낯설지만… 잘 부탁해요!',
+    '주인님은 어떤 분일까, 궁금해요 👀',
+  ],
+  '낯익은 사이': [
+    '주인님 얼굴 보면 이제 마음이 놓여요 😊',
+    '오늘도 같이 있어서 좋아요',
+  ],
+  '친해진 사이': [
+    '주인님이랑 있는 시간이 제일 편해요 ☺️',
+    '이제 주인님 기척만 느껴도 알아요!',
+  ],
+  '마음을 연 사이': [
+    '있잖아요… 주인님이 있어서 매일이 좋아요 💛',
+    '힘든 날엔 저한테 기대요. 제가 있잖아요',
+  ],
+  '둘도 없는 단짝': [
+    '우린 둘도 없는 단짝이죠? 저는 그렇게 생각해요 💖',
+    '주인님 곁이 세상에서 제일 좋아요',
+  ],
+  '운명의 단짝': [
+    '다시 태어나도 주인님한테 갈 거예요 ✨',
+    '말 안 해도 알아요. 우리 사이니까 🫶',
+  ],
+}
+
+/** 평상시(필요 없을 때) 유대·갈래·성격·시간대 섞은 힐링 한마디 */
 export function ambientLine(pet: Pet, hour: number = new Date().getHours()): string {
+  if (Math.random() < 0.2) {
+    const lines = BOND_LINES[bondStage(pet.bond ?? 0).name]
+    if (lines) return pick(lines)
+  }
   if (Math.random() < 0.25) {
     const t = typeLine(formById(pet.form).type)
     if (t) return t
