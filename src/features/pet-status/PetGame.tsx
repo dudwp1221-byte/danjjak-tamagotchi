@@ -1403,6 +1403,8 @@ export default function PetGame({
               // 각성 이력은 합성 자손에게 계승 — 각성↔합성 무한 반복 차단
               awakened: pet.awakened || !!partner?.awakened || formById(pet.form).hidden || (partner ? formById(partner.form).hidden : false),
               growth: Math.max(pet.growth, 1800),
+              // 이름을 직접 안 지어준 펫은 합체 형태의 이름으로
+              ...(pet.name === formById(pet.form).name ? { name: result.name } : {}),
             })
             discoverSpecies(resultFormId)
             addDiary('🧬', `${partner?.name ?? '단짝'}와 합성해 ${result.name}이(가) 되었어요!`)
@@ -1692,6 +1694,8 @@ export default function PetGame({
               form: formId,
               species: next.line,
             }
+            // 이름을 직접 안 지어준 펫(= 현재 형태 기본 이름 그대로)은 새 형태 이름으로
+            if (pet.name === form.name) patch.name = next.name
             // 특수 진화는 진화의 돌 1개 소모
             if (next.requires === 'evostone') {
               const owned = [...pet.ownedItems]
@@ -1723,6 +1727,8 @@ export default function PetGame({
           onAwaken={(formId) => {
             const next = formById(formId)
             const cost = awakenCond(formId)?.cost ?? { coins: 250 }
+            // 이름을 직접 안 지어준 펫은 각성한 모습의 이름으로
+            const namePatch = pet.name === form.name ? { name: next.name } : {}
             if (cost.item) {
               if (!pet.ownedItems.includes(cost.item)) return
               const owned = [...pet.ownedItems]
@@ -1733,6 +1739,7 @@ export default function PetGame({
                 ownedItems: owned,
                 awakened: true,
                 growth: Math.max(pet.growth, 1800),
+                ...namePatch,
               })
             } else {
               if (!spendCoins(cost.coins ?? 0)) {
@@ -1744,6 +1751,7 @@ export default function PetGame({
                 species: next.line,
                 awakened: true,
                 growth: Math.max(pet.growth, 1800),
+                ...namePatch,
               })
             }
             discoverSpecies(formId)

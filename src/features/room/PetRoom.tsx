@@ -9,6 +9,8 @@ import { graduateForm } from '../../utils/graduation'
 import { FURNITURE_ITEMS } from '../../utils/furniture'
 import Memorial from '../graduation/Memorial'
 import FurnitureSprite from '../../components/FurnitureSprite'
+import AccessorySprite from '../../components/AccessorySprite'
+import { accessoryEmoji, accessoryPlacementFor } from '../../utils/items'
 import './room.css'
 
 interface RoomPet {
@@ -182,15 +184,35 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
                 {rp.action === 'sleep' ? (
                   <span className="room-pet-sleep">💤</span>
                 ) : (
-                  <img
-                    src={petSpriteUrl(pet)}
-                    alt={pet.name}
-                    className="room-pet-img"
-                    draggable={false}
-                    // 스프라이트 기본이 왼쪽 보기 — 오른쪽 이동 시에만 뒤집는다.
-                    // 이름·기분 이모지는 버튼이 아닌 이미지만 뒤집어 정방향 유지.
-                    style={{ transform: `scaleX(${rp.dx > 0 ? -1 : 1})` }}
-                  />
+                  <span className="room-pet-body">
+                    <img
+                      src={petSpriteUrl(pet)}
+                      alt={pet.name}
+                      className="room-pet-img"
+                      draggable={false}
+                      // 스프라이트 기본이 왼쪽 보기 — 오른쪽 이동 시에만 뒤집는다.
+                      // 이름·기분 이모지는 버튼이 아닌 이미지만 뒤집어 정방향 유지.
+                      style={{ transform: `scaleX(${rp.dx > 0 ? -1 : 1})` }}
+                    />
+                    {/* 착용 악세서리 — 옷장 배치를 따라 펫에 붙어 함께 돌아다닌다 */}
+                    {(() => {
+                      const emoji = accessoryEmoji(pet.accessory)
+                      if (!emoji || !pet.accessory) return null
+                      const pos = accessoryPlacementFor(pet.accessory, pet.form, pet.accessoryPos)
+                      return (
+                        <span
+                          className="room-pet-acc"
+                          style={
+                            pos
+                              ? { left: `${pos.x}%`, top: `${pos.y}%`, fontSize: `${0.9 * pos.s}rem` }
+                              : undefined
+                          }
+                        >
+                          <AccessorySprite id={pet.accessory} emoji={emoji} width={`${1.1 * (pos?.s ?? 1)}em`} />
+                        </span>
+                      )
+                    })()}
+                  </span>
                 )}
                 <span className="room-pet-name">{pet.name}</span>
                 {isActive && <span className="room-pet-active-dot" />}

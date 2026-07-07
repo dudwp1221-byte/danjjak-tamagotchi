@@ -11,13 +11,35 @@
   text-align: center;
 }
 
+/* 화장대 거울 무드 — 금테 프레임 + 따뜻한 조명 */
 .closet-stage {
+  position: relative;
   display: flex;
   justify-content: center;
-  padding: 0.75rem;
-  border-radius: 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  padding: 0.9rem 0.75rem;
+  border-radius: 18px;
+  background:
+    radial-gradient(ellipse at 50% 18%, rgba(253, 230, 138, 0.14), transparent 55%),
+    linear-gradient(180deg, rgba(120, 90, 60, 0.22), rgba(40, 32, 48, 0.35)),
+    var(--surface);
+  border: 2px solid rgba(217, 175, 108, 0.55);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 240, 200, 0.12),
+    inset 0 10px 26px rgba(0, 0, 0, 0.22);
+}
+/* 프레임 위 화장대 전구 */
+.closet-stage::before {
+  content: '• • • • •';
+  position: absolute;
+  top: 0.25rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.8rem;
+  letter-spacing: 0.55em;
+  color: rgba(253, 224, 71, 0.75);
+  text-shadow: 0 0 6px rgba(253, 224, 71, 0.6);
+  pointer-events: none;
 }
 
 .closet-avatar-box {
