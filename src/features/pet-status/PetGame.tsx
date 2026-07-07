@@ -768,8 +768,12 @@ export default function PetGame({
   // 상점 구매/사용/착용
   const buyItem = useCallback(
     (item: ShopItem) => {
-      // 도구(진화의 돌 등) — 소모품, 여러 개 보유 가능
+      // 도구(진화의 돌 등) — 소모품. 보유 목록은 중복 없이 관리되므로 다 쓰기 전엔 재구매 불가
       if (item.type === 'tool') {
+        if (pet.ownedItems.includes(item.id)) {
+          showToast('이미 보유 중이에요 — 사용한 뒤 다시 살 수 있어요')
+          return
+        }
         if (pet.coins < item.price) {
           showToast('코인이 부족해요 🥲')
           return

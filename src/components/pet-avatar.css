@@ -168,7 +168,9 @@
 }
 
 /* 반응 애니메이션 (1회) — idle보다 우선 */
-.pa-img.pa-react-hop {
+/* 반응 애니메이션은 wrap 레벨 — 착용 악세서리도 함께 튕긴다.
+   (idle 규칙(.pa-tier-* .pa-img-wrap.is-animated)보다 뒤에 선언되어 반응 중엔 이게 이긴다) */
+.pet-avatar .pa-img-wrap.pa-action-hop {
   animation: pa-hop 0.7s cubic-bezier(0.2, 0.9, 0.24, 1.1);
 }
 @keyframes pa-hop {
@@ -191,7 +193,7 @@
     transform: translateY(0) rotate(0deg) scale(1);
   }
 }
-.pa-img.pa-react-munch {
+.pet-avatar .pa-img-wrap.pa-action-munch {
   animation: pa-munch 0.66s ease;
 }
 @keyframes pa-munch {
@@ -212,7 +214,7 @@
     transform: translateX(0) scale(0.98, 1.04);
   }
 }
-.pa-img.pa-react-wiggle {
+.pet-avatar .pa-img-wrap.pa-action-wiggle {
   animation: pa-wiggle 0.72s ease;
 }
 @keyframes pa-wiggle {
@@ -233,7 +235,7 @@
     transform: translateY(0) rotate(4deg) scale(1);
   }
 }
-.pa-img.pa-react-blink {
+.pet-avatar .pa-img-wrap.pa-action-blink {
   animation: pa-blink 0.4s ease;
 }
 @keyframes pa-blink {
@@ -245,7 +247,7 @@
     transform: scaleY(0.85);
   }
 }
-.pa-img.pa-react-breathe {
+.pet-avatar .pa-img-wrap.pa-action-breathe {
   animation: pa-breathe 0.9s ease;
 }
 @keyframes pa-breathe {

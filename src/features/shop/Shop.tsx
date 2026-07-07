@@ -52,6 +52,8 @@ const CLOSET_PREMIUM = SHOP_ITEMS.filter(
 
 export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet, embedded }: ShopProps) {
   const [tab, setTab] = useState<ShopTab>('items')
+  // 아이템 탭 내 분류 칩
+  const [itemCat, setItemCat] = useState<'treat' | 'gift' | 'deco' | 'prestige' | 'material'>('treat')
   // 사기 전에 입어보기 — 선택한 꾸미기 아이템 (악세서리/배경)
   const [preview, setPreview] = useState<ShopItem | null>(null)
   // 프리미엄 상태 변경 시 강제 리렌더용
@@ -347,65 +349,133 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
         </div>
       )}
 
-      {tab === 'items' && (
-        <>
-          <p className="shop-season">
-            {season.emoji} {season.name} 시즌 한정 아이템이 있어요!
-          </p>
+      {tab === 'items' && (() => {
+        // 이미 보유한 착용형·재료는 목록에서 숨긴다 — 관리는 🎒 가방, 전체 조망은 옷장 탭.
+        const notOwned = (i: ShopItem) => !ownsItem(i)
+        const deco = [...accessories, ...backgrounds]
+        const decoLeft = deco.filter(notOwned)
+        const prestigeLeft = prestige.filter(notOwned)
+        const materialsLeft = materials.filter(notOwned)
+        const CATS = [
+          { key: 'treat' as const, label: '🍰 간식' },
+          { key: 'gift' as const, label: '🎁 선물' },
+          { key: 'deco' as const, label: '👗 치장' },
+          { key: 'prestige' as const, label: '✨ 컬렉션' },
+          { key: 'material' as const, label: '🧪 재료' },
+        ]
+        return (
+          <>
+            {/* 분류 칩 — 한 번에 한 분류만 보여줘 목록을 짧고 깔끔하게 */}
+            <div className="shop-chips">
+              {CATS.map((c) => (
+                <button
+                  key={c.key}
+                  type="button"
+                  className={'shop-chip' + (itemCat === c.key ? ' active' : '')}
+                  onClick={() => setItemCat(c.key)}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
 
-          <p className="shop-cat">🎀 꾸미기</p>
-          <p className="shop-section-label">악세서리 (펫)</p>
-          <div className="shop-list">{accessories.map(renderItem)}</div>
-          <p className="shop-section-label">배경 (방)</p>
-          <div className="shop-list">{backgrounds.map(renderItem)}</div>
-          <p className="shop-section-label">✨ 컬렉션 (고가 한정 — 오래 함께한 단짝의 목표)</p>
-          <div className="shop-list">{prestige.map(renderItem)}</div>
+            {itemCat === 'treat' && (
+              <>
+                <p className="shop-section-label">간식 — 즉시 스탯 회복</p>
+                <div className="shop-list">{treats.map(renderItem)}</div>
+              </>
+            )}
 
-          <p className="shop-cat">💗 케어</p>
-          <p className="shop-section-label">간식 (즉시 스탯 회복)</p>
-          <div className="shop-list">{treats.map(renderItem)}</div>
-          <p className="shop-section-label">🎁 선물 (선물함에 모아 → 선물하기로 애정·유대 ↑)</p>
-          <div className="shop-list">
-            {GIFT_ITEMS.map((g) => {
-              const owned = pet.gifts[g.id] ?? 0
-              const affordable = pet.coins >= g.price
-              return (
-                <div key={g.id} className="shop-item">
-                  <span className="shop-emoji">{g.emoji}</span>
-                  <div className="shop-info">
-                    <span className="shop-name">
-                      {g.name}
-                      {owned > 0 && <span className="shop-owned"> · 보유 {owned}</span>}
-                    </span>
-                    <span className="shop-desc">{g.desc}</span>
-                  </div>
-                  <button
-                    type="button"
-                    className={'shop-buy' + (!affordable ? ' disabled' : '')}
-                    disabled={!affordable}
-                    onClick={() => onBuy(g)}
-                  >
-                    🪙 {g.price}
-                  </button>
+            {itemCat === 'gift' && (
+              <>
+                <p className="shop-section-label">선물함에 모아 → 선물하기로 애정·유대 ↑</p>
+                <div className="shop-list">
+                  {GIFT_ITEMS.map((g) => {
+                    const owned = pet.gifts[g.id] ?? 0
+                    const affordable = pet.coins >= g.price
+                    return (
+                      <div key={g.id} className="shop-item">
+                        <span className="shop-emoji">{g.emoji}</span>
+                        <div className="shop-info">
+                          <span className="shop-name">
+                            {g.name}
+                            {owned > 0 && <span className="shop-owned"> · 보유 {owned}</span>}
+                          </span>
+                          <span className="shop-desc">{g.desc}</span>
+                        </div>
+                        <button
+                          type="button"
+                          className={'shop-buy' + (!affordable ? ' disabled' : '')}
+                          disabled={!affordable}
+                          onClick={() => onBuy(g)}
+                        >
+                          🪙 {g.price}
+                        </button>
+                      </div>
+                    )
+                  })}
                 </div>
-              )
-            })}
-          </div>
+              </>
+            )}
 
-          <p className="shop-cat">🧪 진화·각성 재료</p>
-          <p className="shop-section-label">진화의 돌 · 십이지 부적 (특수 진화·각성에 사용)</p>
-          <div className="shop-list">{materials.map(renderItem)}</div>
-        </>
-      )}
+            {itemCat === 'deco' && (
+              <>
+                <p className="shop-season">
+                  {season.emoji} {season.name} 시즌 한정 아이템이 있어요!
+                </p>
+                <p className="shop-section-label">
+                  악세서리 · 방 테마{' '}
+                  <span className="shop-closet-rate">보유 {deco.length - decoLeft.length}/{deco.length}</span>
+                </p>
+                <div className="shop-list">{decoLeft.map(renderItem)}</div>
+                {decoLeft.length === 0 && (
+                  <p className="shop-alldone">지금 살 수 있는 건 전부 모았어요! 🎉 착용은 🎒 가방에서</p>
+                )}
+              </>
+            )}
 
-      {tab === 'furniture' && (
-        <>
-          <p className="shop-season">
-            🪑 방에 가구를 두면 펫의 행동과 진화에 영향을 줘요!
-          </p>
-          <div className="shop-list">{FURNITURE_ITEMS.map(renderFurniture)}</div>
-        </>
-      )}
+            {itemCat === 'prestige' && (
+              <>
+                <p className="shop-section-label">
+                  ✨ 컬렉션 — 고가 한정, 오래 함께한 단짝의 목표{' '}
+                  <span className="shop-closet-rate">보유 {prestige.length - prestigeLeft.length}/{prestige.length}</span>
+                </p>
+                <div className="shop-list">{prestigeLeft.map(renderItem)}</div>
+                {prestigeLeft.length === 0 && (
+                  <p className="shop-alldone">컬렉션을 전부 모았어요! 🏆</p>
+                )}
+              </>
+            )}
+
+            {itemCat === 'material' && (
+              <>
+                <p className="shop-section-label">진화의 돌 · 십이지 부적 — 특수 진화·각성에 사용 (소모품)</p>
+                <div className="shop-list">{materialsLeft.map(renderItem)}</div>
+                {materialsLeft.length === 0 && (
+                  <p className="shop-alldone">재료를 모두 보유 중 — 사용하면 다시 살 수 있어요</p>
+                )}
+              </>
+            )}
+          </>
+        )
+      })()}
+
+      {tab === 'furniture' && (() => {
+        const left = FURNITURE_ITEMS.filter((f) => !pet.furniture.includes(f.id))
+        return (
+          <>
+            <p className="shop-season">
+              🪑 가구는 케어·성장에 실제 보너스를 줘요! 배치는 🎒 가방에서
+            </p>
+            <p className="shop-section-label">
+              가구{' '}
+              <span className="shop-closet-rate">보유 {FURNITURE_ITEMS.length - left.length}/{FURNITURE_ITEMS.length}</span>
+            </p>
+            <div className="shop-list">{left.map(renderFurniture)}</div>
+            {left.length === 0 && <p className="shop-alldone">가구를 전부 모았어요! 🎉 배치는 🎒 가방에서</p>}
+          </>
+        )
+      })()}
 
       {tab === 'closet' && (
         <>
