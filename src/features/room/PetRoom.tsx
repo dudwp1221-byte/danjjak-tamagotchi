@@ -8,6 +8,7 @@ import { loadGraduates, type Graduate } from '../../utils/storage'
 import { graduateForm } from '../../utils/graduation'
 import { FURNITURE_ITEMS } from '../../utils/furniture'
 import Memorial from '../graduation/Memorial'
+import FurnitureSprite from '../../components/FurnitureSprite'
 import './room.css'
 
 interface RoomPet {
@@ -151,7 +152,7 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
                 }}
                 title={f.name}
               >
-                {f.emoji}
+                <FurnitureSprite id={f.id} emoji={f.emoji} />
               </div>
             ))
           )}

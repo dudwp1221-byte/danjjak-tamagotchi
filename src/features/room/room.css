@@ -127,6 +127,14 @@
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
   pointer-events: none;
 }
+.room-furniture .furn-sprite {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 44px;
+  max-height: 36px;
+  image-rendering: pixelated;
+}
 
 /* 펫 */
 .room-pet {

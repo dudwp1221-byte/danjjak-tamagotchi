@@ -21,6 +21,7 @@ import {
 } from '../../utils/premium'
 import { ITEM_SETS, isSetComplete, pieceInfo } from '../../utils/sets'
 import PetAvatar from '../../components/PetAvatar'
+import FurnitureSprite from '../../components/FurnitureSprite'
 import Modal from '../../components/Modal'
 import './shop.css'
 
@@ -140,7 +141,9 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
     const affordable = pet.coins >= item.price
     return (
       <div key={item.id} className="shop-item">
-        <span className="shop-emoji">{item.emoji}</span>
+        <span className="shop-emoji">
+          <FurnitureSprite id={item.id} emoji={item.emoji} />
+        </span>
         <div className="shop-info">
           <span className="shop-name">{item.name}</span>
           <span className="shop-desc">{item.desc}</span>

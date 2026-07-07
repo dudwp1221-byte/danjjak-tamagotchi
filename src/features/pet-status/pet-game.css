@@ -28,6 +28,15 @@
   font-size: 2rem;
   z-index: 5;
 }
+/* 가구 도트 스프라이트 — 크기는 부모 font-size에 비례(드래그 시 확대 유지) */
+.pg-furniture-item .furn-sprite {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 3.4em;
+  max-height: 2.7em;
+  image-rendering: pixelated;
+}
 
 .pet-game {
   display: flex;

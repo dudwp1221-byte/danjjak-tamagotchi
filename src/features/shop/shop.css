@@ -81,6 +81,15 @@
   width: 2rem;
   text-align: center;
 }
+.shop-emoji .furn-sprite {
+  display: block;
+  margin: 0 auto;
+  width: auto;
+  height: auto;
+  max-width: 2rem;
+  max-height: 1.8rem;
+  image-rendering: pixelated;
+}
 .shop-info {
   flex: 1;
   display: flex;

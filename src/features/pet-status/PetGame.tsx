@@ -86,6 +86,7 @@ import GiftPicker from '../gift/GiftPicker'
 import Graduation from '../graduation/Graduation'
 import MoodCheck, { getTodayMood } from '../mood/MoodCheck'
 import ClosetEditor from '../closet/ClosetEditor'
+import FurnitureSprite from '../../components/FurnitureSprite'
 import PomodoroTimer from '../timer/PomodoroTimer'
 import ScheduleManager from '../schedule/ScheduleManager'
 import ScheduleAlarm from '../schedule/ScheduleAlarm'
@@ -1042,10 +1043,10 @@ export default function PetGame({
             {FURNITURE_ITEMS.filter((f) => pet.furniture.includes(f.id)).map((f, i, arr) => {
               const dragPos = furnDrag?.id === f.id ? furnDrag : null
               const saved = pet.furniturePos?.[f.id]
-              // 저장된 배치가 없으면 바닥을 따라 균등 분산 (지그재그로 겹침 방지)
+              // 저장된 배치가 없으면 바닥을 따라 균등 분산 (지그재그로 겹침 방지, 레벨바 위)
               const pos = dragPos ?? saved ?? {
                 x: 10 + (i * 80) / Math.max(arr.length - 1, 1),
-                y: 72 + (i % 2) * 10,
+                y: 60 + (i % 2) * 9,
               }
               return (
                 <span
@@ -1078,7 +1079,7 @@ export default function PetGame({
                   }}
                   onPointerCancel={() => setFurnDrag(null)}
                 >
-                  {f.emoji}
+                  <FurnitureSprite id={f.id} emoji={f.emoji} />
                 </span>
               )
             })}
