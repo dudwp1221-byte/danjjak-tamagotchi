@@ -19,8 +19,8 @@ interface IntroProps {
 
 const SEEN_KEY = 'danjjak.introSeen.v1'
 const LAST = 4
-// 각 장면 자동 진행 시간(ms). 마지막 장면은 멈춤.
-const DURATIONS = [5200, 4600, 5200, 5200]
+// 각 장면 자동 진행 시간(ms). 마지막 장면은 멈춤. (대사 읽을 여유를 넉넉히)
+const DURATIONS = [7000, 6200, 7000, 6600]
 
 function prefersReduced(): boolean {
   return (
@@ -39,7 +39,8 @@ const isElectronEnv =
   !!(window as { electronBridge?: unknown }).electronBridge
 
 export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) {
-  const skip = prefersReduced() || localStorage.getItem(SEEN_KEY) === '1'
+  // 매 방문마다 인트로를 처음부터 재생 (모션 최소화 설정일 때만 곧장 타이틀로)
+  const skip = prefersReduced()
   const [step, setStep] = useState(skip ? LAST : 0)
   const [soundOn, setSoundOn] = useState(!isMuted())
   const beeped = useRef(false)

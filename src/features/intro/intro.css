@@ -242,10 +242,13 @@
   font-size: 1.9rem;
   font-weight: 800;
   letter-spacing: -0.01em;
-  background: linear-gradient(135deg, #fcd34d, #fb923c);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  /* 그라데이션 클립은 밝은 컷 위에서 검게 묻혀 보여, 단색 골드로 확실하게 */
+  background: none;
+  color: #ffd24a;
+  -webkit-text-fill-color: #ffd24a;
+  text-shadow:
+    0 2px 6px rgba(8, 6, 2, 0.9),
+    0 0 16px rgba(160, 90, 10, 0.6) !important;
 }
 
 /* 다마고치 기기 */
@@ -340,10 +343,10 @@
   font-size: 2.7rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #7dd3fc, #c4b5fd);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  /* 밝은 부화 컷 위에서도 또렷하게 — 단색 밝은 흰색 + 진한 그림자 */
+  background: none;
+  color: #f4f7ff;
+  -webkit-text-fill-color: #f4f7ff;
   animation: fade-up 0.9s ease 0.35s both;
 }
 .intro-subtitle {
