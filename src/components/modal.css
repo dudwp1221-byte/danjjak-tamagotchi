@@ -101,3 +101,19 @@
     animation: none;
   }
 }
+
+/* 제목 앞 UI 아이콘 — 글자 높이에 맞춰 정렬 */
+.modal-header h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.modal-title-icon {
+  display: inline-flex;
+  width: 1.15em;
+  height: 1.15em;
+}
+.modal-title-icon .ui-icon {
+  width: 100%;
+  height: 100%;
+}

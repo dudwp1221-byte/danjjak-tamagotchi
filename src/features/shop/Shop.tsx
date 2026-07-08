@@ -304,6 +304,7 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
   return (
     <Modal
       title="🛍️ 상점"
+      titleIcon={<UIIcon name="tab_shop" emoji="🛍️" />}
       variant={embedded ? 'inline' : 'modal'}
       onClose={onClose}
       headerExtra={

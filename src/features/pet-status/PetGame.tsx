@@ -1440,7 +1440,7 @@ export default function PetGame({
       </section>{/* /page 0 (케어 홈) */}
 
       <section className="pg-page pg-page-scroll" style={{ order: 1 }} data-tab={1}>
-        <Modal variant="inline" title="🎮 미니게임" onClose={() => {}}>
+        <Modal variant="inline" title="🎮 미니게임" titleIcon={<UIIcon name="tab_game" emoji="🎮" />} onClose={() => {}}>
           <div className="pg-gamehub">
             <button type="button" className="pg-game-card" onClick={() => setModal('catch')}>
               <span className="pg-game-emoji">🍙</span>

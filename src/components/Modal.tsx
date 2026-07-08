@@ -4,6 +4,8 @@ import './modal.css'
 
 interface ModalProps {
   title: string
+  /** 제목 앞에 붙는 아이콘 (UIIcon 등). 주면 title 문자열의 선행 이모지 대신 이걸 표시 */
+  titleIcon?: ReactNode
   onClose: () => void
   children: ReactNode
   /** 헤더 우측에 표시할 추가 정보 (예: 코인 잔액) */
@@ -17,7 +19,13 @@ interface ModalProps {
 }
 
 /** 화면 중앙에 뜨는 재사용 모달. 배경 클릭/Esc로 닫힌다. */
-export default function Modal({ title, onClose, children, headerExtra, variant = 'modal' }: ModalProps) {
+export default function Modal({ title, titleIcon, onClose, children, headerExtra, variant = 'modal' }: ModalProps) {
+  // 아이콘을 주면 title에서 선행 이모지를 떼고 텍스트만 (aria-label은 원본 title 유지)
+  const titleNode = titleIcon ? (
+    <><span className="modal-title-icon">{titleIcon}</span> {title.replace(/^[^\p{L}\p{N}]+/u, '')}</>
+  ) : (
+    title
+  )
   useEffect(() => {
     if (variant === 'inline') return
     const onKey = (e: KeyboardEvent) => {
@@ -37,7 +45,7 @@ export default function Modal({ title, onClose, children, headerExtra, variant =
     return (
       <section className="modal modal--inline" aria-label={title}>
         <header className="modal-header">
-          <h3>{title}</h3>
+          <h3>{titleNode}</h3>
           {headerExtra && <div className="modal-header-right">{headerExtra}</div>}
         </header>
         <div className="modal-body">{children}</div>
@@ -56,7 +64,7 @@ export default function Modal({ title, onClose, children, headerExtra, variant =
         onClick={(e) => e.stopPropagation()}
       >
         <header className="modal-header">
-          <h3>{title}</h3>
+          <h3>{titleNode}</h3>
           <div className="modal-header-right">
             {headerExtra}
             <button

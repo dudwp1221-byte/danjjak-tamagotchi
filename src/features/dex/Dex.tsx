@@ -19,6 +19,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { loadDex, loadDexClaims, addDexClaim } from '../../utils/storage'
 import { EVOLUTION_CONDITIONS } from '../../utils/evolution-conditions'
+import UIIcon from '../../components/UIIcon'
 import Modal from '../../components/Modal'
 import './dex.css'
 
@@ -182,6 +183,7 @@ export default function Dex({ currentForm, onReward, onClose, embedded }: DexPro
     )}
     <Modal
       title="📚 진화 도감"
+      titleIcon={<UIIcon name="tab_dex" emoji="📚" />}
       variant={embedded ? 'inline' : 'modal'}
       onClose={onClose}
       headerExtra={

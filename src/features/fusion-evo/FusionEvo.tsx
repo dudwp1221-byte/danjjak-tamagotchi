@@ -16,6 +16,7 @@ const FUSE_FLAVOR: Record<string, string> = {
 import { levelFromXp, stageFromLevel } from '../../utils/progression'
 import { petSpriteUrl } from '../../utils/pet'
 import PetAvatar from '../../components/PetAvatar'
+import UIIcon from '../../components/UIIcon'
 import Modal from '../../components/Modal'
 import './fusion-evo.css'
 
@@ -56,7 +57,7 @@ export default function FusionEvo({
 
   if (!selfEligible || partners.length === 0) {
     return (
-      <Modal title="⚗️ 펫 합성" variant={modalVariant} onClose={onClose}>
+      <Modal title="⚗️ 펫 합성" titleIcon={<UIIcon name="tab_fusion" emoji="⚗️" />} variant={modalVariant} onClose={onClose}>
         <p className="fe-empty">
           펫 합성은 <strong>레벨 {FUSION_MIN_LEVEL} 이상</strong> 펫 두 마리가
           필요해요.
@@ -72,7 +73,7 @@ export default function FusionEvo({
   // 합성 연출 중
   if (phase === 'fusing' && partner && result) {
     return (
-      <Modal title="⚗️ 합성 중…" variant={modalVariant} onClose={() => {}}>
+      <Modal title="⚗️ 합성 중…" titleIcon={<UIIcon name="tab_fusion" emoji="⚗️" />} variant={modalVariant} onClose={() => {}}>
         <div className="fe-fusing">
           <div className="fe-orbit">
             <span className="fe-orb fe-orb-a">{myForm.emoji}</span>
@@ -90,7 +91,7 @@ export default function FusionEvo({
   // 합성 결과 공개
   if (phase === 'done' && partner && result) {
     return (
-      <Modal title="⚗️ 합성 완성!" variant={modalVariant} onClose={() => onFuse(partner.id, result.id)}>
+      <Modal title="⚗️ 합성 완성!" titleIcon={<UIIcon name="tab_fusion" emoji="⚗️" />} variant={modalVariant} onClose={() => onFuse(partner.id, result.id)}>
         <div className="fe-preview fe-done">
           <span className="fe-burst">✨</span>
           <PetAvatar
