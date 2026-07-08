@@ -66,7 +66,8 @@
   height: 1em;
   vertical-align: -0.12em;
   object-fit: contain;
-  image-rendering: pixelated;
+  /* 디테일 일러스트라 축소 시 부드럽게 — pixelated는 자글거림을 만든다 (도트가 아님) */
+  image-rendering: auto;
 }
 
 * {
