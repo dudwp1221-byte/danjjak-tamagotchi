@@ -176,8 +176,8 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
       {/* 장면 3 — 서랍 속 알 (컷3, 두근거리는 줌인) */}
       {step === 3 && (
         <div className="intro-scene" key="s3">
-          <p className="intro-line intro-l1">그런데 오늘, 책상 서랍 속에서 —</p>
-          <p className="intro-line intro-l2 intro-line-bottom">작은 온기가 반짝이고 있었어요.</p>
+          <p className="intro-line intro-l1">그 친구가 그리웠던 걸까요 —</p>
+          <p className="intro-line intro-l2 intro-line-bottom">오늘, 책상 서랍 속에서 작은 온기가 반짝였어요.</p>
         </div>
       )}
 
