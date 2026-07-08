@@ -30,16 +30,37 @@ function App() {
   const [pets, setPets] = useState<Pet[]>([])
   const [activeId, setActiveIdState] = useState<string | null>(null)
   const [revealNew, setRevealNew] = useState(false)
-  const [guest, setGuest] = useState(() => localStorage.getItem(GUEST_KEY) === '1')
   const [forceLobby, setForceLobby] = useState(false)
 
   const activePet = pets.find((p) => p.id === activeId) ?? null
 
   const { user, ready } = useAuth()
 
-  // 로그인되면 강제 로비 해제
+  // 인트로 "만나러 가기"/로그인 완료 후 실제 게임으로 진입:
+  // 저장된 펫이 있으면 이어서(play), 없으면 새로 만들기(create).
+  const enterGame = () => {
+    const list = loadPets()
+    setPets(list)
+    if (list.length > 0) {
+      const stored = getActiveId()
+      const aid = stored && list.some((p) => p.id === stored) ? stored : list[0].id
+      setActiveId(aid)
+      setActiveIdState(aid)
+      discoverSpecies(list.find((p) => p.id === aid)!.form)
+      setScreen('play')
+    } else {
+      setScreen('create')
+    }
+  }
+
+  // 로비에서 로그인 성공 시(로비를 띄운 상태에서만) 게임으로 진입.
+  // 이미 로그인된 채 재방문한 경우엔 인트로부터 보게 두고, "만나러 가기"로 진입한다.
   useEffect(() => {
-    if (user) setForceLobby(false)
+    if (user && forceLobby) {
+      setForceLobby(false)
+      enterGame()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   // 로비에 머무는 동안 바탕화면 펫이 XP를 적립하므로, 게임 화면으로 돌아올 때
@@ -70,7 +91,9 @@ function App() {
     return bridge?.onOpenAccount?.(() => setForceLobby(true))
   }, [])
 
-  // 시작 시 테마 적용 + 보관함 로드
+  // 시작 시 테마 적용 + 보관함 로드.
+  // 저장된 펫이 있어도 게임으로 자동 점프하지 않는다 — 매 방문마다 인트로부터
+  // 보여주고, 인트로의 "만나러 가기"에서 enterGame()으로 이어서 진입한다.
   useEffect(() => {
     applyTheme(loadSettings().theme)
     const list = loadPets()
@@ -82,9 +105,6 @@ function App() {
       setActiveId(aid)
       setActiveIdState(aid)
       setPets(list)
-      const ap = list.find((p) => p.id === aid)!
-      discoverSpecies(ap.form)
-      setScreen('play')
     }
   }, [])
 
@@ -124,16 +144,15 @@ function App() {
 
   const handleGuest = () => {
     localStorage.setItem(GUEST_KEY, '1')
-    setGuest(true)
     setForceLobby(false)
+    enterGame()
   }
 
   const handleLogout = async () => {
     await logOut()
     localStorage.removeItem(GUEST_KEY)
-    setGuest(false)
-    setForceLobby(false)
-    // user가 null이 되며 로비가 다시 표시됨
+    // 로그아웃하면 로비(로그인 화면)를 다시 띄운다
+    setForceLobby(true)
   }
 
   // 인증 확인 중에는 깜빡임 방지용 빈 화면
@@ -143,7 +162,9 @@ function App() {
 
   const isElectron = typeof window !== 'undefined' && !!(window as { electronBridge?: unknown }).electronBridge
 
-  const showLobby = forceLobby || (firebaseReady && !user && !guest)
+  // 로비(로그인 화면)는 사용자가 인트로/설정에서 로그인을 누르거나 로그아웃했을 때만 뜬다.
+  // 매 방문의 첫 화면은 항상 인트로 → 인트로의 로그인 버튼으로 로비 진입.
+  const showLobby = forceLobby
   if (showLobby) {
     return (
       <main className="app">
@@ -158,7 +179,7 @@ function App() {
       {isElectron && <div className="app-drag" aria-hidden="true" />}
       {screen === 'title' && (
         <Intro
-          onStart={() => setScreen('create')}
+          onStart={enterGame}
           onAccount={() => setForceLobby(true)}
           accountLabel={user ? `☁️ ${displayId(user)}` : '☁️ 로그인'}
         />
