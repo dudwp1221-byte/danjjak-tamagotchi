@@ -43,9 +43,9 @@ import { lineQuestsFor } from '../../utils/quests'
 import { awakenCond, AWAKEN_CONDS, canAttemptAwaken, isAwakenEligible, type AwakenCtx } from '../../utils/awaken'
 import { backgroundCss, wornAccessories, type ShopItem } from '../../utils/items'
 import {
-  focusBuffInfo,
   activeFocusSession,
-  completeDueFocusSession,
+  isFocusDue,
+  claimFocusSession,
   abortFocusSession,
   FOCUS_IDLE_FAIL_SEC,
 } from '../../utils/focus'
@@ -273,9 +273,9 @@ export default function PetGame({
     return Object.keys(AWAKEN_CONDS).some((id) => isAwakenEligible(id, ctx))
   }, [pet, level])
   const giftCount = Object.values(pet.gifts).reduce((a, b) => a + b, 0)
-  // 집중 타이머 버프/세션 — usePet 틱(2초)마다 리렌더되므로 매 렌더 재계산으로 충분
-  const focusBuff = focusBuffInfo()
+  // 집중 세션 — usePet 틱(2초)마다 리렌더되므로 매 렌더 재계산으로 충분
   const focusSession = activeFocusSession()
+  const focusDue = focusSession ? isFocusDue() : false
   const { stats } = pet
   const [settings, setSettings] = useState<AppSettings>(loadSettings)
 
@@ -666,10 +666,6 @@ export default function PetGame({
       showToast('💼 업무 감지! 일하는 동안 XP 가속 ⚡')
       setSpeech('오늘도 화이팅이에요! 💪')
       window.setTimeout(() => setSpeech(null), 3500)
-    } else if (workMode === 'focused' && prev !== 'focused') {
-      showToast('🔥 집중 모드 진입! XP 2배 가속')
-      setSpeech('우와, 엄청 집중하고 있어요! 🔥')
-      window.setTimeout(() => setSpeech(null), 3500)
     } else if (workMode === 'overtime' && prev !== 'overtime') {
       showToast('🌙 야근 버닝타임! XP 3배 가속')
     }
@@ -780,25 +776,15 @@ export default function PetGame({
     return () => window.clearInterval(id)
   }, [reward, showToast])
 
-  // 집중 세션 상시 판정 — 타이머 창이 닫혀 있어도 완료 보상·자리 비움 실패가 동작한다
+  // 집중 세션 상시 판정 — 창이 닫혀 있어도 자리 비움 실패가 동작. 완료 보상은 '업무 완료' 버튼으로 수령.
   const focusIdleSecRef = useRef(0)
+  const [, setSecTick] = useState(0)
   useEffect(() => {
     const id = window.setInterval(() => {
-      const r = completeDueFocusSession()
-      if (r) {
-        focusIdleSecRef.current = 0
-        if (r.capped) {
-          showToast('🍅 세션 완료! (오늘 보상은 이미 다 받았어요)')
-        } else {
-          const parts = [`+${r.xp} XP`, `${r.buffMin}분간 ${r.mult}배 성장`]
-          if (r.coins > 0) parts.push(`+${r.coins}🪙`)
-          reward(r.coins, r.xp)
-          showToast(`🍅 집중 완주! ${parts.join(' · ')}`)
-        }
-        return
-      }
-      // 데스크톱: 세션 중 3분 연속 자리 비움이면 실패
-      if (isElectron && activeFocusSession()) {
+      setSecTick((n) => n + 1) // 카운트다운/완료 버튼 상태 갱신
+      // 데스크톱: 진행 중(아직 60분 전) 세션에서 3분 연속 자리 비움이면 실패
+      const s = activeFocusSession()
+      if (isElectron && s && Date.now() < s.endsAt) {
         if (workMode === 'idle') {
           focusIdleSecRef.current += 1
           if (focusIdleSecRef.current >= FOCUS_IDLE_FAIL_SEC) {
@@ -809,10 +795,26 @@ export default function PetGame({
         } else {
           focusIdleSecRef.current = 0
         }
+      } else {
+        focusIdleSecRef.current = 0
       }
     }, 1000)
     return () => window.clearInterval(id)
-  }, [isElectron, workMode, reward, showToast])
+  }, [isElectron, workMode, showToast])
+
+  // '업무 완료' — 60분 채운 집중 세션의 보상 수령: 대량 XP + 피로(스탯 감소)
+  const claimFocus = useCallback(() => {
+    const r = claimFocusSession()
+    if (!r) return
+    if (r.xp > 0) {
+      reward(0, r.xp)
+      adjust({ hunger: -r.drain.hunger, energy: -r.drain.energy, health: -r.drain.health })
+      showToast(`🎉 업무 완료! +${r.xp} XP · 열심히 일해서 조금 지쳤어요 😮‍💨`)
+    } else {
+      showToast('오늘 집중은 다 채웠어요 — 내일 또! 🌙')
+    }
+    bridge?.notifyPetChanged?.()
+  }, [reward, adjust, showToast, bridge])
 
   // 상점 구매/사용/착용
   const buyItem = useCallback(
@@ -1249,30 +1251,35 @@ export default function PetGame({
           title={
             isElectron
               ? `펫은 가만히 둬도 자라고(방치), 컴퓨터로 일하면 더 빨리 자라요. 오늘 업무 ${todayWorkMin}분${todayOvertimeMin > 0 ? ` · 야근 ${todayOvertimeMin}분` : ''} · 누르면 집중 타이머`
-              : '웹에서는 업무 자동 감지가 안 돼요 (데스크톱 앱 전용). 집중 타이머를 완주하면 XP 버프를 받아요!'
+              : '웹에서는 업무 자동 감지가 안 돼요 (데스크톱 앱 전용). 집중 타이머 60분을 완료하면 대량 XP를 받아요!'
           }
         >
           {workMode === 'idle'
             ? `💤 방치 성장중 · ${isElectron ? '일하면 XP 가속' : '🍅 타이머로 가속'}`
             : `${WORK_MODE_META[workMode].emoji} ${WORK_MODE_META[workMode].label} · XP 가속 중 ⚡`}
         </button>
-        {focusSession && (
+        {focusSession && !focusDue && (
           <button
             type="button"
             className="pg-work-badge pg-focus-buff"
             onClick={() => setModal('timer')}
-            title="집중 세션 진행 중 — 창을 닫아도 계속 돌아가요. 누르면 타이머 열기"
+            title="집중 모드 진행 중 — 창을 닫아도 계속 돌아가요. 누르면 타이머 열기"
           >
-            🍅 집중 중 · {(() => {
+            🔥 집중 모드 · {(() => {
               const left = Math.max(0, Math.ceil((focusSession.endsAt - Date.now()) / 1000))
               return `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`
             })()} 남음
           </button>
         )}
-        {focusBuff && (
-          <div className="pg-work-badge pg-focus-buff" title="집중 버프 — 그동안 업무·케어 XP가 배로 붙어요">
-            ⚡ ×{focusBuff.mult} 성장 중 · {focusBuff.remainMin}분
-          </div>
+        {focusDue && (
+          <button
+            type="button"
+            className="pg-work-badge pg-focus-done"
+            onClick={claimFocus}
+            title="60분 집중 완료! 눌러서 대량 경험치를 받아요 (열심히 일해 조금 지쳐요)"
+          >
+            ✅ 업무 완료 — 보상 받기 🎉
+          </button>
         )}
 
         {canEvolve && (
@@ -1406,7 +1413,7 @@ export default function PetGame({
               <span className="pg-drawer-label">케어</span>
               <div className="pg-drawer-row">
                 <button type="button" className="pg-drawer-btn" onClick={() => setModal('chat')} title="펫과 대화 (AI · 설정에서 키 입력)"><UIIcon name="menu_chat" emoji="💬" /> 대화</button>
-                <button type="button" className="pg-drawer-btn" onClick={() => setModal('timer')} title="1시간 집중 타이머 — 완주하면 XP 버프"><UIIcon name="menu_timer" emoji="🍅" /> 집중 타이머</button>
+                <button type="button" className="pg-drawer-btn" onClick={() => setModal('timer')} title="60분 집중 타이머 — 완료하면 대량 XP (하루 3번)"><UIIcon name="menu_timer" emoji="🍅" /> 집중 타이머</button>
                 <button type="button" className="pg-drawer-btn" onClick={() => setModal('schedule')} title="일정 등록 — 시간 되면 펫이 알려줘요"><UIIcon name="menu_schedule" emoji="📅" /> 일정</button>
               </div>
             </div>
@@ -1859,7 +1866,7 @@ export default function PetGame({
         <ClosetEditor pet={pet} onUpdatePet={update} onClose={() => setModal('bag')} />
       )}
       {modal === 'timer' && (
-        <PomodoroTimer petName={pet.name} isElectron={isElectron} onClose={() => setModal(null)} />
+        <PomodoroTimer petName={pet.name} isElectron={isElectron} onClaim={claimFocus} onClose={() => setModal(null)} />
       )}
       {modal === 'schedule' && (
         <ScheduleManager

@@ -350,6 +350,35 @@ body, html {
   }
 }
 
+/* 집중 완료 — 업무 완료 버튼 (펫 위에 눈에 띄게) */
+.dp-focus-done {
+  position: absolute;
+  bottom: 96px;
+  left: 4px;
+  z-index: 12;
+  border: none;
+  border-radius: 12px;
+  padding: 6px 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(90deg, #22c55e, #10b981);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-app-region: no-drag;
+  animation: dp-focus-done-pulse 1.2s ease-in-out infinite;
+}
+.dp-focus-done:hover { filter: brightness(1.08); }
+.dp-focus-done:active { transform: scale(0.94); }
+@keyframes dp-focus-done-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dp-focus-done { animation: none; }
+}
+
 /* 착용 악세서리 — 게임 창과 동일하게 머리 위 표시 */
 .dp-accessory {
   position: absolute;

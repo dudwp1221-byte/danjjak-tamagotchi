@@ -16,7 +16,6 @@ import { upsertPet, loadPets, trickleInactivePets, PETS_KEY } from '../utils/sto
 import { PROFILE_KEYS } from '../utils/evolution-conditions'
 import { useAccount } from './useAccount'
 import { addCoins as acctAddCoins, spendCoins as acctSpendCoins, refreshAccount } from '../utils/account'
-import { focusMultiplier } from '../utils/focus'
 
 const TICK_MS = 2000
 /** 오프라인(앱 꺼둔 동안) 감소 하한선 */
@@ -119,8 +118,7 @@ export function usePet(initialPet: Pet) {
     const p = petRef.current
     // 시간당 제한 + 큰 XP + 속성 배수는 공용 util에서 (바탕화면 펫과 동일 규칙)
     const { result, xp: baseXp, coins, nextCareXp } = resolveCare(p, action)
-    // 집중 타이머 버프 — 일하는 동안 돌봐주는 손길에도 XP가 배로 붙는다
-    const xp = Math.round(baseXp * focusMultiplier())
+    const xp = Math.round(baseXp)
 
     // 코인은 계정(주인) 지갑으로
     if (coins > 0) acctAddCoins(coins)

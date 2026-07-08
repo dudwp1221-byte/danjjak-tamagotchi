@@ -69,8 +69,6 @@ const STATE_FILE = path.join(app.getPath('userData'), 'window-state.json')
 
 // 활동 감지 주기(ms) — 짧을수록 키보드·마우스에 빠르게 반응
 const WORK_TICK_MS = 15000
-// 집중 모드 진입에 필요한 연속 활성 틱 수 (20 × 15s = 5분)
-const FOCUS_TICK_THRESHOLD = 20
 // 야근(버닝타임) 시간대: 저녁 7시 ~ 새벽 6시
 const OVERTIME_HOUR_START = 19
 const OVERTIME_HOUR_END = 6
@@ -381,8 +379,8 @@ function buildWorkTickPayload(): { mode: string; consecutiveTicks: number } | nu
     return { mode: 'overtime', consecutiveTicks: consecutiveActiveTicks }
   }
 
-  const mode = consecutiveActiveTicks >= FOCUS_TICK_THRESHOLD ? 'focused' : 'working'
-  return { mode, consecutiveTicks: consecutiveActiveTicks }
+  // 평소 업무 자동 감지는 항상 '업무 중'. '집중 모드'는 오직 집중 타이머로만 진입한다.
+  return { mode: 'working', consecutiveTicks: consecutiveActiveTicks }
 }
 
 app.whenReady().then(async () => {

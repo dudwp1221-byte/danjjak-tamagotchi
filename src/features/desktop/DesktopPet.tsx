@@ -9,6 +9,7 @@ import { levelFromXp, stageFromLevel } from '../../utils/progression'
 import { canEvolveNow } from '../../utils/evolve'
 import { needLine, ambientLine, pokeLine } from '../../utils/desktopTalk'
 import { accessoryEmoji, wornAccessories } from '../../utils/items'
+import { isFocusDue, claimFocusSession } from '../../utils/focus'
 import AccessorySprite from '../../components/AccessorySprite'
 import { normalizePet, petSpriteUrl } from '../../utils/pet'
 import type { Pet } from '../../types/pet'
@@ -56,6 +57,44 @@ export default function DesktopPet() {
   // 저장된 이동 모드를 메인 프로세스에 전달 (펫 창이 뜰 때마다 동기화)
   useEffect(() => {
     ;(window as any).electronBridge?.setPetMoveMode?.(loadPetMoveMode())
+  }, [])
+
+  // 집중 60분 완료 여부 — 완료되면 '업무 완료' 버튼 노출
+  const [focusDue, setFocusDue] = useState(false)
+  useEffect(() => {
+    const check = () => setFocusDue(isFocusDue())
+    check()
+    const id = setInterval(check, 1500)
+    return () => clearInterval(id)
+  }, [])
+
+  // '업무 완료' — 대량 XP + 피로(스탯 감소)를 펫에 적용
+  const claimFocus = useCallback(() => {
+    const r = claimFocusSession()
+    setFocusDue(false)
+    if (!r || r.xp <= 0) return
+    const pets = loadPets()
+    const aid = getActiveId()
+    const raw = (aid && pets.find((p) => p.id === aid)) || pets[0]
+    if (!raw) return
+    const st = raw.stats
+    const updated = normalizePet({
+      ...raw,
+      stats: {
+        ...st,
+        hunger: Math.max(0, st.hunger - r.drain.hunger),
+        energy: Math.max(0, st.energy - r.drain.energy),
+        health: Math.max(0, st.health - r.drain.health),
+      },
+      growth: raw.growth + r.xp,
+      lastUpdated: Date.now(),
+    })
+    upsertPet(updated)
+    setPet(updated)
+    ;(window as any).electronBridge?.notifyPetChanged?.()
+    setSpeech(`업무 완료! +${r.xp} XP 🎉 좀 지쳤어요 😮‍💨`)
+    clearTimeout(speechTimer.current)
+    speechTimer.current = setTimeout(() => setSpeech(null), 4000)
   }, [])
 
   // 백그라운드 XP: 게임 창의 PetGame이 적립 중이 아닐 때(창 닫힘/로비 화면) 바탕화면 펫이 담당 (중복 방지)
@@ -264,6 +303,19 @@ export default function DesktopPet() {
           </span>
         )}
       </div>
+
+      {/* 집중 60분 완료 → 업무 완료 버튼 (대량 XP + 피로) */}
+      {focusDue && (
+        <button
+          type="button"
+          className="dp-focus-done"
+          data-click
+          onClick={claimFocus}
+          title="60분 집중 완료! 눌러서 대량 경험치를 받아요"
+        >
+          ✅ 업무 완료 🎉
+        </button>
+      )}
 
       {/* 이름 — 펫 이미지 아래 중앙 */}
       <div className="dp-info">

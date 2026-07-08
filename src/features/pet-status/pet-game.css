@@ -1168,12 +1168,28 @@
   color: inherit;
   cursor: pointer;
 }
-/* 집중 타이머 버프 표시 칩 */
+/* 집중 모드 진행 칩 */
 .pg-focus-buff {
   background: linear-gradient(90deg, rgba(251, 146, 60, 0.22), rgba(250, 204, 21, 0.18));
   border: 1px solid rgba(251, 146, 60, 0.45);
   color: #fdba74;
-  cursor: default;
+  cursor: pointer;
+}
+/* 집중 60분 완료 — 눈에 띄는 초록 '업무 완료' 버튼 */
+.pg-focus-done {
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.95), rgba(16, 185, 129, 0.95));
+  border: 1px solid rgba(16, 185, 129, 0.9);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  animation: pg-focus-done-pulse 1.2s ease-in-out infinite;
+}
+@keyframes pg-focus-done-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0.5); }
+  50% { transform: scale(1.04); box-shadow: 0 0 14px rgba(16, 185, 129, 0.6); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pg-focus-done { animation: none; }
 }
 .pg-work-idle {
   /* 방 배경 위에서도 읽히게 — 더 진한 칩 배경 + 또렷한 글자 */

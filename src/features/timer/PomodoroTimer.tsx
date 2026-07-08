@@ -1,12 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   loadFocus,
-  focusBuffInfo,
   activeFocusSession,
   startFocusSession,
   abortFocusSession,
+  isFocusDue,
+  canStartFocus,
   FOCUS_DAILY_CAP,
   FOCUS_SESSION_MIN,
+  FOCUS_COMPLETE_XP,
 } from '../../utils/focus'
 import Modal from '../../components/Modal'
 import './pomodoro.css'
@@ -14,6 +16,8 @@ import './pomodoro.css'
 interface PomodoroTimerProps {
   petName: string
   onClose: () => void
+  /** '업무 완료' — 60분을 채운 세션의 보상 수령 (PetGame이 XP+피로를 적용) */
+  onClaim: () => void
   /** 데스크톱(Electron)에서만 자리 비움 자동 실패가 있음 — 안내 문구용 */
   isElectron?: boolean
 }
@@ -34,74 +38,62 @@ const WORK_MSGS = [
 
 /**
  * 집중 타이머 — 세션은 localStorage에 저장되어 이 창을 닫아도 계속 돈다.
- * 완료 보상·자리 비움 판정은 PetGame이 상시 처리하고, 이 컴포넌트는 보기/시작/중단만 담당.
+ * 60분을 채우면 '업무 완료' 버튼으로 대량 XP를 받는다 (하루 3번). 스트릭·버프 없음.
  */
-export default function PomodoroTimer({ petName, onClose, isElectron = false }: PomodoroTimerProps) {
+export default function PomodoroTimer({ petName, onClose, onClaim, isElectron = false }: PomodoroTimerProps) {
   const [, tick] = useState(0)
   const [msg, setMsg] = useState<string | null>(null)
-  // 열려 있는 동안 세션이 자연 종료되면 "완주" 화면을 보여주기 위한 추적
-  const hadSession = useRef(!!activeFocusSession())
-  const [justDone, setJustDone] = useState(false)
 
   useEffect(() => {
-    const id = window.setInterval(() => {
-      const s = activeFocusSession()
-      if (hadSession.current && !s) setJustDone(true)
-      hadSession.current = !!s
-      tick((n) => n + 1)
-    }, 1000)
+    const id = window.setInterval(() => tick((n) => n + 1), 1000)
     return () => window.clearInterval(id)
   }, [])
 
   const focus = loadFocus()
-  const buff = focusBuffInfo()
   const session = activeFocusSession()
+  const due = isFocusDue()
   const remaining = session ? Math.max(0, Math.ceil((session.endsAt - Date.now()) / 1000)) : 0
-  const capped = focus.completed >= FOCUS_DAILY_CAP
+  const capped = !canStartFocus()
 
-  const phase: 'work' | 'done' | 'ready' = session ? 'work' : justDone ? 'done' : 'ready'
+  const phase: 'work' | 'done' | 'ready' = session ? (due ? 'done' : 'work') : 'ready'
   const total = FOCUS_SESSION_MIN * 60
   const ratio = phase === 'work' ? 1 - remaining / total : phase === 'done' ? 1 : 0
   const circumference = 2 * Math.PI * 54
 
   const start = () => {
+    if (capped || session) return
     startFocusSession()
-    hadSession.current = true
-    setJustDone(false)
     setMsg(WORK_MSGS[Math.floor(Math.random() * WORK_MSGS.length)])
     tick((n) => n + 1)
   }
 
   const stop = () => {
     abortFocusSession()
-    hadSession.current = false
-    setJustDone(false)
-    setMsg('중단했어요 — 보상 없이 연속 기록이 끊겼어요 🥲')
+    setMsg('중단했어요 — 보상은 없어요 🥲 (하루 횟수는 안 깎여요)')
+    tick((n) => n + 1)
+  }
+
+  const claim = () => {
+    onClaim() // PetGame이 대량 XP + 피로 적용 후 세션 제거
+    setMsg('수고했어요! 대량 경험치를 받았어요 🎉')
     tick((n) => n + 1)
   }
 
   return (
     <Modal title="🍅 집중 타이머" onClose={onClose}>
       <div className="pomo-wrap">
-        {/* 오늘 진행 현황 — 세션 도장 + 스트릭 + 버프 */}
+        {/* 오늘 진행 현황 — 세션 도장 (하루 3번) */}
         <div className="pomo-status">
-          <div className="pomo-stamps" title={`오늘 ${focus.completed}/${FOCUS_DAILY_CAP}번 성공`}>
+          <div className="pomo-stamps" title={`오늘 ${focus.completed}/${FOCUS_DAILY_CAP}번 완료`}>
             {Array.from({ length: FOCUS_DAILY_CAP }, (_, i) => (
               <span key={i} className={'pomo-stamp' + (i < focus.completed ? ' done' : '')}>
                 🍅
               </span>
             ))}
           </div>
-          {focus.streak > 1 && (
-            <span className="pomo-streak" title="오늘 실패 없이 쌓은 성공 — 쉬었다 해도 이어져요">
-              🔥 오늘 {focus.streak}번째
-            </span>
-          )}
-          {buff && (
-            <span className="pomo-buff" title="집중 버프 — 그동안 펫이 더 빨리 자라요">
-              ⚡ {buff.mult}배 성장 · {buff.remainMin}분
-            </span>
-          )}
+          <span className="pomo-buff" title="집중 완료 보상">
+            완료 시 +{FOCUS_COMPLETE_XP} XP
+          </span>
         </div>
 
         <div className={`pomo-ring pomo-ring--${phase}`}>
@@ -119,8 +111,8 @@ export default function PomodoroTimer({ petName, onClose, isElectron = false }: 
             <p className="pomo-time">{phase === 'work' ? fmt(remaining) : READY_LABEL}</p>
             <p className="pomo-phase-label">
               {phase === 'ready' && '준비'}
-              {phase === 'work' && '집중 중'}
-              {phase === 'done' && '완주! 🎉'}
+              {phase === 'work' && '집중 모드'}
+              {phase === 'done' && '완료! 🎉'}
             </p>
           </div>
         </div>
@@ -128,14 +120,14 @@ export default function PomodoroTimer({ petName, onClose, isElectron = false }: 
         <p className="pomo-pet-msg">
           <strong>{petName}</strong>:{' '}
           {phase === 'done'
-            ? '해냈어! 잠깐 쉬었다 와요 ☕'
-            : msg ?? (phase === 'work' ? '집중하는 중이에요…' : '오늘도 1시간, 같이 달려볼까요?')}
+            ? '60분 다 했어요! "업무 완료"를 눌러줘요 🎁'
+            : msg ?? (phase === 'work' ? '집중하는 중이에요…' : '오늘도 60분, 같이 달려볼까요?')}
         </p>
 
         <div className="pomo-btns">
-          {phase !== 'work' && (
-            <button type="button" className="pomo-btn pomo-btn--start" onClick={start}>
-              {phase === 'done' ? '한 번 더 🔥' : '시작하기'}
+          {phase === 'ready' && (
+            <button type="button" className="pomo-btn pomo-btn--start" onClick={start} disabled={capped}>
+              {capped ? '오늘 3번 다 했어요 🌙' : '시작하기'}
             </button>
           )}
           {phase === 'work' && (
@@ -143,16 +135,20 @@ export default function PomodoroTimer({ petName, onClose, isElectron = false }: 
               중단하기
             </button>
           )}
+          {phase === 'done' && (
+            <button type="button" className="pomo-btn pomo-btn--start" onClick={claim}>
+              ✅ 업무 완료 — 보상 받기 🎉
+            </button>
+          )}
         </div>
 
         {/* 규칙 안내 — 한 줄씩, 쉽게 */}
         <div className="pomo-rules">
-          <p>⏰ 1시간을 채우면 → 보너스 XP를 받고, 그 후 1시간 동안 펫이 훨씬 빨리 자라요</p>
-          <p>
-            🔥 하루 안에 성공을 쌓을수록 버프가 세져요 — 세션 사이에 얼마든 쉬어도 괜찮아요,
-            "중단/자리 비움 실패"만 없으면! (하루 {FOCUS_DAILY_CAP}번, 다 채우면 선물 🎁)
-          </p>
-          <p>🚪 이 창을 닫아도 타이머는 계속 돌아가요 — "중단하기"를 눌러야만 취소돼요</p>
+          <p>🔥 집중 타이머를 켠 동안에만 “집중 모드”예요 (평소 일은 “업무 중”)</p>
+          <p>🎁 60분을 채우고 <b>업무 완료</b>를 누르면 → <b>대량 경험치 +{FOCUS_COMPLETE_XP} XP</b></p>
+          <p>😮‍💨 대신 열심히 일해서 건강·기운·포만도가 조금 내려가요 — 완료 후 잘 챙겨주세요</p>
+          <p>📅 하루 {FOCUS_DAILY_CAP}번까지 (연속·스트릭 같은 건 없어요)</p>
+          <p>🚪 이 창을 닫아도 타이머는 계속 돌아가요 — “중단하기”를 눌러야만 취소돼요</p>
           {isElectron && <p>💻 3분 넘게 자리를 비우면 실패로 끝나요</p>}
           {capped && <p className="pomo-capped">오늘 몫은 다 채웠어요 — 내일 이어서! 🌙</p>}
         </div>
