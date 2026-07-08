@@ -11,7 +11,7 @@ import './intro.css'
 interface IntroProps {
   /** 시작하기를 누르면 펫 만들기로 */
   onStart: () => void
-  /** 클라우드 계정(로그인/로그아웃) 패널 열기 */
+  /** 계정(로그인/로그아웃) 패널 열기 */
   onAccount?: () => void
   /** 계정 버튼 라벨 (로그인 상태 반영) */
   accountLabel?: string
@@ -194,7 +194,7 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
                 onAccount()
               }}
             >
-              {accountLabel ?? '☁️ 로그인'}
+              {accountLabel ?? '👤 계정 로그인'}
             </button>
           )}
           {/* 웹에서만 — 바탕화면 펫까지 쓰는 데스크톱 앱(Windows) 다운로드. Electron에선 숨김 */}

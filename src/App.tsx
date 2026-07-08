@@ -69,7 +69,7 @@ function App() {
     if (!forceLobby) setPets(loadPets())
   }, [forceLobby])
 
-  // 로그인 상태면 진행 상황을 클라우드에 자동 저장.
+  // 로그인 상태면 진행 상황을 계정(서버)에 자동 저장.
   // pushCloud가 자체적으로 "변화 없으면 생략 + 최소 2분 간격"을 지켜 쿼터를 보호하고,
   // 종료/로그아웃 시에만 간격 무시(force)로 마지막 상태를 확실히 남긴다.
   useEffect(() => {
@@ -181,7 +181,7 @@ function App() {
         <Intro
           onStart={enterGame}
           onAccount={() => setForceLobby(true)}
-          accountLabel={user ? `☁️ ${displayId(user)}` : '☁️ 로그인'}
+          accountLabel={user ? `👤 ${displayId(user)}` : '👤 계정 로그인'}
         />
       )}
 

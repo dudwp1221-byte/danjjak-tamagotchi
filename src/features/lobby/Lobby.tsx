@@ -104,7 +104,7 @@ export default function Lobby({ onGuest }: LobbyProps) {
         ) : (
           <>
             <p className="lobby-note">
-              클라우드 저장이 아직 설정되지 않았어요. 로컬로 바로 시작할 수 있어요.
+              계정 로그인이 아직 설정되지 않았어요. 로컬로 바로 시작할 수 있어요.
             </p>
             <button type="button" className="lobby-btn primary" onClick={onGuest}>
               시작하기

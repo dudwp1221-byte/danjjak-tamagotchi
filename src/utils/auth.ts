@@ -59,7 +59,7 @@ function friendlyError(e: unknown): string {
 export class AuthError extends Error {}
 
 export async function signUp(id: string, pw: string): Promise<User> {
-  if (!auth) throw new AuthError('클라우드 저장이 아직 설정되지 않았어요.')
+  if (!auth) throw new AuthError('계정 로그인이 아직 설정되지 않았어요.')
   const idErr = validateId(id)
   if (idErr) throw new AuthError(idErr)
   try {
@@ -71,7 +71,7 @@ export async function signUp(id: string, pw: string): Promise<User> {
 }
 
 export async function logIn(id: string, pw: string): Promise<User> {
-  if (!auth) throw new AuthError('클라우드 저장이 아직 설정되지 않았어요.')
+  if (!auth) throw new AuthError('계정 로그인이 아직 설정되지 않았어요.')
   try {
     const cred = await signInWithEmailAndPassword(auth, toEmail(id), pw)
     return cred.user

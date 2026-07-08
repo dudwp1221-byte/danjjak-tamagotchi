@@ -150,12 +150,12 @@ export default function Settings({
       </div>
 
       <div className="set-section">
-        <p className="set-label">☁️ 계정</p>
+        <p className="set-label">👤 계정</p>
         {loggedInId ? (
           <div className="set-row">
             <div className="set-text">
               <span className="set-name">{loggedInId} 님</span>
-              <span className="set-desc">진행 상황이 클라우드에 자동 저장돼요.</span>
+              <span className="set-desc">진행 상황이 계정에 자동 저장돼요.</span>
             </div>
             <button type="button" className="set-btn" onClick={() => onLogout?.()}>
               로그아웃
