@@ -23,6 +23,7 @@ import { ITEM_SETS, isSetComplete, pieceInfo } from '../../utils/sets'
 import PetAvatar from '../../components/PetAvatar'
 import FurnitureSprite from '../../components/FurnitureSprite'
 import AccessorySprite from '../../components/AccessorySprite'
+import UIIcon from '../../components/UIIcon'
 import Modal from '../../components/Modal'
 import './shop.css'
 
@@ -40,6 +41,13 @@ interface ShopProps {
 }
 
 type ShopTab = 'items' | 'furniture' | 'closet' | 'premium'
+
+/** 소비 아이템의 전용 UI 아이콘 이름 (public/ui) — treat_* → item_*, 부적은 공용 */
+function uiItemIconName(item: ShopItem): string {
+  if (item.id.startsWith('charm_')) return 'item_charm'
+  if (item.type === 'treat') return item.id.replace('treat_', 'item_')
+  return item.id
+}
 
 const PREMIUM_BGS = SHOP_ITEMS.filter((i) => i.premium && i.type === 'background')
 const PREMIUM_ACCS = SHOP_ITEMS.filter((i) => i.premium && i.type === 'accessory')
@@ -114,6 +122,8 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
         <span className="shop-emoji">
           {item.type === 'accessory' && !item.aura ? (
             <AccessorySprite id={item.id} emoji={item.emoji} width="1.6rem" />
+          ) : item.type === 'treat' || item.type === 'tool' ? (
+            <UIIcon name={uiItemIconName(item)} emoji={item.emoji} size="1.5rem" />
           ) : (
             item.emoji
           )}
@@ -192,6 +202,8 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
         <span className="shop-emoji">
           {item.type === 'accessory' && !item.aura ? (
             <AccessorySprite id={item.id} emoji={item.emoji} width="1.6rem" />
+          ) : item.type === 'treat' || item.type === 'tool' ? (
+            <UIIcon name={uiItemIconName(item)} emoji={item.emoji} size="1.5rem" />
           ) : (
             item.emoji
           )}
@@ -236,6 +248,8 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
         <span className="shop-emoji">
           {item.type === 'accessory' && !item.aura ? (
             <AccessorySprite id={item.id} emoji={item.emoji} width="1.6rem" />
+          ) : item.type === 'treat' || item.type === 'tool' ? (
+            <UIIcon name={uiItemIconName(item)} emoji={item.emoji} size="1.5rem" />
           ) : (
             item.emoji
           )}
@@ -395,7 +409,9 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
                     const affordable = pet.coins >= g.price
                     return (
                       <div key={g.id} className="shop-item">
-                        <span className="shop-emoji">{g.emoji}</span>
+                        <span className="shop-emoji">
+                          <UIIcon name={g.id} emoji={g.emoji} size="1.5rem" />
+                        </span>
                         <div className="shop-info">
                           <span className="shop-name">
                             {g.name}

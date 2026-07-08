@@ -94,6 +94,7 @@ import MoodCheck, { getTodayMood } from '../mood/MoodCheck'
 import ClosetEditor from '../closet/ClosetEditor'
 import Bag from '../bag/Bag'
 import FurnitureSprite from '../../components/FurnitureSprite'
+import UIIcon from '../../components/UIIcon'
 import PomodoroTimer from '../timer/PomodoroTimer'
 import ScheduleManager from '../schedule/ScheduleManager'
 import ScheduleAlarm from '../schedule/ScheduleAlarm'
@@ -986,7 +987,7 @@ export default function PetGame({
             </span>
           )}
           <span className="pg-coins" title="코인">
-            🪙 {pet.coins}
+            <UIIcon name="ui_coin" emoji="🪙" /> {pet.coins}
             <button
               type="button"
               className="pg-coins-plus"
@@ -1005,7 +1006,11 @@ export default function PetGame({
             title={muted ? '소리 켜기' : '소리 끄기'}
             aria-label={muted ? '소리 켜기' : '소리 끄기'}
           >
-            {muted ? '🔇' : '🔊'}
+            {muted ? (
+              <UIIcon name="ui_sound_off" emoji="🔇" size="1.1em" />
+            ) : (
+              <UIIcon name="ui_sound_on" emoji="🔊" size="1.1em" />
+            )}
           </button>
           <button
             type="button"
@@ -1014,7 +1019,7 @@ export default function PetGame({
             title="가방 (치장·테마·가구 꺼내 쓰기)"
             aria-label="가방 (치장·테마·가구 꺼내 쓰기)"
           >
-            🎒
+            <UIIcon name="ui_bag" emoji="🎒" size="1.1em" />
           </button>
           {/* 내 방은 새 펫 입양 입구이기도 하므로 펫 수와 무관하게 항상 노출 */}
           <button
@@ -1024,7 +1029,7 @@ export default function PetGame({
             title="내 방 (펫 교체·새 식구 입양)"
             aria-label="내 방 (펫 교체·새 식구 입양)"
           >
-            🏠
+            <UIIcon name="ui_room" emoji="🏠" size="1.1em" />
           </button>
           <button
             type="button"
@@ -1033,7 +1038,7 @@ export default function PetGame({
             title="설정"
             aria-label="설정"
           >
-            ⚙️
+            <UIIcon name="ui_settings" emoji="⚙️" size="1.1em" />
           </button>
         </div>
       </header>
@@ -1326,11 +1331,11 @@ export default function PetGame({
 
       {/* 4대 스탯 게이지 — 각 케어로 오르는 항목이 달라요 */}
       <div className="pg-stats">
-        <StatBar icon="🍙" label="포만도" value={stats.hunger} />
-        <StatBar icon="💗" label="애정" value={stats.mood} />
-        <StatBar icon="🛁" label="청결도" value={stats.cleanliness} />
-        <StatBar icon="⚡" label="기운" value={stats.energy} />
-        <StatBar icon="❤️‍🩹" label="건강" value={stats.health} />
+        <StatBar icon="🍙" iconName="stat_hunger" label="포만도" value={stats.hunger} />
+        <StatBar icon="💗" iconName="stat_love" label="애정" value={stats.mood} />
+        <StatBar icon="🛁" iconName="stat_clean" label="청결도" value={stats.cleanliness} />
+        <StatBar icon="⚡" iconName="stat_energy" label="기운" value={stats.energy} />
+        <StatBar icon="❤️‍🩹" iconName="stat_health" label="건강" value={stats.health} />
       </div>
 
       {/* 메인 액션 — 6종 (3열 × 2행) */}
@@ -1357,7 +1362,9 @@ export default function PetGame({
               disabled={capped}
               title={hint}
             >
-              <span className="pg-main-action-icon">{icon}</span>
+              <span className="pg-main-action-icon">
+                <UIIcon name={`act_${action === 'pet' ? 'touch' : action}`} emoji={icon} size="1.15em" />
+              </span>
               <span>{label}</span>
               <span className="pg-main-action-charge" aria-hidden="true">
                 {action === 'gift'
@@ -1386,40 +1393,40 @@ export default function PetGame({
             <div className="pg-drawer-section">
               <span className="pg-drawer-label">우리 식구</span>
               <div className="pg-drawer-row">
-                <button type="button" className="pg-drawer-btn" onClick={() => setModal('roster')}>🏠 내 방 · 펫 교체{pets.length > 1 ? ` (${pets.length})` : ''}</button>
+                <button type="button" className="pg-drawer-btn" onClick={() => setModal('roster')}><UIIcon name="ui_room" emoji="🏠" /> 내 방 · 펫 교체{pets.length > 1 ? ` (${pets.length})` : ''}</button>
               </div>
             </div>
             {/* 추가 케어 */}
             <div className="pg-drawer-section">
               <span className="pg-drawer-label">케어</span>
               <div className="pg-drawer-row">
-                <button type="button" className="pg-drawer-btn" onClick={() => setModal('chat')} title="펫과 대화 (AI · 설정에서 키 입력)">💬 대화</button>
-                <button type="button" className="pg-drawer-btn" onClick={() => setModal('timer')} title="1시간 집중 타이머 — 완주하면 XP 버프">🍅 집중 타이머</button>
-                <button type="button" className="pg-drawer-btn" onClick={() => setModal('schedule')} title="일정 등록 — 시간 되면 펫이 알려줘요">📅 일정</button>
+                <button type="button" className="pg-drawer-btn" onClick={() => setModal('chat')} title="펫과 대화 (AI · 설정에서 키 입력)"><UIIcon name="menu_chat" emoji="💬" /> 대화</button>
+                <button type="button" className="pg-drawer-btn" onClick={() => setModal('timer')} title="1시간 집중 타이머 — 완주하면 XP 버프"><UIIcon name="menu_timer" emoji="🍅" /> 집중 타이머</button>
+                <button type="button" className="pg-drawer-btn" onClick={() => setModal('schedule')} title="일정 등록 — 시간 되면 펫이 알려줘요"><UIIcon name="menu_schedule" emoji="📅" /> 일정</button>
               </div>
             </div>
             {/* 놀기 */}
             <div className="pg-drawer-section">
               <span className="pg-drawer-label">놀기</span>
               <div className="pg-drawer-row">
-                <button type="button" className="pg-drawer-btn" onClick={() => setModal('missions')} title="매일 바뀌는 미션 — 완료하면 코인 보상">📋 일일 미션</button>
-                <button type="button" className="pg-drawer-btn" onClick={() => setModal('quest')}>📜 이야기</button>
+                <button type="button" className="pg-drawer-btn" onClick={() => setModal('missions')} title="매일 바뀌는 미션 — 완료하면 코인 보상"><UIIcon name="menu_mission" emoji="📋" /> 일일 미션</button>
+                <button type="button" className="pg-drawer-btn" onClick={() => setModal('quest')}><UIIcon name="menu_story" emoji="📜" /> 이야기</button>
               </div>
             </div>
             {/* 키우기 */}
             <div className="pg-drawer-section">
               <span className="pg-drawer-label">키우기</span>
               <div className="pg-drawer-row">
-                <button type="button" className="pg-drawer-btn" onClick={() => setModal('diary')}>📖 일기</button>
-                <button type="button" className="pg-drawer-btn" onClick={() => setModal('achievements')}>🏆 업적</button>
+                <button type="button" className="pg-drawer-btn" onClick={() => setModal('diary')}><UIIcon name="menu_diary" emoji="📖" /> 일기</button>
+                <button type="button" className="pg-drawer-btn" onClick={() => setModal('achievements')}><UIIcon name="menu_trophy" emoji="🏆" /> 업적</button>
               </div>
             </div>
             {/* 친구 */}
             <div className="pg-drawer-section">
               <span className="pg-drawer-label">친구</span>
               <div className="pg-drawer-row">
-                <button type="button" className="pg-drawer-btn" onClick={() => setModal('friends')}>👀 친구</button>
-                <button type="button" className="pg-drawer-btn" onClick={() => setModal('share')}>📸 자랑</button>
+                <button type="button" className="pg-drawer-btn" onClick={() => setModal('friends')}><UIIcon name="menu_friends" emoji="👀" /> 친구</button>
+                <button type="button" className="pg-drawer-btn" onClick={() => setModal('share')}><UIIcon name="menu_share" emoji="📸" /> 자랑</button>
               </div>
             </div>
           </div>
@@ -1493,12 +1500,12 @@ export default function PetGame({
 
       <nav className="pg-bottom-tabs" aria-label="주요 메뉴">
         {([
-          { i: 0, icon: '🛒', label: '상점' },
-          { i: 1, icon: '🎮', label: '놀이' },
-          { i: 2, icon: '🧸', label: '케어' },
-          { i: 3, icon: '🧬', label: '합성' },
-          { i: 4, icon: '📚', label: '도감' },
-        ] as const).map(({ i, icon, label }) => (
+          { i: 0, icon: '🛒', name: 'tab_shop', label: '상점' },
+          { i: 1, icon: '🎮', name: 'tab_game', label: '놀이' },
+          { i: 2, icon: '🧸', name: 'tab_care', label: '케어' },
+          { i: 3, icon: '🧬', name: 'tab_fusion', label: '합성' },
+          { i: 4, icon: '📚', name: 'tab_dex', label: '도감' },
+        ] as const).map(({ i, icon, name, label }) => (
           <button
             key={i}
             type="button"
@@ -1509,7 +1516,7 @@ export default function PetGame({
             }
             onClick={() => setTab(i)}
           >
-            <span>{icon}</span>
+            <span><UIIcon name={name} emoji={icon} size="1.2em" /></span>
             <b>{label}</b>
           </button>
         ))}

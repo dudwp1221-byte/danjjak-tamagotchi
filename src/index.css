@@ -16,6 +16,20 @@
   --good-text: #86efac;
   --violet-text: #c4b5fd;
 
+  /* 브랜드/포인트 컬러 — 버튼·활성 상태·칩 공용 */
+  --accent: #8b5cf6;
+  --accent-2: #f472b6;
+  --accent-soft: rgba(139, 92, 246, 0.16);
+  --text-secondary: rgba(230, 230, 234, 0.65);
+
+  /* 모양·그림자 토큰 */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.3);
+
   font: 16px/1.5 var(--sans);
   color-scheme: dark;
   color: var(--text);
@@ -36,7 +50,23 @@
   --gold-text: #b45309;
   --good-text: #15803d;
   --violet-text: #6d28d9;
+  --accent: #7c3aed;
+  --accent-2: #db2777;
+  --accent-soft: rgba(124, 58, 237, 0.12);
+  --text-secondary: rgba(27, 29, 41, 0.62);
+  --shadow-sm: 0 2px 8px rgba(80, 90, 120, 0.16);
+  --shadow-md: 0 12px 30px rgba(80, 90, 120, 0.2);
   color-scheme: light;
+}
+
+/* 게임 UI 아이콘 (public/ui) — 에셋이 없으면 UIIcon 컴포넌트가 이모지로 폴백 */
+.ui-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.12em;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 
 * {
