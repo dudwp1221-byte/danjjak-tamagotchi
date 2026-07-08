@@ -1013,11 +1013,10 @@ export default function PetGame({
             title={muted ? '소리 켜기' : '소리 끄기'}
             aria-label={muted ? '소리 켜기' : '소리 끄기'}
           >
-            {muted ? (
-              <UIIcon name="ui_sound_off" emoji="🔇" size="1.1em" />
-            ) : (
-              <UIIcon name="ui_sound_on" emoji="🔊" size="1.1em" />
-            )}
+            {/* 아이콘 하나를 고정하고 음소거일 때만 빗금 — 상태 전환 시 모양이 안 바뀌게 */}
+            <span className={'pg-sound-ico' + (muted ? ' is-muted' : '')}>
+              <UIIcon name="ui_sound_on" emoji={muted ? '🔇' : '🔊'} size="1.1em" />
+            </span>
           </button>
           <button
             type="button"

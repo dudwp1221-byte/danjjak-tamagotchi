@@ -524,7 +524,8 @@
   transform: translate(-50%, -50%);
   border-radius: 50%;
   pointer-events: none;
-  z-index: 1;
+  /* 펫(.pa-img-wrap z-index:1) 뒤에 — 종족 오라와 같은 층에서 은은하게 감싼다 */
+  z-index: 0;
 }
 /* 이펙트 스프라이트가 있으면 이미지가 대신하고 CSS 합성 이펙트는 숨긴다 */
 .pa-acc-aura.has-img i {

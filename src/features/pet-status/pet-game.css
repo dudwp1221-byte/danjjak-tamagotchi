@@ -2479,3 +2479,27 @@
 .pg-work-badge {
   transition: transform 0.1s ease, background 0.15s, border-color 0.15s;
 }
+
+/* 음소거 토글 — 스피커 아이콘 고정, muted일 때만 빗금+흐리게 (모양 유지) */
+.pg-sound-ico {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.pg-sound-ico.is-muted {
+  opacity: 0.6;
+}
+.pg-sound-ico.is-muted::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 128%;
+  height: 2px;
+  background: #ef4444;
+  border-radius: 2px;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
