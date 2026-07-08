@@ -533,9 +533,17 @@
   100% { opacity: 0; transform: translate(-50%, -8px) scale(0.96) }
 }
 .pg-mood {
-  margin: 0.5rem 0 0;
-  font-size: 1.1rem;
+  margin: 0.5rem auto 0;
+  font-size: 1rem;
   font-weight: 600;
+  /* 방 배경 위에서 또렷하게 — 내용에 딱 맞는 알약 칩 */
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(20, 24, 34, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(2px);
 }
 .pg-score {
   margin: 0;
@@ -2516,6 +2524,15 @@
 .pg-combo {
   text-shadow: 0 1px 3px rgba(8, 10, 18, 0.6), 0 0 2px rgba(8, 10, 18, 0.5);
 }
+/* 무드 칩 — 라이트 테마에선 밝은 칩 */
+[data-theme='light'] .pg-mood {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+[data-theme='light'] .pg-mood {
+  text-shadow: none;
+}
+
 /* 흐렸던 보조 텍스트 투명도 상향 */
 .pg-score { opacity: 0.9; }
 .pg-class { opacity: 0.92; }
