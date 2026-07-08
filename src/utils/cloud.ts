@@ -24,6 +24,28 @@ const PUSH_MIN_INTERVAL = 120_000
 let lastPushAt = 0
 let pushing = false
 
+/** 로그아웃 시에도 기기에 남겨둘 키 (계정과 무관한 기기 설정) */
+const KEEP_ON_LOGOUT = new Set([
+  'danjjak-settings', // 화면 테마·알림 토글
+  'danjjak-onboarded', // 튜토리얼 시청 여부
+  'danjjak.introSeen.v1', // 인트로 시청 여부
+])
+
+/**
+ * 이 기기의 게임 저장 데이터를 지운다 (로그아웃 시).
+ * 계정 데이터는 클라우드에 남아있으므로, 다음 게스트/다른 계정에 이전 데이터가
+ * 새지 않도록 로컬만 비운다. 기기 설정(KEEP_ON_LOGOUT)은 남긴다.
+ */
+export function clearLocalSave(): void {
+  const toRemove: string[] = []
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i)
+    if (k && k.startsWith(PREFIX) && !KEEP_ON_LOGOUT.has(k)) toRemove.push(k)
+  }
+  for (const k of toRemove) localStorage.removeItem(k)
+  lastPushed = '' // 다음 로그인 때 새 데이터가 정상 업로드되도록 지문 초기화
+}
+
 /**
  * 클라우드에 현재 데이터 업로드 (덮어쓰기).
  * - 데이터가 지난 업로드와 동일하면 생략
@@ -32,6 +54,10 @@ let pushing = false
 export async function pushCloud(uid: string, force = false): Promise<void> {
   if (!db || pushing) return
   const data = snapshot()
+  // 안전장치: 펫이 하나도 없는(로그아웃 직후 등) 빈 상태로는 클라우드를 덮어쓰지 않는다.
+  // — 실수로 계정의 클라우드 저장본을 날려버리는 사고 방지.
+  const petsRaw = data['danjjak-pets']
+  if (!petsRaw || petsRaw === '[]') return
   const fingerprint = JSON.stringify(data)
   if (fingerprint === lastPushed) return
   if (!force && Date.now() - lastPushAt < PUSH_MIN_INTERVAL) return

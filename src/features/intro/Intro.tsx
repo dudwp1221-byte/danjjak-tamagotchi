@@ -43,7 +43,14 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
   const skip = prefersReduced()
   const [step, setStep] = useState(skip ? LAST : 0)
   const [soundOn, setSoundOn] = useState(!isMuted())
+  // 현재 컷의 대사를 전부 즉시 표시했는지 — 첫 클릭은 "글씨 올리기", 다음 클릭이 "다음 컷"
+  const [revealed, setRevealed] = useState(false)
   const beeped = useRef(false)
+
+  // 컷이 바뀌면 다시 "읽는 중" 상태로 초기화
+  useEffect(() => {
+    setRevealed(false)
+  }, [step])
 
   // 장면 자동 진행
   useEffect(() => {
@@ -70,8 +77,15 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
     }
   }, [step])
 
+  // 화면 클릭: 아직 대사가 다 안 떴으면 먼저 전부 띄우고(읽을 시간 확보),
+  // 이미 다 떠 있으면 그때 다음 컷으로. → 실수 클릭 한 번으로 컷을 건너뛰지 않는다.
   const advance = () => {
-    if (step < LAST) setStep((s) => Math.min(LAST, s + 1))
+    if (step >= LAST) return
+    if (!revealed) {
+      setRevealed(true)
+      return
+    }
+    setStep((s) => Math.min(LAST, s + 1))
   }
 
   const skipAll = () => setStep(LAST)
@@ -85,7 +99,7 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
 
   return (
     <div
-      className={`intro intro-step-${step}`}
+      className={`intro intro-step-${step}${revealed ? ' intro-revealed' : ''}`}
       onClick={advance}
       role="presentation"
     >

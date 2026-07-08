@@ -251,6 +251,15 @@
 .intro-l2 { animation-delay: 1.7s; }
 .intro-l3 { animation-delay: 2.6s; }
 
+/* 클릭으로 "글씨 올리기" — 이 컷의 모든 대사를 즉시 최종 상태로 (페이드 지연 건너뜀) */
+.intro-revealed .intro-line,
+.intro-revealed .intro-clock,
+.intro-revealed .intro-place {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 .intro-big {
   font-size: 1.9rem;
   font-weight: 800;

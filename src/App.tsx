@@ -17,7 +17,7 @@ import {
 import { migrateFromPets } from './utils/account'
 import { useAuth } from './hooks/useAuth'
 import { displayId, firebaseReady, logOut } from './utils/auth'
-import { pushCloud } from './utils/cloud'
+import { pushCloud, clearLocalSave } from './utils/cloud'
 import Lobby from './features/lobby/Lobby'
 import './App.css'
 
@@ -31,6 +31,7 @@ function App() {
   const [activeId, setActiveIdState] = useState<string | null>(null)
   const [revealNew, setRevealNew] = useState(false)
   const [forceLobby, setForceLobby] = useState(false)
+  const [booted, setBooted] = useState(false)
 
   const activePet = pets.find((p) => p.id === activeId) ?? null
 
@@ -54,7 +55,6 @@ function App() {
   }
 
   // 로비에서 로그인 성공 시(로비를 띄운 상태에서만) 게임으로 진입.
-  // 이미 로그인된 채 재방문한 경우엔 인트로부터 보게 두고, "만나러 가기"로 진입한다.
   useEffect(() => {
     if (user && forceLobby) {
       setForceLobby(false)
@@ -62,6 +62,17 @@ function App() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
+
+  // 첫 부팅 판정 — 인증 상태가 확정된 뒤 1회.
+  // 로그인된 재방문자는 인트로를 건너뛰고 바로 게임으로(이미 본 인트로 반복 방지).
+  // 비로그인(게스트/신규)은 인트로부터 — 매 방문 인트로 재생.
+  useEffect(() => {
+    if (firebaseReady && !ready) return // 인증 확정 대기
+    if (booted) return
+    setBooted(true)
+    if (user) enterGame()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, user, booted])
 
   // 로비에 머무는 동안 바탕화면 펫이 XP를 적립하므로, 게임 화면으로 돌아올 때
   // 저장소를 다시 읽어 PetGame이 옛 값으로 진행도를 덮어쓰지 않게 한다
@@ -149,14 +160,28 @@ function App() {
   }
 
   const handleLogout = async () => {
+    // 1) 로그아웃 전에 현재 진행 상황을 계정에 확실히 저장
+    if (user) {
+      try {
+        await pushCloud(user.uid, true)
+      } catch {
+        /* 네트워크 문제여도 로그아웃은 진행 */
+      }
+    }
+    // 2) 로그아웃
     await logOut()
+    // 3) 이 기기의 로컬 저장 데이터 삭제 — 다음 게스트/다른 계정에 이전 펫이 새지 않도록
+    clearLocalSave()
     localStorage.removeItem(GUEST_KEY)
-    // 로그아웃하면 로비(로그인 화면)를 다시 띄운다
+    // 4) 인메모리 상태도 비우고 로비(로그인 화면)로
+    setPets([])
+    setActiveIdState(null)
     setForceLobby(true)
   }
 
-  // 인증 확인 중에는 깜빡임 방지용 빈 화면
-  if (firebaseReady && !ready) {
+  // 인증 확인/부팅 판정 중에는 깜빡임 방지용 빈 화면
+  // (로그인 재방문자가 인트로 → 게임으로 튀는 플래시를 막는다)
+  if (firebaseReady && (!ready || !booted)) {
     return <main className="app" />
   }
 
