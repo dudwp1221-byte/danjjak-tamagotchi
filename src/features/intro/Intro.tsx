@@ -18,9 +18,9 @@ interface IntroProps {
 }
 
 const SEEN_KEY = 'danjjak.introSeen.v1'
-const LAST = 3
+const LAST = 4
 // 각 장면 자동 진행 시간(ms). 마지막 장면은 멈춤.
-const DURATIONS = [5500, 5000, 5500]
+const DURATIONS = [5200, 4600, 5200, 5200]
 
 function prefersReduced(): boolean {
   return (
@@ -52,9 +52,9 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
     return () => window.clearTimeout(id)
   }, [step])
 
-  // 장면별 효과음
+  // 장면별 효과음 — 서랍 속 알 발견(3)에서 삐약, 부화(4)에서 해치
   useEffect(() => {
-    if (step === 2 && !beeped.current) {
+    if (step === 3 && !beeped.current) {
       beeped.current = true
       playEggBeep()
     }
@@ -83,6 +83,19 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
       onClick={advance}
       role="presentation"
     >
+      {/* 웹툰 컷 — 장면(transform 애니메이션) 밖 최상위에 깔아야 fixed가 화면 전체를 덮는다 */}
+      <div
+        key={`cut-${step}`}
+        className={`intro-cut intro-cut-${['zoom', 'panup', 'zoomout', 'heartbeat', 'bloom'][step]}`}
+        style={{
+          backgroundImage: `url('/intro/${['intro_cut1', 'intro_cut1', 'intro_cut2', 'intro_cut3', 'intro_cut4'][step]}.webp')`,
+        }}
+        aria-hidden="true"
+      />
+      <div
+        className={'intro-text-veil' + (step === LAST ? ' intro-veil-final' : '')}
+        aria-hidden="true"
+      />
       <div className="intro-vignette" aria-hidden="true" />
       <div className="intro-monitor" aria-hidden="true" />
 
@@ -112,7 +125,7 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
         )}
       </div>
 
-      {/* 장면 0 — 늦은 밤 사무실 */}
+      {/* 장면 0 — 늦은 밤 사무실 (컷1, 느린 줌인) */}
       {step === 0 && (
         <div className="intro-scene" key="s0">
           <p className="intro-clock">오후 11 : 47</p>
@@ -123,7 +136,7 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
         </div>
       )}
 
-      {/* 장면 1 — 위로 */}
+      {/* 장면 1 — 위로 (컷1 이어서, 위로 팬) */}
       {step === 1 && (
         <div className="intro-scene" key="s1">
           <p className="intro-line intro-l1">오늘 하루도 버텨내느라,</p>
@@ -132,40 +145,25 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
         </div>
       )}
 
-      {/* 장면 2 — 향수 */}
+      {/* 장면 2 — 향수 (컷2: 손바닥 위 다마고치, 느린 줌아웃) */}
       {step === 2 && (
         <div className="intro-scene" key="s2">
           <p className="intro-line intro-l1">문득, 떠오르지 않나요?</p>
-          <div className="intro-device intro-l2" aria-hidden="true">
-            <div className="intro-device-screen">
-              <span className="intro-egg">🥚</span>
-            </div>
-            <div className="intro-device-btns">
-              <span />
-              <span />
-              <span />
-            </div>
-          </div>
-          <p className="intro-line intro-l3">주머니 속에서 삐약대던, 그 작은 친구.</p>
+          <p className="intro-line intro-l3 intro-line-bottom">주머니 속에서 삐약대던, 그 작은 친구.</p>
         </div>
       )}
 
-      {/* 장면 3 — 부화 & 타이틀 */}
+      {/* 장면 3 — 서랍 속 알 (컷3, 두근거리는 줌인) */}
+      {step === 3 && (
+        <div className="intro-scene" key="s3">
+          <p className="intro-line intro-l1">그런데 — 오늘, 서랍 속에서</p>
+          <p className="intro-line intro-l2 intro-line-bottom">작은 온기가 반짝이고 있었어요.</p>
+        </div>
+      )}
+
+      {/* 장면 4 — 부화 & 타이틀 (컷4, 빛 번짐) */}
       {step === LAST && (
-        <div className="intro-scene intro-final" key="s3">
-          <div className="intro-device is-hatch" aria-hidden="true">
-            <div className="intro-glow" />
-            <div className="intro-device-screen">
-              <span className="intro-egg">🥚</span>
-              <span className="intro-spark intro-spark-a">✦</span>
-              <span className="intro-spark intro-spark-b">✧</span>
-            </div>
-            <div className="intro-device-btns">
-              <span />
-              <span />
-              <span />
-            </div>
-          </div>
+        <div className="intro-scene intro-final" key="s4">
           <span className="intro-star intro-star-a" aria-hidden="true">✦</span>
           <span className="intro-star intro-star-b" aria-hidden="true">✧</span>
           <span className="intro-star intro-star-c" aria-hidden="true">✦</span>

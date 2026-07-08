@@ -2430,3 +2430,52 @@
     border-radius: 26px;
   }
 }
+
+/* ── UI 폴리시: 케어 버튼 액션별 컬러 + 눌림 피드백 ───────────── */
+.pg-act-feed .pg-main-action-icon {
+  background: rgba(251, 146, 60, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(251, 146, 60, 0.38);
+}
+.pg-act-pet .pg-main-action-icon {
+  background: rgba(244, 114, 182, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(244, 114, 182, 0.38);
+}
+.pg-act-wash .pg-main-action-icon {
+  background: rgba(56, 189, 248, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.38);
+}
+.pg-act-sleep .pg-main-action-icon {
+  background: rgba(129, 140, 248, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(129, 140, 248, 0.38);
+}
+.pg-act-play .pg-main-action-icon {
+  background: rgba(74, 222, 128, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(74, 222, 128, 0.38);
+}
+.pg-act-gift .pg-main-action-icon {
+  background: rgba(192, 132, 252, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(192, 132, 252, 0.38);
+}
+
+/* 호버 시 액션 색이 버튼 테두리에도 살짝 */
+.pg-act-feed:hover:not(:disabled)  { border-color: rgba(251, 146, 60, 0.5); }
+.pg-act-pet:hover:not(:disabled)   { border-color: rgba(244, 114, 182, 0.5); }
+.pg-act-wash:hover:not(:disabled)  { border-color: rgba(56, 189, 248, 0.5); }
+.pg-act-sleep:hover:not(:disabled) { border-color: rgba(129, 140, 248, 0.5); }
+.pg-act-play:hover:not(:disabled)  { border-color: rgba(74, 222, 128, 0.5); }
+.pg-act-gift:hover:not(:disabled)  { border-color: rgba(192, 132, 252, 0.5); }
+
+/* 꾹 눌리는 촉감 */
+.pg-main-action:active:not(:disabled) {
+  transform: scale(0.93);
+}
+.pg-icon-btn:active,
+.pg-drawer-btn:active,
+.pg-work-badge:active {
+  transform: scale(0.93);
+}
+.pg-icon-btn,
+.pg-drawer-btn,
+.pg-work-badge {
+  transition: transform 0.1s ease, background 0.15s, border-color 0.15s;
+}

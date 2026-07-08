@@ -1352,7 +1352,7 @@ export default function PetGame({
             <button
               key={action}
               type="button"
-              className={'pg-main-action' + (capped ? ' is-capped' : '')}
+              className={`pg-main-action pg-act-${action}` + (capped ? ' is-capped' : '')}
               onClick={() => (action === 'gift' ? setModal('gift') : handleAction(action))}
               disabled={capped}
               title={hint}

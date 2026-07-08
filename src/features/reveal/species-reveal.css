@@ -13,6 +13,13 @@
   font-size: 5rem;
   animation: rv-shake 0.5s ease-in-out infinite;
 }
+.rv-egg-img {
+  display: block;
+  width: 110px;
+  height: auto;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 6px 14px rgba(253, 224, 71, 0.35));
+}
 @keyframes rv-shake {
   0%,
   100% {

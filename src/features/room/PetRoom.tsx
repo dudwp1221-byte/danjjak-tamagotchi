@@ -10,7 +10,7 @@ import { FURNITURE_ITEMS } from '../../utils/furniture'
 import Memorial from '../graduation/Memorial'
 import FurnitureSprite from '../../components/FurnitureSprite'
 import AccessorySprite from '../../components/AccessorySprite'
-import { accessoryEmoji, accessoryPlacementFor } from '../../utils/items'
+import { accessoryEmoji, accessoryPlacementFor, backgroundCss } from '../../utils/items'
 import './room.css'
 
 interface RoomPet {
@@ -117,6 +117,8 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
   }, [])
 
   const petMap = Object.fromEntries(pets.map((p) => [p.id, p]))
+  // 인게임에서 설정한 방 테마를 내 방에도 동일하게
+  const roomThemeBg = backgroundCss(activePet?.background ?? null)
 
   // 페이저 트랙(transform) 기준으로 붙지 않도록 body로 포탈
   return createPortal(
@@ -130,9 +132,12 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
           <button type="button" className="room-close" onClick={onClose}>✕</button>
         </div>
 
-        {/* 방 씬 */}
-        <div className="room-scene">
-          {/* 방 배경 요소 */}
+        {/* 방 씬 — 돌보는 펫이 착용한 방 테마를 인게임과 동일하게 적용 */}
+        <div
+          className={'room-scene' + (roomThemeBg ? ' has-theme' : '')}
+          style={roomThemeBg ? { background: roomThemeBg } : undefined}
+        >
+          {/* 방 배경 요소 (테마가 있으면 테마 일러스트가 대신한다) */}
           <div className="room-wall" />
           <div className="room-floor" />
           <div className="room-window">
@@ -199,6 +204,7 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
                       const emoji = accessoryEmoji(pet.accessory)
                       if (!emoji || !pet.accessory) return null
                       const pos = accessoryPlacementFor(pet.accessory, pet.form, pet.accessoryPos)
+                      // 크기는 펫 몸 대비 % — 인게임 아바타와 같은 비율(약 36%)로 딱 맞게
                       return (
                         <span
                           className="room-pet-acc"
@@ -211,7 +217,7 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
                           <AccessorySprite
                             id={pet.accessory}
                             emoji={emoji}
-                            width={`${1.1 * (pos?.s ?? 1)}em`}
+                            width={`${Math.round(36 * (pos?.s ?? 1))}%`}
                             rotate={pos?.r ?? 0}
                             flip={pos?.flip ?? false}
                           />

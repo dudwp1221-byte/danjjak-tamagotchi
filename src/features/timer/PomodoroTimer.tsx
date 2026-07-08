@@ -92,7 +92,11 @@ export default function PomodoroTimer({ petName, onClose, isElectron = false }: 
               </span>
             ))}
           </div>
-          {focus.streak > 1 && <span className="pomo-streak">🔥 {focus.streak}연속</span>}
+          {focus.streak > 1 && (
+            <span className="pomo-streak" title="오늘 실패 없이 쌓은 성공 — 쉬었다 해도 이어져요">
+              🔥 오늘 {focus.streak}번째
+            </span>
+          )}
           {buff && (
             <span className="pomo-buff" title="집중 버프 — 그동안 펫이 더 빨리 자라요">
               ⚡ {buff.mult}배 성장 · {buff.remainMin}분
@@ -144,7 +148,10 @@ export default function PomodoroTimer({ petName, onClose, isElectron = false }: 
         {/* 규칙 안내 — 한 줄씩, 쉽게 */}
         <div className="pomo-rules">
           <p>⏰ 1시간을 채우면 → 보너스 XP를 받고, 그 후 1시간 동안 펫이 훨씬 빨리 자라요</p>
-          <p>🔥 연속으로 성공하면 성장 속도가 더 세져요 (하루 {FOCUS_DAILY_CAP}번, 다 채우면 선물 🎁)</p>
+          <p>
+            🔥 하루 안에 성공을 쌓을수록 버프가 세져요 — 세션 사이에 얼마든 쉬어도 괜찮아요,
+            "중단/자리 비움 실패"만 없으면! (하루 {FOCUS_DAILY_CAP}번, 다 채우면 선물 🎁)
+          </p>
           <p>🚪 이 창을 닫아도 타이머는 계속 돌아가요 — "중단하기"를 눌러야만 취소돼요</p>
           {isElectron && <p>💻 3분 넘게 자리를 비우면 실패로 끝나요</p>}
           {capped && <p className="pomo-capped">오늘 몫은 다 채웠어요 — 내일 이어서! 🌙</p>}

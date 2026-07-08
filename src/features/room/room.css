@@ -127,6 +127,17 @@
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
   pointer-events: none;
 }
+/* 방 테마 적용 시 — 테마 일러스트가 배경 전체를 대신하므로 기본 벽/바닥/창은 숨긴다 */
+.room-scene.has-theme .room-wall,
+.room-scene.has-theme .room-floor,
+.room-scene.has-theme .room-window {
+  display: none;
+}
+.room-scene.has-theme {
+  background-size: cover !important;
+  background-position: center bottom !important;
+}
+
 .room-furniture .furn-sprite {
   display: block;
   width: auto;

@@ -44,11 +44,112 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  z-index: 2;
   background: radial-gradient(
     120% 100% at 50% 50%,
     transparent 55%,
     rgba(0, 0, 0, 0.55) 100%
   );
+}
+
+/* ── 웹툰 컷 레이어 — 컷마다 다른 카메라 모션(Ken Burns) ──
+   .intro-scene이 relative(콘텐츠 크기)라서, 컷은 화면 전체를 덮도록 fixed로 깐다 */
+.intro-cut {
+  position: fixed;
+  inset: -4%;
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+  z-index: 0;
+  animation: cut-fade-in 0.9s ease both;
+}
+@keyframes cut-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.intro-cut-zoom {
+  animation: cut-fade-in 0.9s ease both, cut-zoom 7s ease-out both;
+}
+@keyframes cut-zoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.09); }
+}
+.intro-cut-panup {
+  animation: cut-fade-in 0.9s ease both, cut-panup 6.5s ease-in-out both;
+}
+@keyframes cut-panup {
+  from { transform: scale(1.12) translateY(2.5%); }
+  to { transform: scale(1.12) translateY(-2.5%); }
+}
+.intro-cut-zoomout {
+  animation: cut-fade-in 0.9s ease both, cut-zoomout 7s ease-out both;
+}
+@keyframes cut-zoomout {
+  from { transform: scale(1.14); }
+  to { transform: scale(1.02); }
+}
+.intro-cut-heartbeat {
+  animation: cut-fade-in 0.9s ease both, cut-heartbeat 6.5s ease-in-out both;
+}
+@keyframes cut-heartbeat {
+  0% { transform: scale(1); }
+  55% { transform: scale(1.06); }
+  70% { transform: scale(1.045); }
+  85% { transform: scale(1.09); }
+  100% { transform: scale(1.07); }
+}
+.intro-cut-bloom {
+  animation: cut-fade-in 1.2s ease both, cut-bloom 8s ease-out both;
+}
+@keyframes cut-bloom {
+  from { transform: scale(1.1); filter: brightness(1.25) saturate(1.15); }
+  to { transform: scale(1); filter: brightness(1) saturate(1); }
+}
+
+/* 텍스트 가독성용 어두운 베일 (위·아래) */
+.intro-text-veil {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(6, 8, 14, 0.55), transparent 26%),
+    linear-gradient(0deg, rgba(6, 8, 14, 0.6), transparent 32%);
+}
+.intro-veil-final {
+  background:
+    linear-gradient(180deg, rgba(6, 8, 14, 0.4), transparent 22%),
+    radial-gradient(95% 52% at 50% 50%, rgba(6, 8, 14, 0.6), transparent 78%),
+    linear-gradient(0deg, rgba(6, 8, 14, 0.72), transparent 55%);
+}
+
+/* 밝은 컷 위 타이틀 가독성 — 진한 그림자 겹치기 */
+.intro-final .intro-title {
+  text-shadow:
+    0 2px 5px rgba(8, 6, 18, 0.95),
+    0 0 18px rgba(8, 6, 18, 0.8),
+    0 0 42px rgba(8, 6, 18, 0.6) !important;
+}
+.intro-final .intro-subtitle {
+  text-shadow: 0 1px 4px rgba(8, 6, 18, 0.95), 0 0 14px rgba(8, 6, 18, 0.8) !important;
+  color: #f3f0ff;
+}
+
+/* 컷 위에 얹히는 텍스트/버튼이 항상 위 */
+.intro-scene {
+  z-index: 2;
+}
+.intro-scene > *:not(.intro-cut):not(.intro-text-veil) {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.65);
+}
+/* 하단 고정 대사 (컷 그림을 가리지 않게) */
+.intro-line-bottom {
+  position: fixed !important;
+  bottom: 9vh;
+  left: 1.5rem;
+  right: 1.5rem;
 }
 
 .intro-top {

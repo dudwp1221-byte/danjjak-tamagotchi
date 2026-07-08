@@ -19,6 +19,8 @@ interface SpeciesRevealProps {
 
 export default function SpeciesReveal({ pet, isNew, onContinue }: SpeciesRevealProps) {
   const [revealed, setRevealed] = useState(false)
+  // 알 스프라이트(public/intro/egg_glow.webp)가 있으면 사용, 없으면 이모지 폴백
+  const [eggImgOk, setEggImgOk] = useState(true)
   const form = formById(pet.form)
   const branches = nextForms(form.id)
 
@@ -31,7 +33,19 @@ export default function SpeciesReveal({ pet, isNew, onContinue }: SpeciesRevealP
     <div className="rv-screen">
       {!revealed ? (
         <div className="rv-suspense">
-          <div className="rv-egg">🥚</div>
+          <div className="rv-egg">
+            {eggImgOk ? (
+              <img
+                className="rv-egg-img"
+                src="/intro/egg_glow.webp"
+                alt=""
+                draggable={false}
+                onError={() => setEggImgOk(false)}
+              />
+            ) : (
+              '🥚'
+            )}
+          </div>
           <p className="rv-dots">두근두근…</p>
         </div>
       ) : (
