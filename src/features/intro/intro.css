@@ -162,12 +162,10 @@
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
-/* 하단 고정 대사 (컷 그림을 가리지 않게) */
+/* 예전 개별-하단고정 클래스 — 이제 자막 블록 전체를 하단에 고정하므로 무효화.
+   (컷 안에서 대사가 위/아래로 갈리던 문제 해소) */
 .intro-line-bottom {
-  position: fixed !important;
-  bottom: 9vh;
-  left: 1.5rem;
-  right: 1.5rem;
+  position: relative;
 }
 
 .intro-top {
@@ -209,6 +207,21 @@
   align-items: center;
   gap: 1.1rem;
   max-width: 32rem;
+}
+
+/* 나레이션 컷(0~3) — 모든 대사를 하단 자막(넷플릭스 위치)으로 통일.
+   컷 그림을 가리지 않고, 컷마다 위치가 달라 헷갈리던 문제를 없앤다.
+   마지막 타이틀 화면(.intro-final)만 중앙 유지. */
+.intro-scene:not(.intro-final) {
+  position: fixed;
+  left: 50%;
+  right: auto;
+  top: auto;
+  bottom: 8vh;
+  transform: translateX(-50%);
+  width: min(90%, 40rem);
+  max-width: none;
+  gap: 0.6rem;
 }
 
 .intro-clock {
