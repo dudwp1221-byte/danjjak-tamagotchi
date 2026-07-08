@@ -5,7 +5,7 @@ import { resolveCare, careRemaining } from '../../utils/care'
 import { addCoins } from '../../utils/account'
 import { useBackgroundXp } from '../../hooks/useBackgroundXp'
 import { formById } from '../../utils/species'
-import { levelFromXp } from '../../utils/progression'
+import { levelFromXp, stageFromLevel } from '../../utils/progression'
 import { canEvolveNow } from '../../utils/evolve'
 import { needLine, ambientLine, pokeLine } from '../../utils/desktopTalk'
 import { accessoryEmoji, wornAccessories } from '../../utils/items'
@@ -21,7 +21,8 @@ function spriteUrl(pet: Pet): string {
 
 export default function DesktopPet() {
   const [pet, setPet] = useState<Pet | null>(null)
-  const [dir, setDir] = useState<1 | -1>(1)
+  // 기본값 -1 = 왼쪽 보기 (시작 위치가 화면 오른쪽이라 중앙을 향함). main.ts가 로드 시 동기화.
+  const [dir, setDir] = useState<1 | -1>(-1)
 
   const [speech, setSpeech] = useState<string | null>(null)
   const [careEffect, setCareEffect] = useState<string | null>(null)
@@ -152,6 +153,13 @@ export default function DesktopPet() {
   const mood = pet ? petMood(pet.stats) : null
   const sleeping = pet ? pet.stats.energy < 25 : false
   const form = pet ? formById(pet.form) : null
+  // 인게임 PetAvatar와 동일한 악세서리 배치를 위해 진화 단계 배율을 구한다.
+  // 저장 좌표는 "아바타 박스(%)" 기준인데, 실제 그림은 박스 안에서 stage.scale 만큼
+  // 축소돼 가운데 놓이므로, 그림(=dp-img 72px) 프레임 좌표로 변환해야 위치가 맞는다.
+  const DP_IMG = 72
+  const dpScale = pet ? stageFromLevel(levelFromXp(pet.growth)).scale : 1
+  const dpBox = DP_IMG / dpScale
+  const toWrap = (pct: number) => (((pct / 100) * dpBox - (dpBox - DP_IMG) / 2) / DP_IMG) * 100
   // 게임 창에서 착용한 악세서리(다중)를 바탕화면에서도 보여준다 (옷장 배치 반영)
   const wornList = pet
     ? wornAccessories(pet)
@@ -224,30 +232,30 @@ export default function DesktopPet() {
           // 몸이 좌우반전되면 착용 장비도 몸에 붙은 채 같이 뒤집힌다.
           <span className="dp-body">
             <img src={spriteUrl(pet)} alt={pet.name} className="dp-img" draggable={false} />
-            {wornList.map((w) => (
-              <span
-                key={w.id}
-                className="dp-accessory"
-                style={
-                  w.placement
-                    ? {
-                        left: `${w.placement.x}%`,
-                        top: `${w.placement.y}%`,
-                        fontSize: `${1.15 * w.placement.s}rem`,
-                      }
-                    : undefined
-                }
-                aria-hidden="true"
-              >
-                <AccessorySprite
-                  id={w.id}
-                  emoji={w.emoji}
-                  width={`${1.4 * (w.placement?.s ?? 1)}em`}
-                  rotate={w.placement?.r ?? 0}
-                  flip={w.placement?.flip ?? false}
-                />
-              </span>
-            ))}
+            {wornList.map((w) => {
+              // 인게임(PetAvatar)과 동일한 좌표계·크기 비율로 렌더 — 위치·크기 일치
+              const p = w.placement ?? { x: 50, y: 10, s: 1 }
+              return (
+                <span
+                  key={w.id}
+                  className="dp-accessory"
+                  style={{
+                    left: `${toWrap(p.x)}%`,
+                    top: `${toWrap(p.y)}%`,
+                    fontSize: `${dpBox * 0.28 * p.s}px`,
+                  }}
+                  aria-hidden="true"
+                >
+                  <AccessorySprite
+                    id={w.id}
+                    emoji={w.emoji}
+                    width={dpBox * 0.32 * p.s}
+                    rotate={p.r ?? 0}
+                    flip={p.flip ?? false}
+                  />
+                </span>
+              )
+            })}
           </span>
         )}
       </div>

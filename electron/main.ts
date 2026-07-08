@@ -167,6 +167,11 @@ function createPetWindow() {
     petWin?.setTitle('')
     petWin?.webContents.executeJavaScript('document.title = ""')
     sendFullWinState()
+    // 초기 방향 동기화 — dir은 '변할 때만' 보내므로, 로드 시 현재 위치 기준으로 한 번 강제 전송
+    // (안 하면 렌더러가 기본값에 갇혀 벽을 보고 있게 됨)
+    const { workAreaSize } = screen.getPrimaryDisplay()
+    petDir = petX + PET_W / 2 < workAreaSize.width / 2 ? 1 : -1
+    petWin?.webContents.send('pet-dir', petDir)
   })
 
   petWin.on('closed', () => { petWin = null })
@@ -212,8 +217,9 @@ function startWander() {
     if (petY < 0)    { petY = 0;    petVy =  Math.abs(petVy) }
     if (petY > maxY) { petY = maxY; petVy = -Math.abs(petVy) }
 
-    // 방향: 오른쪽 레일에선 왼쪽 보기(-1), 왼쪽 레일에선 오른쪽 보기(1)
-    const newDir: 1 | -1 = petSide === 'right' ? -1 : 1
+    // 방향: 실제 X위치 기준 — 화면 왼쪽 절반이면 오른쪽 보기(1), 오른쪽 절반이면
+    // 왼쪽 보기(-1). 항상 화면 중앙(=자기가 가는 쪽)을 바라본다.
+    const newDir: 1 | -1 = petX + PET_W / 2 < workAreaSize.width / 2 ? 1 : -1
     if (newDir !== petDir) {
       petDir = newDir
       petWin.webContents.send('pet-dir', petDir)

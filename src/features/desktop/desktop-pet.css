@@ -355,6 +355,8 @@ body, html {
   position: absolute;
   top: -10px;
   left: 50%;
+  /* 인게임(PetAvatar)과 동일하게 가로 중심을 기준점에 맞춘다 (좌상단 앵커 → 중심 앵커) */
+  transform: translateX(-50%);
   font-size: 1.15rem;
   pointer-events: none;
   z-index: 2;
