@@ -41,7 +41,7 @@ import { careRemaining, CARE_HOURLY_CAP } from '../../utils/care'
 import { pickPetLine } from '../../utils/petLines'
 import { lineQuestsFor } from '../../utils/quests'
 import { awakenCond, AWAKEN_CONDS, canAttemptAwaken, isAwakenEligible, type AwakenCtx } from '../../utils/awaken'
-import { backgroundCss, accessoryPlacementFor, type ShopItem } from '../../utils/items'
+import { backgroundCss, wornAccessories, type ShopItem } from '../../utils/items'
 import {
   focusBuffInfo,
   activeFocusSession,
@@ -307,6 +307,8 @@ export default function PetGame({
   )
   const [, forceRerender] = useState(0)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  // 선물 팝업 → 상점 "선물" 분류로 바로 이동시키는 신호 (카운터)
+  const [shopGiftSignal, setShopGiftSignal] = useState(0)
   // 가구 드래그 배치 (놓는 순간 pet.furniturePos에 저장)
   const stageRef = useRef<HTMLDivElement>(null)
   const [furnDrag, setFurnDrag] = useState<{ id: string; x: number; y: number } | null>(null)
@@ -1155,8 +1157,7 @@ export default function PetGame({
             imageDataUrl={petSpriteUrl(pet)}
             stats={stats}
             stage={stage}
-            accessory={pet.accessory}
-            accessoryPos={accessoryPlacementFor(pet.accessory, pet.form, pet.accessoryPos)}
+            worn={wornAccessories(pet)}
             species={displaySpecies(pet)}
             stageIndex={form.tier}
             size={150}
@@ -1493,7 +1494,7 @@ export default function PetGame({
       </section>
 
       <section className="pg-page pg-page-scroll" style={{ order: 0 }} data-tab={0}>
-        <Shop embedded pet={pet} onBuy={buyItem} onBuyFurniture={buyFurniture} onUpdatePet={update} onClose={() => setTab(CARE_TAB)} />
+        <Shop embedded pet={pet} onBuy={buyItem} onBuyFurniture={buyFurniture} onUpdatePet={update} focusGiftSignal={shopGiftSignal} onClose={() => setTab(CARE_TAB)} />
       </section>
       </div>{/* /track */}
       </div>{/* /viewport */}
@@ -1571,7 +1572,7 @@ export default function PetGame({
         <GiftPicker
           pet={pet}
           onGive={giveGift}
-          onGoShop={() => { setModal(null); setTab(0) }}
+          onGoShop={() => { setModal(null); setTab(0); setShopGiftSignal((n) => n + 1) }}
           onClose={() => setModal(null)}
         />
       )}

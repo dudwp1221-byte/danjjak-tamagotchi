@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Pet, AccessoryPlacement } from '../../types/pet'
-import { SHOP_ITEMS, placementKey, backgroundCss, type ShopItem } from '../../utils/items'
+import {
+  SHOP_ITEMS,
+  placementKey,
+  backgroundCss,
+  wornAccessories,
+  type ShopItem,
+} from '../../utils/items'
 import { ownsPremium } from '../../utils/premium'
 import { levelFromXp, stageFromLevel } from '../../utils/progression'
 import { formById } from '../../utils/species'
@@ -22,12 +28,14 @@ interface ClosetEditorProps {
 }
 
 /**
- * 옷장 — 내 펫 위에 악세서리를 직접 끌어다 배치하고 저장한다.
+ * 옷장 — 내 펫 위에 악세서리를 직접 끌어다 배치하고 저장한다 (다중 착용).
+ * 목록에서 고른 아이템 하나를 편집하고, 나머지 착용 중인 아이템은 그대로 보인다.
  * 배치는 형태(진화)별로 저장되어, 진화로 몸집이 바뀌면 다시 맞춰줄 수 있다.
  */
 export default function ClosetEditor({ pet, onClose, onUpdatePet }: ClosetEditorProps) {
   const level = levelFromXp(pet.growth)
   const form = formById(pet.form)
+  const wornIds = pet.accessories ?? (pet.accessory ? [pet.accessory] : [])
 
   // 보유 악세서리 (일반 = 펫 소유, 프리미엄 오라 = 계정 소유)
   const owned = SHOP_ITEMS.filter(
@@ -36,9 +44,10 @@ export default function ClosetEditor({ pet, onClose, onUpdatePet }: ClosetEditor
       (pet.ownedItems.includes(i.id) || (i.premium && ownsPremium(i.id))),
   )
 
-  const [selId, setSelId] = useState<string | null>(pet.accessory)
+  const [selId, setSelId] = useState<string | null>(wornIds[0] ?? null)
   const selItem: ShopItem | undefined = owned.find((i) => i.id === selId)
   const isAura = !!selItem?.aura
+  const selWorn = !!selId && wornIds.includes(selId)
 
   const savedPos = selId ? pet.accessoryPos?.[placementKey(selId, pet.form)] : undefined
   const [pos, setPos] = useState<AccessoryPlacement>(savedPos ?? DEFAULT_POS)
@@ -76,25 +85,36 @@ export default function ClosetEditor({ pet, onClose, onUpdatePet }: ClosetEditor
     dragging.current = false
   }
 
+  /** 배치 저장 (+아직 안 입었으면 착용까지) */
   const save = () => {
-    if (!selId) {
-      onUpdatePet({ accessory: null })
-    } else if (isAura) {
-      onUpdatePet({ accessory: selId })
-    } else {
-      onUpdatePet({
-        accessory: selId,
-        accessoryPos: {
-          ...(pet.accessoryPos ?? {}),
-          [placementKey(selId, pet.form)]: pos,
-        },
-      })
-    }
+    if (!selId) return
+    const nextWorn = wornIds.includes(selId) ? wornIds : [...wornIds, selId]
+    onUpdatePet({
+      accessories: nextWorn,
+      accessory: nextWorn[0] ?? null,
+      ...(isAura
+        ? {}
+        : {
+            accessoryPos: {
+              ...(pet.accessoryPos ?? {}),
+              [placementKey(selId, pet.form)]: pos,
+            },
+          }),
+    })
     setSavedFlash(true)
     window.setTimeout(() => setSavedFlash(false), 1200)
   }
 
+  /** 선택한 아이템 착용/해제 토글 */
+  const toggleWear = () => {
+    if (!selId) return
+    const next = selWorn ? wornIds.filter((w) => w !== selId) : [...wornIds, selId]
+    onUpdatePet({ accessories: next, accessory: next[0] ?? null })
+  }
+
   const bg = backgroundCss(pet.background)
+  // 무대에는 "편집 중인 것을 제외한" 착용 아이템을 그대로 보여준다 (편집 대상은 드래그 오버레이로)
+  const stageWorn = wornAccessories(pet).filter((w) => w.id !== selId || isAura)
 
   return (
     <Modal title="👗 옷장" onClose={onClose}>
@@ -104,7 +124,7 @@ export default function ClosetEditor({ pet, onClose, onUpdatePet }: ClosetEditor
             ? isAura
               ? '오라는 펫을 은은하게 감싸요 — 위치 조정이 필요 없어요 ✨'
               : '아이템을 끌어서 원하는 자리에 놓고, 저장을 눌러 주세요'
-            : '아래에서 착용할 아이템을 골라 주세요'}
+            : '아래에서 편집할 아이템을 골라 주세요 (여러 개 착용 가능)'}
         </p>
 
         {/* 배치 무대 — 좌표계는 아바타 박스와 1:1 (저장 좌표 그대로 표시됨) */}
@@ -121,7 +141,7 @@ export default function ClosetEditor({ pet, onClose, onUpdatePet }: ClosetEditor
               imageDataUrl={petSpriteUrl(pet)}
               stats={pet.stats}
               stage={stageFromLevel(level)}
-              accessory={isAura ? selId : null}
+              worn={stageWorn}
               species={form}
               stageIndex={form.tier}
               size={AVATAR_SIZE}
@@ -195,40 +215,52 @@ export default function ClosetEditor({ pet, onClose, onUpdatePet }: ClosetEditor
               </button>
             </>
           )}
-          <button type="button" className="closet-btn closet-save" onClick={save}>
-            {savedFlash ? '저장했어요 ✔' : selId ? '이 모습으로 저장' : '벗은 모습으로 저장'}
-          </button>
+          {selItem && (
+            <button type="button" className="closet-btn" onClick={toggleWear}>
+              {selWorn ? '벗기' : '입기'}
+            </button>
+          )}
+          {selItem && (
+            <button type="button" className="closet-btn closet-save" onClick={save}>
+              {savedFlash ? '저장했어요 ✔' : '배치 저장'}
+            </button>
+          )}
         </div>
 
-        {/* 보유 악세서리 목록 */}
+        {/* 보유 악세서리 목록 — 착용 중인 것은 표시 */}
         <div className="closet-list">
-          <button
-            type="button"
-            className={'closet-slot' + (selId === null ? ' active' : '')}
-            onClick={() => setSelId(null)}
-            title="착용 안 함"
-          >
-            <span className="closet-slot-emoji">🚫</span>
-            <span className="closet-slot-name">안 함</span>
-          </button>
           {owned.map((i) => (
             <button
               key={i.id}
               type="button"
-              className={'closet-slot' + (selId === i.id ? ' active' : '')}
+              className={
+                'closet-slot' +
+                (selId === i.id ? ' active' : '') +
+                (wornIds.includes(i.id) ? ' worn' : '')
+              }
               onClick={() => setSelId(i.id)}
-              title={i.desc}
+              title={i.desc + (wornIds.includes(i.id) ? ' (착용 중)' : '')}
             >
               <span className="closet-slot-emoji">
                 {i.aura ? i.emoji : <AccessorySprite id={i.id} emoji={i.emoji} width="1.4em" />}
               </span>
               <span className="closet-slot-name">{i.name}</span>
               {i.aura && <span className="closet-slot-tag">오라</span>}
+              {wornIds.includes(i.id) && <span className="closet-slot-worn">✔</span>}
             </button>
           ))}
         </div>
         {owned.length === 0 && (
           <p className="closet-empty">아직 악세서리가 없어요 — 상점에서 구경해 보세요 🛍️</p>
+        )}
+        {wornIds.length > 0 && (
+          <button
+            type="button"
+            className="closet-btn closet-unwear-all"
+            onClick={() => onUpdatePet({ accessories: [], accessory: null })}
+          >
+            🚫 전부 벗기
+          </button>
         )}
       </div>
     </Modal>

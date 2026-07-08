@@ -63,6 +63,8 @@ interface PetAvatarProps {
   accessory?: string | null
   /** 옷장에서 저장한 악세서리 배치 (없으면 기본 위치) */
   accessoryPos?: AccessoryPlacement | null
+  /** 다중 착용 — 지정되면 accessory/accessoryPos 대신 이 목록을 렌더 (utils/items.wornAccessories) */
+  worn?: { id: string; placement: AccessoryPlacement | null }[]
   /** 현재 형태 (오라/색조/희귀도 발광) */
   species?: Form
   /** 진화 단계 인덱스 0~3 (오라 강도) */
@@ -90,6 +92,7 @@ export default function PetAvatar({
   stage,
   accessory = null,
   accessoryPos = null,
+  worn,
   species,
   stageIndex = 0,
   size = 200,
@@ -101,8 +104,12 @@ export default function PetAvatar({
   alt = '펫',
 }: PetAvatarProps) {
   const overlays = showOverlays ? overlaysFor(stats) : []
-  const acc = accessoryEmoji(accessory)
-  const auraId = accessoryAura(accessory)
+  // 착용 목록 — worn(다중)이 우선, 없으면 레거시 단일 accessory
+  const wornList = worn ?? (accessory ? [{ id: accessory, placement: accessoryPos ?? null }] : [])
+  const wornEmojis = wornList
+    .map((w) => ({ ...w, emoji: accessoryEmoji(w.id) }))
+    .filter((w): w is typeof w & { emoji: string } => !!w.emoji)
+  const wornAuras = wornList.map((w) => accessoryAura(w.id)).filter((id): id is string => !!id)
   const imgSize = Math.round(size * stage.scale)
   const [spriteFailed, setSpriteFailed] = useState(false)
   const spriteUrl = species && !spriteFailed ? formSpriteUrl(species.id) : imageDataUrl
@@ -178,14 +185,15 @@ export default function PetAvatar({
             {react === 'breathe' && <b>Z</b>}
           </span>
         )}
-        {/* 악세서리 — 애니메이션 레이어(img-wrap) 안에 넣어 펫의 둥실거림·반응 바운스를 함께 탄다.
+        {/* 악세서리(다중) — 애니메이션 레이어(img-wrap) 안에 넣어 펫의 둥실거림·반응 바운스를 함께 탄다.
             저장 좌표는 아바타 컨테이너(%) 기준이므로 wrap 좌표계로 변환 */}
-        {acc && accessory && (() => {
-          const p = accessoryPos ?? { x: 50, y: 10, s: 1 }
+        {wornEmojis.map((w) => {
+          const p = w.placement ?? { x: 50, y: 10, s: 1 }
           const offset = (size - imgSize) / 2
           const toWrap = (pct: number) => ((((pct / 100) * size - offset) / imgSize) * 100)
           return (
             <span
+              key={w.id}
               className="pa-accessory pa-acc-custom"
               style={{
                 fontSize: size * 0.28 * p.s,
@@ -194,17 +202,19 @@ export default function PetAvatar({
               }}
             >
               <AccessorySprite
-                id={accessory}
-                emoji={acc}
+                id={w.id}
+                emoji={w.emoji}
                 width={size * 0.32 * p.s}
                 rotate={p.r ?? 0}
                 flip={p.flip ?? false}
               />
             </span>
           )
-        })()}
+        })}
       </span>
-      {auraId && <AuraFx id={auraId} size={imgSize * 1.5} />}
+      {wornAuras.map((id) => (
+        <AuraFx key={id} id={id} size={imgSize * 1.5} />
+      ))}
       {overlays.map((o, i) => (
         <span key={i} className={`pa-overlay pa-${o.position} pa-anim-${o.anim}`}>
           {o.symbol}

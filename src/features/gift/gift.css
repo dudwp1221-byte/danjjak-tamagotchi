@@ -1,3 +1,45 @@
+/* 유대 안내 카드 */
+.gift-bond {
+  margin: 0 0 0.9rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: var(--radius-md, 14px);
+  background: rgba(244, 114, 182, 0.1);
+  border: 1px solid rgba(244, 114, 182, 0.28);
+}
+.gift-bond-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.gift-bond-stage {
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+.gift-bond-val {
+  font-size: 0.82rem;
+  opacity: 0.8;
+}
+.gift-bond-track {
+  height: 6px;
+  margin: 0.5rem 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+.gift-bond-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f472b6, #c084fc);
+  transition: width 0.4s ease;
+}
+.gift-bond-desc {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  opacity: 0.8;
+}
+
 .gift-desc {
   margin: 0 0 0.5rem;
   font-size: 0.85rem;

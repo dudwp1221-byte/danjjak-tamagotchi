@@ -13,12 +13,28 @@
   font-size: 5rem;
   animation: rv-shake 0.5s ease-in-out infinite;
 }
+.rv-egg-wrap {
+  position: relative;
+  display: inline-block;
+}
 .rv-egg-img {
   display: block;
   width: 110px;
   height: auto;
   image-rendering: pixelated;
-  filter: drop-shadow(0 6px 14px rgba(253, 224, 71, 0.35));
+  /* 종족 색 글로우 (--egg-tint 없으면 기본 노랑) */
+  filter: drop-shadow(0 6px 16px color-mix(in srgb, var(--egg-tint, #fde047) 55%, transparent));
+}
+/* 알 픽셀만 종족 색으로 물들이는 오버레이 — 알 이미지를 마스크로 사용 */
+.rv-egg-tint {
+  position: absolute;
+  inset: 0;
+  background: var(--egg-tint, #fde047);
+  opacity: 0.38;
+  mix-blend-mode: color;
+  -webkit-mask: url('/intro/egg_glow.webp') center / 110px no-repeat;
+  mask: url('/intro/egg_glow.webp') center / 110px no-repeat;
+  pointer-events: none;
 }
 @keyframes rv-shake {
   0%,

@@ -10,7 +10,7 @@ import { FURNITURE_ITEMS } from '../../utils/furniture'
 import Memorial from '../graduation/Memorial'
 import FurnitureSprite from '../../components/FurnitureSprite'
 import AccessorySprite from '../../components/AccessorySprite'
-import { accessoryEmoji, accessoryPlacementFor, backgroundCss } from '../../utils/items'
+import { accessoryEmoji, wornAccessories, backgroundCss } from '../../utils/items'
 import './room.css'
 
 interface RoomPet {
@@ -199,14 +199,15 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
                       // 이름·기분 이모지는 버튼이 아닌 이미지만 뒤집어 정방향 유지.
                       style={{ transform: `scaleX(${rp.dx > 0 ? -1 : 1})` }}
                     />
-                    {/* 착용 악세서리 — 옷장 배치를 따라 펫에 붙어 함께 돌아다닌다 */}
-                    {(() => {
-                      const emoji = accessoryEmoji(pet.accessory)
-                      if (!emoji || !pet.accessory) return null
-                      const pos = accessoryPlacementFor(pet.accessory, pet.form, pet.accessoryPos)
-                      // 크기는 펫 몸 대비 % — 인게임 아바타와 같은 비율(약 36%)로 딱 맞게
+                    {/* 착용 악세서리(다중) — 옷장 배치를 따라 펫에 붙어 함께 돌아다닌다.
+                        크기는 펫 몸 대비 % — 인게임 아바타와 같은 비율(약 36%) */}
+                    {wornAccessories(pet).map((w) => {
+                      const emoji = accessoryEmoji(w.id)
+                      if (!emoji) return null
+                      const pos = w.placement
                       return (
                         <span
+                          key={w.id}
                           className="room-pet-acc"
                           style={
                             pos
@@ -215,7 +216,7 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
                           }
                         >
                           <AccessorySprite
-                            id={pet.accessory}
+                            id={w.id}
                             emoji={emoji}
                             width={`${Math.round(36 * (pos?.s ?? 1))}%`}
                             rotate={pos?.r ?? 0}
@@ -223,7 +224,7 @@ export default function PetRoom({ pets, activePetId, onSwitch, onAddNew, onGradu
                           />
                         </span>
                       )
-                    })()}
+                    })}
                   </span>
                 )}
                 <span className="room-pet-name">{pet.name}</span>

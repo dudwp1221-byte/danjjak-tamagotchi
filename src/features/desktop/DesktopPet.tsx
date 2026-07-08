@@ -8,7 +8,7 @@ import { formById } from '../../utils/species'
 import { levelFromXp } from '../../utils/progression'
 import { canEvolveNow } from '../../utils/evolve'
 import { needLine, ambientLine, pokeLine } from '../../utils/desktopTalk'
-import { accessoryEmoji, accessoryPlacementFor } from '../../utils/items'
+import { accessoryEmoji, wornAccessories } from '../../utils/items'
 import AccessorySprite from '../../components/AccessorySprite'
 import { normalizePet, petSpriteUrl } from '../../utils/pet'
 import type { Pet } from '../../types/pet'
@@ -152,9 +152,12 @@ export default function DesktopPet() {
   const mood = pet ? petMood(pet.stats) : null
   const sleeping = pet ? pet.stats.energy < 25 : false
   const form = pet ? formById(pet.form) : null
-  // 게임 창에서 착용한 악세서리를 바탕화면에서도 보여준다 (옷장 배치 반영)
-  const accEmoji = pet ? accessoryEmoji(pet.accessory) : null
-  const accPos = pet ? accessoryPlacementFor(pet.accessory, pet.form, pet.accessoryPos) : null
+  // 게임 창에서 착용한 악세서리(다중)를 바탕화면에서도 보여준다 (옷장 배치 반영)
+  const wornList = pet
+    ? wornAccessories(pet)
+        .map((w) => ({ ...w, emoji: accessoryEmoji(w.id) }))
+        .filter((w): w is typeof w & { emoji: string } => !!w.emoji)
+    : []
   const distressed = pet
     ? Math.min(pet.stats.hunger, pet.stats.mood, pet.stats.cleanliness, pet.stats.energy) < 30
     : false
@@ -221,29 +224,30 @@ export default function DesktopPet() {
           // 몸이 좌우반전되면 착용 장비도 몸에 붙은 채 같이 뒤집힌다.
           <span className="dp-body">
             <img src={spriteUrl(pet)} alt={pet.name} className="dp-img" draggable={false} />
-            {accEmoji && (
+            {wornList.map((w) => (
               <span
+                key={w.id}
                 className="dp-accessory"
                 style={
-                  accPos
+                  w.placement
                     ? {
-                        left: `${accPos.x}%`,
-                        top: `${accPos.y}%`,
-                        fontSize: `${1.15 * accPos.s}rem`,
+                        left: `${w.placement.x}%`,
+                        top: `${w.placement.y}%`,
+                        fontSize: `${1.15 * w.placement.s}rem`,
                       }
                     : undefined
                 }
                 aria-hidden="true"
               >
                 <AccessorySprite
-                  id={pet.accessory!}
-                  emoji={accEmoji}
-                  width={`${1.4 * (accPos?.s ?? 1)}em`}
-                  rotate={accPos?.r ?? 0}
-                  flip={accPos?.flip ?? false}
+                  id={w.id}
+                  emoji={w.emoji}
+                  width={`${1.4 * (w.placement?.s ?? 1)}em`}
+                  rotate={w.placement?.r ?? 0}
+                  flip={w.placement?.flip ?? false}
                 />
               </span>
-            )}
+            ))}
           </span>
         )}
       </div>

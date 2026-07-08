@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { Pet } from '../../types/pet'
-import { SHOP_ITEMS, GIFT_ITEMS, backgroundCss, type ShopItem } from '../../utils/items'
+import { SHOP_ITEMS, GIFT_ITEMS, backgroundCss, wornAccessories, accessoryPlacementFor, type ShopItem } from '../../utils/items'
 import { FURNITURE_ITEMS, type FurnitureItem } from '../../utils/furniture'
 import { gameClock } from '../../utils/gametime'
 import { levelFromXp, stageFromLevel } from '../../utils/progression'
@@ -38,6 +38,8 @@ interface ShopProps {
   onUpdatePet: (patch: Partial<Pet>) => void
   /** 페이저 페이지로 임베드 (배경/닫기 없이 인라인 렌더) */
   embedded?: boolean
+  /** 값이 바뀌면 아이템 탭의 "선물" 분류로 이동 (선물 팝업에서 넘어올 때) */
+  focusGiftSignal?: number
 }
 
 type ShopTab = 'items' | 'furniture' | 'closet' | 'premium'
@@ -58,10 +60,18 @@ const CLOSET_PREMIUM = SHOP_ITEMS.filter(
   (i) => i.premium && (i.type === 'accessory' || i.type === 'background'),
 )
 
-export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet, embedded }: ShopProps) {
+export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet, embedded, focusGiftSignal }: ShopProps) {
   const [tab, setTab] = useState<ShopTab>('items')
   // 아이템 탭 내 분류 칩
   const [itemCat, setItemCat] = useState<'treat' | 'gift' | 'deco' | 'prestige' | 'material'>('treat')
+
+  // 선물 팝업 "상점에서 선물 사기" → 아이템 탭 + 선물 분류로 직행
+  useEffect(() => {
+    if (focusGiftSignal) {
+      setTab('items')
+      setItemCat('gift')
+    }
+  }, [focusGiftSignal])
   // 사기 전에 입어보기 — 선택한 꾸미기 아이템 (악세서리/배경)
   const [preview, setPreview] = useState<ShopItem | null>(null)
   // 프리미엄 상태 변경 시 강제 리렌더용
@@ -91,7 +101,7 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
 
   const isEquipped = (item: ShopItem) =>
     item.type === 'accessory'
-      ? pet.accessory === item.id
+      ? (pet.accessories ?? []).includes(item.id)
       : item.type === 'background'
         ? pet.background === item.id
         : false
@@ -99,8 +109,15 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
   const isWearable = (item: ShopItem) =>
     item.type === 'accessory' || item.type === 'background'
 
-  // 미리보기에 적용할 악세서리/배경 (선택 없으면 현재 착용 상태)
-  const previewAcc = preview?.type === 'accessory' ? preview.id : pet.accessory
+  // 미리보기 — 현재 착용(다중) 위에 선택한 악세서리를 얹어서 보여준다
+  const baseWorn = wornAccessories(pet)
+  const previewWorn =
+    preview?.type === 'accessory'
+      ? [
+          ...baseWorn.filter((w) => w.id !== preview.id),
+          { id: preview.id, placement: accessoryPlacementFor(preview.id, pet.form, pet.accessoryPos) },
+        ]
+      : baseWorn
   const previewBg =
     preview?.type === 'background' ? (preview.bg ?? null) : backgroundCss(pet.background)
   const level = levelFromXp(pet.growth)
@@ -338,7 +355,7 @@ export default function Shop({ pet, onClose, onBuy, onBuyFurniture, onUpdatePet,
             imageDataUrl={petSpriteUrl(pet)}
             stats={pet.stats}
             stage={stageFromLevel(level)}
-            accessory={previewAcc}
+            worn={previewWorn}
             species={form}
             stageIndex={form.tier}
             size={72}

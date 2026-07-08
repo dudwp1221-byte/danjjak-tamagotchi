@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { Pet } from '../../types/pet'
-import { SHOP_ITEMS, backgroundCss, type ShopItem } from '../../utils/items'
+import { SHOP_ITEMS, backgroundCss, getItem, type ShopItem } from '../../utils/items'
 import { FURNITURE_ITEMS } from '../../utils/furniture'
 import { ownsPremium } from '../../utils/premium'
 import AccessorySprite from '../../components/AccessorySprite'
@@ -29,6 +29,8 @@ function ownedBy(pet: Pet, item: ShopItem): boolean {
  */
 /** 방에 동시에 꺼내 놓을 수 있는 가구 수 — 난잡함 방지 */
 const MAX_PLACED = 6
+/** 동시 착용 가능한 악세서리 수 (오라 포함) */
+const MAX_WORN = 4
 
 export default function Bag({ pet, onUpdatePet, onOpenCloset, onClose }: BagProps) {
   const [tab, setTab] = useState<BagTab>('acc')
@@ -38,6 +40,29 @@ export default function Bag({ pet, onUpdatePet, onOpenCloset, onClose }: BagProp
   const themes = SHOP_ITEMS.filter((i) => i.type === 'background' && ownedBy(pet, i))
   const furniture = FURNITURE_ITEMS.filter((f) => pet.furniture.includes(f.id))
   const placed = pet.furniturePlaced ?? pet.furniture
+  const wornIds = pet.accessories ?? (pet.accessory ? [pet.accessory] : [])
+
+  const flash = (msg: string) => {
+    setWarn(msg)
+    window.setTimeout(() => setWarn(null), 2500)
+  }
+
+  /** 악세서리 다중 착용 토글 — 오라는 서로 배타(1개), 총 개수 제한 */
+  const toggleAccessory = (item: ShopItem) => {
+    let next: string[]
+    if (wornIds.includes(item.id)) {
+      next = wornIds.filter((w) => w !== item.id)
+    } else {
+      // 오라를 새로 끼면 기존 오라는 벗는다
+      const base = item.aura ? wornIds.filter((w) => !getItem(w)?.aura) : [...wornIds]
+      if (base.length >= MAX_WORN) {
+        flash(`동시에 ${MAX_WORN}개까지만 착용할 수 있어요 — 먼저 하나를 벗어 주세요`)
+        return
+      }
+      next = [...base, item.id]
+    }
+    onUpdatePet({ accessories: next, accessory: next[0] ?? null })
+  }
 
   const toggleFurniture = (id: string) => {
     if (!placed.includes(id) && placed.length >= MAX_PLACED) {
@@ -65,23 +90,26 @@ export default function Bag({ pet, onUpdatePet, onOpenCloset, onClose }: BagProp
 
       {tab === 'acc' && (
         <>
-          <p className="bag-hint">눌러서 착용/해제 — 위치·크기는 옷장에서 조정해요</p>
+          <p className="bag-hint">
+            눌러서 착용/해제 (동시에 {MAX_WORN}개까지, 오라는 1개) — 위치·크기는 옷장에서
+          </p>
+          {warn && <p className="bag-warn">{warn}</p>}
           <div className="bag-grid">
             {accs.map((i) => {
-              const worn = pet.accessory === i.id
+              const wornNow = wornIds.includes(i.id)
               return (
                 <button
                   key={i.id}
                   type="button"
-                  className={'bag-slot' + (worn ? ' active' : '')}
-                  onClick={() => onUpdatePet({ accessory: worn ? null : i.id })}
+                  className={'bag-slot' + (wornNow ? ' active' : '')}
+                  onClick={() => toggleAccessory(i)}
                   title={i.desc}
                 >
                   <span className="bag-slot-icon">
                     {i.aura ? i.emoji : <AccessorySprite id={i.id} emoji={i.emoji} width="2rem" />}
                   </span>
                   <span className="bag-slot-name">{i.name}</span>
-                  {worn && <em className="bag-slot-tag">착용 중</em>}
+                  {wornNow && <em className="bag-slot-tag">착용 중</em>}
                 </button>
               )
             })}

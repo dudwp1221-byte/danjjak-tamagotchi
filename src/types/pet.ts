@@ -116,7 +116,9 @@ export interface Pet {
   totalActions: number
 
   // --- 아이템 / 꾸미기 ---
-  /** 착용 중인 악세서리 id (없으면 null) */
+  /** 착용 중인 악세서리 목록 (다중 착용) — 원본 데이터 */
+  accessories?: string[]
+  /** @deprecated 단일 착용 시절 필드 — accessories[0] 미러 (구버전 저장본·공유 스냅샷 호환용) */
   accessory: string | null
   /** 옷장에서 조정한 악세서리 배치 — 키: `${악세서리id}@${형태id}` (진화하면 형태별로 다시 조정) */
   accessoryPos?: Record<string, AccessoryPlacement>

@@ -47,6 +47,20 @@ export function accessoryPlacementFor(
   return saved[placementKey(accessoryId, formId)] ?? null
 }
 
+/** 착용 중인 악세서리 전체(다중) + 각자의 배치 — 렌더러 공용 */
+export function wornAccessories(pet: {
+  accessories?: string[]
+  accessory?: string | null
+  form: string
+  accessoryPos?: Record<string, AccessoryPlacement>
+}): { id: string; placement: AccessoryPlacement | null }[] {
+  const list = pet.accessories ?? (pet.accessory ? [pet.accessory] : [])
+  return list.map((id) => ({
+    id,
+    placement: accessoryPlacementFor(id, pet.form, pet.accessoryPos),
+  }))
+}
+
 /** 선물 아이템 카탈로그 (상점 구매/이벤트로 획득 → 보관 → 선물하기로 사용) */
 export const GIFT_ITEMS: ShopItem[] = [
   { id: 'gift_flower', name: '들꽃 다발', emoji: '💐', type: 'gift', desc: '애정 +20', price: 25, affection: 20 },

@@ -29,19 +29,28 @@ export default function SpeciesReveal({ pet, isNew, onContinue }: SpeciesRevealP
     return () => window.clearTimeout(id)
   }, [])
 
+  // 유년기(현재 형태)의 종족 색으로 알을 물들인다 — 감성 + 어떤 아이가 나올지 살짝 암시
+  const eggTint = form.aura
   return (
     <div className="rv-screen">
       {!revealed ? (
         <div className="rv-suspense">
-          <div className="rv-egg">
+          <div
+            className="rv-egg"
+            style={{ '--egg-tint': eggTint } as React.CSSProperties}
+          >
             {eggImgOk ? (
-              <img
-                className="rv-egg-img"
-                src="/intro/egg_glow.webp"
-                alt=""
-                draggable={false}
-                onError={() => setEggImgOk(false)}
-              />
+              <span className="rv-egg-wrap">
+                <img
+                  className="rv-egg-img"
+                  src="/intro/egg_glow.webp"
+                  alt=""
+                  draggable={false}
+                  onError={() => setEggImgOk(false)}
+                />
+                {/* 알 모양을 마스크로 써서 종족 색만 은은하게 입힌다 */}
+                <span className="rv-egg-tint" />
+              </span>
             ) : (
               '🥚'
             )}

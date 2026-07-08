@@ -1,7 +1,7 @@
 import type { Pet } from '../../types/pet'
 import { GIFT_ITEMS, type ShopItem } from '../../utils/items'
 import { personalityDef } from '../../utils/personality'
-import { FAVORITE_GIFT, giftBondGain, objectParticle } from '../../utils/bond'
+import { FAVORITE_GIFT, giftBondGain, objectParticle, bondStage, nextBondStage } from '../../utils/bond'
 import Modal from '../../components/Modal'
 import './gift.css'
 
@@ -22,6 +22,33 @@ export default function GiftPicker({ pet, onClose, onGive, onGoShop }: GiftPicke
 
   return (
     <Modal title="🎁 선물하기" onClose={onClose}>
+      {/* 유대 = 깎이지 않고 쌓이기만 하는 우리 사이의 친밀도. 단계가 오르면 대사·기록이 깊어짐 */}
+      {(() => {
+        const bond = pet.bond ?? 0
+        const stage = bondStage(bond)
+        const next = nextBondStage(bond)
+        return (
+          <div className="gift-bond">
+            <div className="gift-bond-row">
+              <span className="gift-bond-stage">{stage.emoji} {stage.name}</span>
+              <span className="gift-bond-val">💞 {bond}</span>
+            </div>
+            {next && (
+              <div className="gift-bond-track">
+                <div
+                  className="gift-bond-fill"
+                  style={{ width: `${Math.min(100, Math.round((bond / next.min) * 100))}%` }}
+                />
+              </div>
+            )}
+            <p className="gift-bond-desc">
+              <strong>유대</strong>는 우리 사이의 친밀도예요. 선물·매일 인사로 쌓이기만 하고
+              절대 줄지 않아요 — 깊어질수록 펫이 더 다정하게 말을 걸어요.
+              {next && ` (다음: ${next.emoji} ${next.name})`}
+            </p>
+          </div>
+        )
+      })()}
       <p className="gift-desc">
         선물은 애정과 함께 <strong>유대</strong>를 쌓고, 일기에 추억으로 남아요.
       </p>
