@@ -204,6 +204,23 @@ export default function Settings({
         </p>
       </div>
 
+      {/* 웹에서만 — 바탕화면 펫까지 쓰는 데스크톱 앱(Windows). Electron이면 onAlwaysOnTop 등이 있으므로 숨김 */}
+      {!onAlwaysOnTop && !onClickThrough && (
+        <div className="set-section">
+          <p className="set-label">🖥️ 데스크톱 앱</p>
+          <a
+            className="set-btn set-wide"
+            href="https://github.com/dudwp1221-byte/danjjak-tamagotchi/releases/latest/download/danjjak-windows.zip"
+            style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}
+          >
+            Windows 앱 다운로드
+          </a>
+          <p className="set-desc">
+            바탕화면에 펫이 돌아다니고, 일하는 동안 함께 자라요 (Windows 전용).
+          </p>
+        </div>
+      )}
+
       <div className="set-section">
         <p className="set-label">도움말</p>
         <button
