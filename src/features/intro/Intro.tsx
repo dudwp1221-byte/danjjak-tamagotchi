@@ -152,7 +152,7 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
           <p className="intro-place">· 모두가 퇴근한 사무실 ·</p>
           <p className="intro-line intro-l1">또, 야근이네요.</p>
           <p className="intro-line intro-l2">모니터 불빛만 조용히 깜빡이는 밤 —</p>
-          <p className="intro-line intro-l3">식어버린 커피처럼, 마음도 조금 식어가요.</p>
+          <p className="intro-line intro-l3">식은 커피처럼, 마음도 조금 지쳤어요.</p>
         </div>
       )}
 
@@ -161,14 +161,14 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
         <div className="intro-scene" key="s1">
           <p className="intro-line intro-l1">오늘 하루도 버텨내느라,</p>
           <p className="intro-line intro-l2 intro-big">정말 수고 많았어요.</p>
-          <p className="intro-line intro-l3">아무도 말해주지 않아도 — 알고 있는 친구가 있다면.</p>
+          <p className="intro-line intro-l3">이런 밤엔, 곁에 작은 친구 하나 있었으면 싶죠.</p>
         </div>
       )}
 
       {/* 장면 2 — 향수 (컷2: 손바닥 위 다마고치, 느린 줌아웃) */}
       {step === 2 && (
         <div className="intro-scene" key="s2">
-          <p className="intro-line intro-l1">문득, 떠오르지 않나요?</p>
+          <p className="intro-line intro-l1">문득, 그립지 않나요?</p>
           <p className="intro-line intro-l3 intro-line-bottom">주머니 속에서 삐약대던, 그 작은 친구.</p>
         </div>
       )}
@@ -176,7 +176,7 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
       {/* 장면 3 — 서랍 속 알 (컷3, 두근거리는 줌인) */}
       {step === 3 && (
         <div className="intro-scene" key="s3">
-          <p className="intro-line intro-l1">그런데 — 오늘, 서랍 속에서</p>
+          <p className="intro-line intro-l1">그런데 오늘, 책상 서랍 속에서 —</p>
           <p className="intro-line intro-l2 intro-line-bottom">작은 온기가 반짝이고 있었어요.</p>
         </div>
       )}
