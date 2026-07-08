@@ -578,12 +578,15 @@ export default function PetGame({
   const giveGift = useCallback(
     (item: ShopItem) => {
       if (!consumeGift(item.id)) return
-      adjust({ mood: item.affection ?? 20, health: 4 })
-      reward(0, 4)
+      const affection = item.affection ?? 20
+      const favorite = FAVORITE_GIFT[pet.personality] === item.id
+      // 선물은 코인을 들여 주는 특별한 행동 — 애정값에 비례해 XP, 최애면 1.5배
+      const xp = Math.round((affection / 2) * (favorite ? 1.5 : 1))
+      adjust({ mood: affection, health: 4 })
+      reward(0, xp)
       recordMission('care')
       triggerReaction('wiggle')
-      const favorite = FAVORITE_GIFT[pet.personality] === item.id
-      const bondGain = giftBondGain(item.affection ?? 20, favorite)
+      const bondGain = giftBondGain(affection, favorite)
       addDiary(
         item.emoji,
         favorite
@@ -592,7 +595,9 @@ export default function PetGame({
       )
       setEffect(favorite ? '💖' : '🎁')
       setPop({
-        text: favorite ? `💖 최애 선물! 유대 +${bondGain}` : `💝 애정 +${item.affection ?? 20} · 유대 +${bondGain}`,
+        text: favorite
+          ? `💖 최애 선물! 애정 +${affection} · 유대 +${bondGain} · XP +${xp}`
+          : `💝 애정 +${affection} · 유대 +${bondGain} · XP +${xp}`,
         key: Date.now(),
       })
       window.setTimeout(() => setEffect(null), 800)
