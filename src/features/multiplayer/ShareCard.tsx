@@ -54,7 +54,7 @@ export default function ShareCard({
       try {
         await nav.share({
           files: [file],
-          title: '단짝 다마고치',
+          title: '오피스 펫',
           text: `${pet.name}를 자랑합니다! 🐣`,
         })
       } catch {

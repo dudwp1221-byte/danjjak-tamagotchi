@@ -173,7 +173,7 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
           <span className="intro-star intro-star-a" aria-hidden="true">✦</span>
           <span className="intro-star intro-star-b" aria-hidden="true">✧</span>
           <span className="intro-star intro-star-c" aria-hidden="true">✦</span>
-          <h1 className="intro-title">단짝 다마고치</h1>
+          <h1 className="intro-title">오피스 펫</h1>
           <p className="intro-subtitle">그 시절의 작은 친구가, 이번엔 당신의 책상 위로 —</p>
           <button
             type="button"

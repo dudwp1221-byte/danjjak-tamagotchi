@@ -55,7 +55,7 @@ export async function buildShareCard(pet: Pet, info: CardInfo): Promise<string> 
   ctx.fillStyle = '#c4b5fd'
   ctx.font = 'bold 30px system-ui, sans-serif'
   ctx.textAlign = 'center'
-  ctx.fillText('단짝 다마고치', W / 2, 64)
+  ctx.fillText('오피스 펫', W / 2, 64)
 
   // 펫 그림 패널
   const panelX = 110

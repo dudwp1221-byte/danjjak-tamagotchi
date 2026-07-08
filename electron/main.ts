@@ -302,7 +302,7 @@ function updateTrayMenu() {
 function createTray() {
   const icon = nativeImage.createEmpty()
   tray = new Tray(icon)
-  tray.setToolTip('단짝 다마고치')
+  tray.setToolTip('오피스 펫')
   updateTrayMenu()
   tray.on('double-click', () => createFullWindow())
 }
