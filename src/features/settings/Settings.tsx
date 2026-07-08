@@ -4,7 +4,21 @@ import { getApiKey, setApiKey } from '../../utils/chat'
 import Modal from '../../components/Modal'
 import './settings.css'
 
-import { loadPets, upsertPet, type Theme } from '../../utils/storage'
+import {
+  loadPets,
+  upsertPet,
+  loadPetMoveMode,
+  savePetMoveMode,
+  type Theme,
+  type PetMoveMode,
+} from '../../utils/storage'
+
+const PET_MOVE_OPTIONS: { mode: PetMoveMode; icon: string; label: string }[] = [
+  { mode: 'corner', icon: '📍', label: '우측 하단 고정' },
+  { mode: 'right', icon: '↕️', label: '오른쪽만' },
+  { mode: 'edges', icon: '🔲', label: '가장자리 순회' },
+  { mode: 'free', icon: '✨', label: '자유 이동' },
+]
 
 interface SettingsProps {
   notifications: boolean
@@ -45,6 +59,14 @@ export default function Settings({
     return k ? `${k.slice(0, 8)}${'·'.repeat(12)}` : ''
   })
   const [apiKeyEditing, setApiKeyEditing] = useState(false)
+  // 바탕화면 펫 이동 방식 (Electron 전용)
+  const [petMove, setPetMove] = useState<PetMoveMode>(() => loadPetMoveMode())
+  const changePetMove = (m: PetMoveMode) => {
+    setPetMove(m)
+    savePetMoveMode(m)
+    ;(window as { electronBridge?: { setPetMoveMode?: (m: string) => void } })
+      .electronBridge?.setPetMoveMode?.(m)
+  }
   // 닉네임 — 모든 펫의 ownerName을 한 번에 갱신 ("OO님과 함께한 지"에 표시)
   const [nickname, setNickname] = useState(() => loadPets()[0]?.ownerName ?? '')
   const saveNickname = () => {
@@ -145,6 +167,32 @@ export default function Settings({
                 </button>
               </div>
             )}
+            <div
+              className="set-row"
+              style={{ marginTop: '0.75rem', flexDirection: 'column', alignItems: 'stretch', gap: '0.5rem' }}
+            >
+              <div className="set-text">
+                <span className="set-name">🐾 펫 이동 방식</span>
+                <span className="set-desc">바탕화면에서 펫이 어떻게 돌아다닐지 정해요.</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem' }}>
+                {PET_MOVE_OPTIONS.map((o) => (
+                  <button
+                    key={o.mode}
+                    type="button"
+                    className="set-theme"
+                    onClick={() => changePetMove(o.mode)}
+                    style={
+                      petMove === o.mode
+                        ? { outline: '2px solid var(--accent)', fontWeight: 700 }
+                        : { opacity: 0.7 }
+                    }
+                  >
+                    {o.icon} {o.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </>
         )}
       </div>

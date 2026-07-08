@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { loadPets, getActiveId, loadSettings, applyTheme, upsertPet } from '../../utils/storage'
+import { loadPets, getActiveId, loadSettings, applyTheme, upsertPet, loadPetMoveMode } from '../../utils/storage'
 import { petMood } from '../../utils/stats'
 import { resolveCare, careRemaining } from '../../utils/care'
 import { addCoins } from '../../utils/account'
@@ -51,6 +51,11 @@ export default function DesktopPet() {
     const bridge = (window as any).electronBridge
     if (!bridge?.onPetDir) return
     return bridge.onPetDir((d: 1 | -1) => setDir(d))
+  }, [])
+
+  // 저장된 이동 모드를 메인 프로세스에 전달 (펫 창이 뜰 때마다 동기화)
+  useEffect(() => {
+    ;(window as any).electronBridge?.setPetMoveMode?.(loadPetMoveMode())
   }, [])
 
   // 백그라운드 XP: 게임 창의 PetGame이 적립 중이 아닐 때(창 닫힘/로비 화면) 바탕화면 펫이 담당 (중복 방지)

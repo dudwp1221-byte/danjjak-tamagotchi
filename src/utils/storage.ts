@@ -164,6 +164,26 @@ export function saveSettings(settings: Settings): void {
   }
 }
 
+/* ── 바탕화면 펫 이동 모드 (Electron 전용) ── */
+
+// corner: 우측하단 고정 · right: 오른쪽 세로 레일 · edges: 가장자리 순회 · free: 전체 자유
+export type PetMoveMode = 'corner' | 'right' | 'edges' | 'free'
+
+const PETMOVE_KEY = 'danjjak-petmove'
+
+export function loadPetMoveMode(): PetMoveMode {
+  const v = localStorage.getItem(PETMOVE_KEY)
+  return v === 'corner' || v === 'right' || v === 'edges' || v === 'free' ? v : 'right'
+}
+
+export function savePetMoveMode(mode: PetMoveMode): void {
+  try {
+    localStorage.setItem(PETMOVE_KEY, mode)
+  } catch {
+    // 무시
+  }
+}
+
 /* ── 온보딩 ─────────────────────────────── */
 
 const ONBOARD_KEY = 'danjjak-onboarded'

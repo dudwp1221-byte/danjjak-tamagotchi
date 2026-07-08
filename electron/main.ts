@@ -116,12 +116,16 @@ function sendFullWinState() {
 // 바탕화면 펫 이동 상태
 const PET_W = 160, PET_H = 160   // CSS와 맞춤
 let petX = 200, petY = 200
-let petVy = 1.2                   // 주 이동: 위아래
+let petVy = 1.2                   // 세로 속도
+let petVx = 1.4                   // 가로 속도 (free 모드)
 let petDir: 1 | -1 = 1
 let wanderTimer: ReturnType<typeof setInterval> | null = null
 let pauseTicks = 0
-// 'left' | 'right' — 화면 가장자리 레일
-let petSide: 'left' | 'right' = 'right'
+// 이동 모드: corner(우측하단 고정) · right(오른쪽 세로 레일) · edges(가장자리 순회) · free(전체 자유)
+type MoveMode = 'corner' | 'right' | 'edges' | 'free'
+let moveMode: MoveMode = 'right'
+// edges 모드에서 현재 붙어있는 테두리 (시계방향 순회)
+let edge: 'top' | 'right' | 'bottom' | 'left' = 'right'
 
 // 업무 감지 상태
 let consecutiveActiveTicks = 0
@@ -179,6 +183,16 @@ function createPetWindow() {
   startWander()
 }
 
+// 방향: 실제 X위치 기준 — 화면 왼쪽 절반이면 오른쪽 보기(1), 오른쪽 절반이면
+// 왼쪽 보기(-1). 항상 화면 중앙(=자기가 가는 쪽)을 바라본다.
+function updateDir(screenW: number) {
+  const newDir: 1 | -1 = petX + PET_W / 2 < screenW / 2 ? 1 : -1
+  if (newDir !== petDir) {
+    petDir = newDir
+    petWin?.webContents.send('pet-dir', petDir)
+  }
+}
+
 function startWander() {
   if (wanderTimer) clearInterval(wanderTimer)
 
@@ -188,43 +202,67 @@ function startWander() {
     const { workAreaSize } = screen.getPrimaryDisplay()
     const maxX = workAreaSize.width - PET_W
     const maxY = workAreaSize.height - PET_H
+    const M = 8 // 가장자리 여백
 
-    // 가장자리 레일 목표 X (좌우 10px 여유)
-    const targetX = petSide === 'right' ? maxX - 8 : 8
+    // 우측 하단 고정 — 움직이지 않음
+    if (moveMode === 'corner') {
+      petX = maxX - M
+      petY = maxY - M
+      updateDir(workAreaSize.width)
+      petWin.setPosition(Math.round(petX), Math.round(petY))
+      return
+    }
 
-    // 멈춤 상태
+    // 멈춤 상태 (고정 외 모든 모드 공통)
     if (pauseTicks > 0) {
       pauseTicks--
       return
     }
-
     // 가끔 멈춤 (0.8%)
     if (Math.random() < 0.008) {
       pauseTicks = Math.floor((1000 + Math.random() * 3000) / 50)
       return
     }
 
-    // Y 방향 랜덤 변경 (2%)
-    if (Math.random() < 0.02) {
-      petVy = (Math.random() * 1.8 + 0.5) * (Math.random() < 0.5 ? 1 : -1)
+    if (moveMode === 'edges') {
+      // 화면 테두리를 시계방향으로 순회 (위→오른쪽→아래→왼쪽)
+      const speed = 2.2
+      if (edge === 'top') {
+        petY = M; petX += speed
+        if (petX >= maxX - M) { petX = maxX - M; edge = 'right' }
+      } else if (edge === 'right') {
+        petX = maxX - M; petY += speed
+        if (petY >= maxY - M) { petY = maxY - M; edge = 'bottom' }
+      } else if (edge === 'bottom') {
+        petY = maxY - M; petX -= speed
+        if (petX <= M) { petX = M; edge = 'left' }
+      } else {
+        petX = M; petY -= speed
+        if (petY <= M) { petY = M; edge = 'top' }
+      }
+    } else if (moveMode === 'free') {
+      // 바탕화면 전체를 사방 벽에 튕기며 자유 이동
+      if (Math.random() < 0.02) petVx = (Math.random() * 1.8 + 0.6) * (Math.random() < 0.5 ? 1 : -1)
+      if (Math.random() < 0.02) petVy = (Math.random() * 1.8 + 0.6) * (Math.random() < 0.5 ? 1 : -1)
+      petX += petVx
+      petY += petVy
+      if (petX < 0)    { petX = 0;    petVx =  Math.abs(petVx) }
+      if (petX > maxX) { petX = maxX; petVx = -Math.abs(petVx) }
+      if (petY < 0)    { petY = 0;    petVy =  Math.abs(petVy) }
+      if (petY > maxY) { petY = maxY; petVy = -Math.abs(petVy) }
+    } else {
+      // 'right' — 오른쪽 세로 레일에서 위아래로
+      const targetX = maxX - M
+      if (Math.random() < 0.02) {
+        petVy = (Math.random() * 1.8 + 0.5) * (Math.random() < 0.5 ? 1 : -1)
+      }
+      petX += (targetX - petX) * 0.04 + (Math.random() - 0.5) * 0.5
+      petY += petVy
+      if (petY < 0)    { petY = 0;    petVy =  Math.abs(petVy) }
+      if (petY > maxY) { petY = maxY; petVy = -Math.abs(petVy) }
     }
 
-    // X는 목표 레일로 부드럽게 당김
-    petX += (targetX - petX) * 0.04 + (Math.random() - 0.5) * 0.5
-    petY += petVy
-
-    // Y 벽 반사
-    if (petY < 0)    { petY = 0;    petVy =  Math.abs(petVy) }
-    if (petY > maxY) { petY = maxY; petVy = -Math.abs(petVy) }
-
-    // 방향: 실제 X위치 기준 — 화면 왼쪽 절반이면 오른쪽 보기(1), 오른쪽 절반이면
-    // 왼쪽 보기(-1). 항상 화면 중앙(=자기가 가는 쪽)을 바라본다.
-    const newDir: 1 | -1 = petX + PET_W / 2 < workAreaSize.width / 2 ? 1 : -1
-    if (newDir !== petDir) {
-      petDir = newDir
-      petWin.webContents.send('pet-dir', petDir)
-    }
-
+    updateDir(workAreaSize.width)
     petWin.setPosition(Math.round(petX), Math.round(petY))
   }, 50)
 }
@@ -378,6 +416,14 @@ ipcMain.on('toggle-click-through', () => {
 
 ipcMain.on('set-click-through-state', (_e, active: boolean) => {
   petWin?.setIgnoreMouseEvents(active, { forward: true })
+})
+
+// 바탕화면 펫 이동 모드 변경 (설정/펫 창에서 전송)
+ipcMain.on('pet-move-mode', (_e, mode: MoveMode) => {
+  if (mode === 'corner' || mode === 'right' || mode === 'edges' || mode === 'free') {
+    moveMode = mode
+    if (mode === 'edges') edge = 'right' // 현재 위치에서 오른쪽 테두리부터 순회 시작
+  }
 })
 
 // 게임 창의 PetGame 마운트/언마운트 신호 → 바탕화면 펫과 XP 적립 주체 조율
