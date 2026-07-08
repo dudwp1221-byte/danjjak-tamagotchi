@@ -1,13 +1,68 @@
 import { app, BrowserWindow, ipcMain, Menu, Tray, nativeImage, powerMonitor, screen } from 'electron'
 import path from 'path'
 import fs from 'fs'
+import http from 'http'
 
 // Windows 투명 창의 흰색 잔상(GPU 컴포지팅 아티팩트) 방지
 app.disableHardwareAcceleration()
 
 const isDev = !app.isPackaged
 const PRELOAD = path.join(__dirname, 'preload.js')
-const INDEX_URL = isDev ? 'http://localhost:5173' : `file://${path.join(__dirname, '../dist/index.html')}`
+
+// 렌더러 로드 주소.
+// dev: Vite 서버 / prod: 내장 정적 서버(http). file://을 쓰면 런타임 절대경로 에셋
+// (/sprites, /ui, /themes 등)이 파일시스템 루트로 잘못 풀려 전부 404가 되므로,
+// 패키징된 앱에서는 dist를 http로 서빙해 웹과 동일하게 동작시킨다.
+let INDEX_URL = isDev ? 'http://localhost:5173' : ''
+
+const MIME: Record<string, string> = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript',
+  '.mjs': 'text/javascript',
+  '.css': 'text/css',
+  '.json': 'application/json',
+  '.webp': 'image/webp',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+  '.webmanifest': 'application/manifest+json',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+  '.ttf': 'font/ttf',
+}
+
+/** 프로덕션: dist 폴더를 로컬 http로 서빙하고 base URL을 반환 */
+function startStaticServer(): Promise<string> {
+  const root = path.join(__dirname, '../dist')
+  return new Promise((resolve) => {
+    const server = http.createServer((req, res) => {
+      try {
+        const urlPath = decodeURIComponent((req.url || '/').split('?')[0])
+        let rel = urlPath === '/' ? 'index.html' : urlPath.replace(/^\/+/, '')
+        let filePath = path.join(root, rel)
+        // 디렉터리 이탈 방지
+        if (!filePath.startsWith(root)) filePath = path.join(root, 'index.html')
+        // 파일 없으면 SPA 폴백(index.html)
+        if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+          filePath = path.join(root, 'index.html')
+        }
+        const ext = path.extname(filePath).toLowerCase()
+        res.setHeader('Content-Type', MIME[ext] ?? 'application/octet-stream')
+        fs.createReadStream(filePath).pipe(res)
+      } catch {
+        res.statusCode = 500
+        res.end('error')
+      }
+    })
+    server.listen(0, '127.0.0.1', () => {
+      const addr = server.address()
+      const port = typeof addr === 'object' && addr ? addr.port : 0
+      resolve(`http://127.0.0.1:${port}`)
+    })
+  })
+}
 const STATE_FILE = path.join(app.getPath('userData'), 'window-state.json')
 
 // 활동 감지 주기(ms) — 짧을수록 키보드·마우스에 빠르게 반응
@@ -282,7 +337,10 @@ function buildWorkTickPayload(): { mode: string; consecutiveTicks: number } | nu
   return { mode, consecutiveTicks: consecutiveActiveTicks }
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  // 프로덕션: 내장 정적 서버를 먼저 띄워 렌더러 base URL 확정 (창 생성 전)
+  if (!isDev) INDEX_URL = await startStaticServer()
+
   createPetWindow()
   createTray()
   startWorkMonitor()

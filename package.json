@@ -35,6 +35,9 @@
   "build": {
     "appId": "com.danjjak.tamagotchi",
     "productName": "단짝",
+    "directories": {
+      "output": "release"
+    },
     "files": [
       "dist/**/*",
       "dist-electron/**/*"
@@ -44,6 +47,11 @@
     },
     "mac": {
       "target": "dmg"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
     }
   }
 }
