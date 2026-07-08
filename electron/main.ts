@@ -8,6 +8,8 @@ app.disableHardwareAcceleration()
 
 const isDev = !app.isPackaged
 const PRELOAD = path.join(__dirname, 'preload.js')
+// 창·작업표시줄 아이콘 (dist에 번들된 앱 아이콘)
+const APP_ICON = path.join(__dirname, '../dist/app-icon.png')
 
 // 렌더러 로드 주소.
 // dev: Vite 서버 / prod: 내장 정적 서버(http). file://을 쓰면 런타임 절대경로 에셋
@@ -135,6 +137,7 @@ function createPetWindow() {
     y: Math.round(petY),
     width: PET_W,
     height: PET_H,
+    icon: APP_ICON,
     frame: false,
     transparent: true,
     backgroundColor: '#00000000',
@@ -232,6 +235,7 @@ function createFullWindow() {
     y: state.y,
     width: state.width,
     height: state.height,
+    icon: APP_ICON,
     frame: false,
     titleBarStyle: 'hidden',
     titleBarOverlay: { color: '#15161d', symbolColor: '#ffffff', height: 32 },
