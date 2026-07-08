@@ -33,6 +33,11 @@ function prefersReduced(): boolean {
  * 늦은 밤 사무실 → 위로 → 향수(주머니 속 다마고치) → 부화 → 타이틀.
  * 탭으로 빨리 넘기거나 건너뛸 수 있고, 재방문/모션최소 설정이면 곧장 타이틀.
  */
+// Electron(데스크톱)에서 실행 중이면 다운로드 버튼 숨김
+const isElectronEnv =
+  typeof window !== 'undefined' &&
+  !!(window as { electronBridge?: unknown }).electronBridge
+
 export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) {
   const skip = prefersReduced() || localStorage.getItem(SEEN_KEY) === '1'
   const [step, setStep] = useState(skip ? LAST : 0)
@@ -190,6 +195,16 @@ export default function Intro({ onStart, onAccount, accountLabel }: IntroProps) 
             >
               {accountLabel ?? '☁️ 로그인'}
             </button>
+          )}
+          {/* 웹에서만 — 바탕화면 펫까지 쓰는 데스크톱 앱(Windows) 다운로드. Electron에선 숨김 */}
+          {!isElectronEnv && (
+            <a
+              className="intro-download"
+              href="https://github.com/dudwp1221-byte/danjjak-tamagotchi/releases/latest/download/danjjak-windows.zip"
+              onClick={(e) => e.stopPropagation()}
+            >
+              🖥️ Windows 앱 다운로드 <span className="intro-download-sub">(바탕화면 펫)</span>
+            </a>
           )}
         </div>
       )}

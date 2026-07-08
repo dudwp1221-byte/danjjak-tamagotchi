@@ -447,3 +447,30 @@
 @media (prefers-reduced-motion: reduce) {
   .intro-star { animation: none; opacity: 0.5; }
 }
+
+/* 웹 전용 — 데스크톱 앱 다운로드 링크 (타이틀 화면) */
+.intro-download {
+  margin-top: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(233, 236, 245, 0.82);
+  text-decoration: none;
+  padding: 0.5rem 0.95rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+}
+.intro-download:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+.intro-download:active { transform: scale(0.96); }
+.intro-download-sub {
+  font-weight: 400;
+  opacity: 0.6;
+  font-size: 0.74rem;
+}
