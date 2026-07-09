@@ -58,7 +58,12 @@ body, html {
   left: 8px;
   transform-origin: center bottom;
   transition: transform 0.3s ease;
-  cursor: pointer;
+  cursor: grab;
+  touch-action: none;
+}
+.dp-pet-wrap.dp-dragging {
+  cursor: grabbing;
+  transition: none; /* 드래그 중엔 방향전환 트랜지션이 지연을 만들지 않게 */
 }
 /* 펫 몸통 레이어 — 둥실거림·케어 반응 애니메이션은 여기서.
    악세서리가 이 안에 있어 펫과 함께 바운스한다 */
@@ -379,13 +384,14 @@ body, html {
   .dp-focus-done { animation: none; }
 }
 
-/* 착용 악세서리 — 게임 창과 동일하게 머리 위 표시 */
+/* 착용 악세서리 — 게임 창(.pa-accessory.pa-acc-custom)과 완전히 동일하게 표시.
+   인게임은 좌우·상하 모두 중심을 배치 좌표에 맞춘다(translate(-50%,-50%)) —
+   가로만 중심으로 두면 세로 위치가 어긋난다. */
 .dp-accessory {
   position: absolute;
   top: -10px;
   left: 50%;
-  /* 인게임(PetAvatar)과 동일하게 가로 중심을 기준점에 맞춘다 (좌상단 앵커 → 중심 앵커) */
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   font-size: 1.15rem;
   pointer-events: none;
   z-index: 2;

@@ -124,6 +124,8 @@ type MoveMode = 'corner' | 'right' | 'edges' | 'free'
 let moveMode: MoveMode = 'right'
 // edges 모드에서 현재 붙어있는 테두리 (시계방향 순회)
 let edge: 'top' | 'right' | 'bottom' | 'left' = 'right'
+// 마우스로 펫을 집어 옮기는 중 — 켜져 있으면 자동 이동(wander)을 멈춘다
+let dragging = false
 
 // 업무 감지 상태
 let consecutiveActiveTicks = 0
@@ -196,6 +198,7 @@ function startWander() {
 
   wanderTimer = setInterval(() => {
     if (!petWin || !petWin.isVisible()) return
+    if (dragging) return // 사용자가 마우스로 옮기는 중 — 자동 이동 멈춤
 
     const { workAreaSize } = screen.getPrimaryDisplay()
     const maxX = workAreaSize.width - PET_W
@@ -342,7 +345,9 @@ function updateTrayMenu() {
 }
 
 function createTray() {
-  const icon = nativeImage.createEmpty()
+  // 게임 아이콘을 트레이 크기(16x16)로 리사이즈 — 비워두면(createEmpty) 알림영역에 아무것도 안 보인다.
+  let icon = nativeImage.createFromPath(APP_ICON)
+  if (!icon.isEmpty()) icon = icon.resize({ width: 16, height: 16 })
   tray = new Tray(icon)
   tray.setToolTip('오피스 펫')
   updateTrayMenu()
@@ -423,6 +428,21 @@ ipcMain.on('pet-move-mode', (_e, mode: MoveMode) => {
     if (mode === 'edges') edge = 'right' // 현재 위치에서 오른쪽 테두리부터 순회 시작
   }
 })
+
+// 마우스로 펫 집어서 옮기기 — 렌더러가 포인터 이동 델타(화면 px)를 보내면 창을 그만큼 옮긴다.
+// 자동 이동(wander)은 dragging=true인 동안 멈춰서 서로 싸우지 않는다.
+ipcMain.on('pet-drag-start', () => { dragging = true })
+ipcMain.on('pet-drag-move', (_e, dx: number, dy: number) => {
+  if (!petWin) return
+  const { workAreaSize } = screen.getPrimaryDisplay()
+  const maxX = workAreaSize.width - PET_W
+  const maxY = workAreaSize.height - PET_H
+  petX = Math.min(maxX, Math.max(0, petX + dx))
+  petY = Math.min(maxY, Math.max(0, petY + dy))
+  updateDir(workAreaSize.width)
+  petWin.setPosition(Math.round(petX), Math.round(petY))
+})
+ipcMain.on('pet-drag-end', () => { dragging = false })
 
 // 게임 창의 PetGame 마운트/언마운트 신호 → 바탕화면 펫과 XP 적립 주체 조율
 ipcMain.on('xp-active', (_e, active: boolean) => {

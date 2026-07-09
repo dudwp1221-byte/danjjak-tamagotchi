@@ -9,6 +9,9 @@ contextBridge.exposeInMainWorld('electronBridge', {
   showDesktopPet: () => ipcRenderer.send('show-desktop-pet'),
   setClickThrough: (active: boolean) => ipcRenderer.send('set-click-through-state', active),
   setPetMoveMode: (mode: string) => ipcRenderer.send('pet-move-mode', mode),
+  startPetDrag: () => ipcRenderer.send('pet-drag-start'),
+  movePetDrag: (dx: number, dy: number) => ipcRenderer.send('pet-drag-move', dx, dy),
+  endPetDrag: () => ipcRenderer.send('pet-drag-end'),
   setXpActive: (active: boolean) => ipcRenderer.send('xp-active', active),
   notifyPetChanged: () => ipcRenderer.send('pet-changed'),
   onPetChanged: (callback: () => void) => {

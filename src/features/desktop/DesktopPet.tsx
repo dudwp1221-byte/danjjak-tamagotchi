@@ -194,6 +194,52 @@ export default function DesktopPet() {
     speechTimer.current = setTimeout(() => setSpeech(null), 3000)
   }, [pet])
 
+  // 마우스로 펫을 집어서 원하는 위치로 옮기기.
+  // 작은 흔들림(3px 미만)은 클릭으로 취급 — 드래그로 넘어가야 실제로 창을 옮긴다.
+  const dragRef = useRef<{ x: number; y: number; moved: boolean } | null>(null)
+  const draggedRef = useRef(false)
+  const [dragging, setDragging] = useState(false)
+
+  const onPetPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    dragRef.current = { x: e.screenX, y: e.screenY, moved: false }
+    ;(e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId)
+  }, [])
+
+  const onPetPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    const d = dragRef.current
+    if (!d) return
+    const dx = e.screenX - d.x
+    const dy = e.screenY - d.y
+    if (!d.moved && Math.abs(dx) < 3 && Math.abs(dy) < 3) return
+    if (!d.moved) {
+      d.moved = true
+      draggedRef.current = true
+      setDragging(true)
+      ;(window as any).electronBridge?.startPetDrag?.()
+    }
+    d.x = e.screenX
+    d.y = e.screenY
+    ;(window as any).electronBridge?.movePetDrag?.(dx, dy)
+  }, [])
+
+  const onPetPointerUp = useCallback(() => {
+    const wasDragging = dragRef.current?.moved
+    dragRef.current = null
+    if (wasDragging) {
+      setDragging(false)
+      ;(window as any).electronBridge?.endPetDrag?.()
+    }
+  }, [])
+
+  // 드래그 뒤에도 click 이벤트가 따라와 "말 걸기"가 함께 터지는 걸 막는다
+  const handlePetClick = useCallback(() => {
+    if (draggedRef.current) {
+      draggedRef.current = false
+      return
+    }
+    handlePoke()
+  }, [handlePoke])
+
   const mood = pet ? petMood(pet.stats) : null
   const sleeping = pet ? pet.stats.energy < 25 : false
   const form = pet ? formById(pet.form) : null
@@ -241,17 +287,21 @@ export default function DesktopPet() {
       {speech && <div className="dp-bubble">{speech}</div>}
 
 
-      {/* 펫 */}
+      {/* 펫 — 클릭: 말 걸기, 드래그: 원하는 위치로 옮기기, 더블클릭: 게임 열기 */}
       <div
-        className="dp-pet-wrap"
+        className={'dp-pet-wrap' + (dragging ? ' dp-dragging' : '')}
         data-click
         // dir: 1=오른쪽 보기, -1=왼쪽 보기 (main.ts 레일 기준).
         // 스프라이트 원본이 왼쪽 보기라 오른쪽을 보려면 뒤집어야 한다 — PetRoom과 동일 규칙.
         // (반전은 wrap에 걸어야 함: .dp-img의 keyframes transform이 인라인 반전을 덮어씀)
         style={{ transform: `scaleX(${dir === 1 ? -1 : 1})` }}
-        onClick={handlePoke}
+        onPointerDown={onPetPointerDown}
+        onPointerMove={onPetPointerMove}
+        onPointerUp={onPetPointerUp}
+        onPointerCancel={onPetPointerUp}
+        onClick={handlePetClick}
         onDoubleClick={() => bridge?.openFullUI?.()}
-        title="클릭: 말 걸기 · 더블클릭: 게임 열기"
+        title="클릭: 말 걸기 · 드래그: 옮기기 · 더블클릭: 게임 열기"
       >
         {form && !sleeping && !distressed && (
           <>
@@ -266,42 +316,46 @@ export default function DesktopPet() {
             <span />
           </span>
         )}
-        {sleeping ? (
-          <div className="dp-sleeping">
-            <img src={spriteUrl(pet)} alt={pet.name} className="dp-img" draggable={false} />
-            <span className="dp-zzz">💤</span>
-          </div>
-        ) : (
-          // dp-body가 둥실거림·케어 반응 애니메이션을 담당 — 악세서리도 함께 바운스한다.
-          // 몸이 좌우반전되면 착용 장비도 몸에 붙은 채 같이 뒤집힌다.
-          <span className="dp-body">
-            <img src={spriteUrl(pet)} alt={pet.name} className="dp-img" draggable={false} />
-            {wornList.map((w) => {
-              // 인게임(PetAvatar)과 동일한 좌표계·크기 비율로 렌더 — 위치·크기 일치
-              const p = w.placement ?? { x: 50, y: 10, s: 1 }
-              return (
-                <span
-                  key={w.id}
-                  className="dp-accessory"
-                  style={{
-                    left: `${toWrap(p.x)}%`,
-                    top: `${toWrap(p.y)}%`,
-                    fontSize: `${dpBox * 0.28 * p.s}px`,
-                  }}
-                  aria-hidden="true"
-                >
-                  <AccessorySprite
-                    id={w.id}
-                    emoji={w.emoji}
-                    width={dpBox * 0.32 * p.s}
-                    rotate={p.r ?? 0}
-                    flip={p.flip ?? false}
-                  />
-                </span>
-              )
-            })}
-          </span>
-        )}
+        {/* 악세서리 — 인게임(PetAvatar)과 동일하게 자는 중에도 계속 보여준다 */}
+        {(() => {
+          const accessories = wornList.map((w) => {
+            const p = w.placement ?? { x: 50, y: 10, s: 1 }
+            return (
+              <span
+                key={w.id}
+                className="dp-accessory"
+                style={{
+                  left: `${toWrap(p.x)}%`,
+                  top: `${toWrap(p.y)}%`,
+                  fontSize: `${dpBox * 0.28 * p.s}px`,
+                }}
+                aria-hidden="true"
+              >
+                <AccessorySprite
+                  id={w.id}
+                  emoji={w.emoji}
+                  width={dpBox * 0.32 * p.s}
+                  rotate={p.r ?? 0}
+                  flip={p.flip ?? false}
+                />
+              </span>
+            )
+          })
+          return sleeping ? (
+            <div className="dp-sleeping">
+              <img src={spriteUrl(pet)} alt={pet.name} className="dp-img" draggable={false} />
+              {accessories}
+              <span className="dp-zzz">💤</span>
+            </div>
+          ) : (
+            // dp-body가 둥실거림·케어 반응 애니메이션을 담당 — 악세서리도 함께 바운스한다.
+            // 몸이 좌우반전되면 착용 장비도 몸에 붙은 채 같이 뒤집힌다.
+            <span className="dp-body">
+              <img src={spriteUrl(pet)} alt={pet.name} className="dp-img" draggable={false} />
+              {accessories}
+            </span>
+          )
+        })()}
       </div>
 
       {/* 집중 60분 완료 → 업무 완료 버튼 (대량 XP + 피로) */}
